@@ -1,0 +1,960 @@
+{% load static %}
+{% load partner_extras %}
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Client Profile | Dashboard</title>
+  <!-- Tell the browser to be responsive to screen width -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="{% static 'plugins/fontawesome-free/css/all.min.css' %}">
+  <!-- Ionicons -->
+  <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+  <!-- SweetAlert2 -->
+  <link rel="stylesheet" href="{% static 'plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css' %}">
+  <!-- Tempusdominus Bbootstrap 4 -->
+  <link rel="stylesheet" href="{% static 'plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css' %}">
+  <!-- iCheck -->
+  <link rel="stylesheet" href="{% static 'plugins/icheck-bootstrap/icheck-bootstrap.min.css' %}">
+  <!-- JQVMap -->
+  <link rel="stylesheet" href="{% static 'plugins/jqvmap/jqvmap.min.css' %}">
+  <!-- DataTables -->
+  <link rel="stylesheet" href="{% static 'plugins/datatables-bs4/css/dataTables.bootstrap4.css' %}">
+  <!-- Theme style -->
+  <link rel="stylesheet" href="{% static 'css/adminlte.css' %}">
+  <!-- overlayScrollbars -->
+  <link rel="stylesheet" href="{% static 'plugins/overlayScrollbars/css/OverlayScrollbars.min.css' %}">
+  <!-- Daterange picker -->
+  <link rel="stylesheet" href="{% static 'plugins/daterangepicker/daterangepicker.css' %}">
+  <!-- summernote -->
+  <link rel="stylesheet" href="{% static 'plugins/summernote/summernote-bs4.css' %}">
+  <!-- Google Font: Source Sans Pro -->
+  <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
+  <!-- Folder view -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/metismenu/dist/metisMenu.min.css">
+  <!-- Apex charts -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/apexcharts/3.32.0/apexcharts.min.css"
+    integrity="sha512-Tv+8HvG00Few62pkPxSs1WVfPf9Hft4U1nMD6WxLxJzlY/SLhfUPFPP6rovEmo4zBgwxMsArU6EkF11fLKT8IQ=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <!-- <style>
+    .metisFolder {
+      padding-left: 0;
+    }
+
+    .metisFolder,
+    .metisFolder ul {
+      list-style: none;
+    }
+
+    .metisFolder li {
+      position: relative;
+    }
+
+    .metisFolder li a {
+      display: block;
+      padding-top: 5px;
+      padding-bottom: 5px;
+      color: #333;
+      text-decoration: none;
+      outline: 0 none;
+    }
+
+    .metisFolder ul:before {
+      position: absolute;
+      border-left: 1px dotted #333;
+      content: "";
+      width: 30px;
+      top: 25px;
+      left: 5px;
+      bottom: 17px;
+    }
+
+    .metisFolder ul>li:before {
+      position: absolute;
+      border-top: 1px dotted #333;
+      content: "";
+      width: 30px;
+      top: 13px;
+      left: -33px;
+    }
+
+    li.active>a>span.fa-folder-o:before {
+      content: "\f115" !important;
+    }
+  </style> -->
+  <style>
+    #hideValuesOnSelect {
+      display: none;
+    }
+  </style>
+</head>
+
+<body class="hold-transition sidebar-mini layout-fixed">
+  <div class="wrapper">
+
+    <!-- Navbar -->
+    <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+      <!-- Left navbar links -->
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link" data-widget="pushmenu" href="#"><i class="fas fa-bars"></i></a>
+        </li>
+      </ul>
+    </nav>
+    <!-- /.navbar -->
+
+    <!-- Main Sidebar Container -->
+    <aside class="main-sidebar sidebar-dark-primary elevation-4">
+      <!-- Brand Logo -->
+      <a href="index3.html" class="brand-link">
+        <img src="{% static 'img/AdminLTELogo.png' %}" class="brand-image img-circle elevation-3" style="opacity: .8">
+        <span class="brand-text font-weight-light">Audit System</span>
+      </a>
+
+      <!-- Sidebar -->
+      <div class="sidebar">
+        <!-- Sidebar user panel (optional) -->
+        <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+          <div class="image">
+            <img src="{% static 'img/user2-160x160.jpg' %}" class="img-circle elevation-2" alt="User Image">
+          </div>
+          <div class="info">
+            <a href="#" class="d-block"> {{ request.user }}</a>
+          </div>
+        </div>
+
+        {% include '../includes/sidebar.html' %}
+      </div>
+      <!-- /.sidebar -->
+    </aside>
+
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+      <!-- Content Header (Page header) -->
+      <div class="content-header">
+      </div>
+      <!-- /.content-header -->
+
+      <!-- Main content -->
+      <section class="content">
+        <div class="row">
+          <div class="col-md-6 d-flex align-items-stretch">
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">
+                  <i class="fas fa-list"></i>
+                  Client Details
+                </h3>
+              </div>
+              <!-- /.card-header -->
+              <div class="card-body">
+                <div class="row">
+                  <div class="col-md-8">
+                    <dl class="row">
+                      <dt class="col-sm-4">Client ID</dt>
+                      <dd class="col-sm-8">{{ client.id }}</dd>
+                      <dt class="col-sm-4">Client Name</dt>
+                      <dd class="col-sm-8">{{ client.client_name }}</dd>
+                      <dt class="col-sm-4">GST Number</dt>
+                      <dd class="col-sm-8">{{ client.gst_no }}</dd>
+                      <dt class="col-sm-4">PAN Number</dt>
+                      <dd class="col-sm-8">{{ client.pan_no }}</dd>
+                      <dt class="col-sm-4">Industries</dt>
+                      <dd class="col-sm-8">
+                        {% for i in industry %}
+                        <div class="badge badge-warning">
+                          {{ i }}
+                        </div>
+                        {% endfor %}
+                      </dd>
+                      <dt class="col-sm-4">Types of Audits</dt>
+                      <dd class="col-sm-8">
+                        {% for type in audittype %}
+                        <div class="badge badge-info">
+                          {{ type }}
+                        </div>
+                        {% endfor %}
+                      </dd>
+                      <dt class="col-sm-4">Entities</dt>
+                      <dd class="col-sm-8">
+                        {% for e in entity %}
+                        <div class="badge badge-success">
+                          {{ e }}
+                        </div>
+                        {% endfor %}
+                      </dd>
+                    </dl>
+                  </div>
+                </div>
+              </div>
+              <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+          </div>
+          <div class="col-md-3 col-sm-12 align-items-stretch" style="width:100%">
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">
+                  <i class="fas fa-list"></i>
+                  Client Task Status
+                </h3>
+              </div>
+              <div class="card-body">
+                <div class="row">
+                  <div class="col-md-6 col-sm-12">
+                    <div id="chart"></div>
+                  </div>
+                  <div class="col-md-6 col-sm-12">
+                    <div id="chart2"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3 col-xl-3 col-sm-12 d-flex" style="width:100%">
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">
+                  <i class="fas fa-list"></i>
+                  Client Invoice Details
+                </h3>
+              </div>
+              <div class="card-body">
+                <div class="row">
+                  <div class="col-lg-6 col-12">
+                    <!-- small box -->
+                    <div class="small-box bg-info">
+                      <div class="inner">
+                        <h4>{{ billable_invoices }}</h4>
+                        <h6>Billable Invocies</h6>
+                      </div>
+                      <a href="{% url 'client_master' %}" class="small-box-footer">More info <i
+                          class="fas fa-arrow-circle-right"></i></a>
+                    </div>
+                  </div>
+                  <div class="col-lg-6 col-12">
+                    <!-- small box -->
+                    <div class="small-box bg-success">
+                      <div class="inner">
+                        <h4>{{ invoices_generated }}</h4>
+                        <h6>Invocies Generated</h6>
+                      </div>
+                      <a href="{% url 'client_master' %}" class="small-box-footer">More info <i
+                          class="fas fa-arrow-circle-right"></i></a>
+                    </div>
+                  </div>
+                  <div class="col-lg-6 col-12">
+                    <!-- small box -->
+                    <div class="small-box bg-danger">
+                      <div class="inner">
+                        <h4>{{ invoices_notgenerated }}</h4>
+                        <h6>Invocies Not Generated</h6>
+                      </div>
+                      <a href="{% url 'client_master' %}" class="small-box-footer">More info <i
+                          class="fas fa-arrow-circle-right"></i></a>
+                    </div>
+                  </div>
+
+                  <div class="col-lg-6 col-12">
+                    <!-- small box -->
+                    <div class="small-box bg-primary">
+                      <div class="inner">
+                        <h4>{{ invoices_total }}</h4>
+                        <h6>Invoicing Total</h6>
+                      </div>
+                      <a href="{% url 'client_master' %}" class="small-box-footer">More info <i
+                          class="fas fa-arrow-circle-right"></i></a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12">
+            <div class="card">
+              <div class="card-header">
+                <div class="row">
+                  <div class="col-lg-6 col-12">
+                    <h3 class="card-title">
+                      <i class="fas fa-list"></i>
+                      &nbsp;&nbsp;Audit Plans
+                    </h3>
+                  </div>
+                  <div class="col-lg-6 col-12">
+                    <div class="row">
+                      <div class="col-lg-6 col-12">
+                        <a role="btn" class="btn btn-success float-right"
+                          href="{% url 'view_client_invoicing' client_id=client.id %}" style="width: 250px;">View
+                          Invoicing Information</a>
+                      </div>
+                      <div class="col-lg-6 col-12">
+                        <button type="button" class="btn btn-primary float-right" data-toggle="modal"
+                          data-target="#addAuditPlan" style="width: 250px;">
+                          Add New Audit Plan
+                        </button>
+                      </div>
+                    </div>
+                    <div class="row mt-1">
+                      <div class="col-lg-6 col-12">
+                        <button type="button" class="btn btn-info float-right" data-toggle="modal"
+                          data-target="#addInvoice" style="width: 250px;">
+                          Create New Invoice
+                        </button>
+                      </div>
+                      <div class="col-lg-6 col-12">
+                        <button type="button" class="btn btn-primary float-right" data-toggle="modal"
+                          data-target="#addTaskModal" style="width: 250px;">
+                          Add New Task
+                        </button>
+                      </div>
+                    </div>
+                    <div class="row mt-1">
+                      <div class="col-lg-6 col-12">
+                        <button type="button" class="btn btn-success float-right" data-toggle="modal"
+                        data-target="#SendEmail"  onclick="sendEmail('{{client.id}}')" style="width: 250px;">
+                          Send Email
+                        </button>
+                        <div class="modal fade" id="SendEmail" tabindex="-1">
+                          <div class="modal-dialog" role="document" style="max-width: 900px !important;">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                  <h5 class="modal-title" id="exampleModalLongTitle">Send Email</h5>
+                                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                  </button>
+                                </div>
+                                <div class="modal-body">
+                                  <div class="form-row">
+                                    <div class="form-group col-md-12 mb-3">
+                                      <label for="email_id" class="text-dark">Email ID</label>
+                                      <input type="text" name="email_id" id="email_id" class="form-control" />
+                                    </div>
+                                  </div>
+                                  <div class="form-row">
+                                    <div class="form-group col-md-12 mb-3">
+                                      <label for="message">Content</label>
+                                      <textarea class="form-control" id="message" rows="3"></textarea>
+                                    </div>
+                                  </div>
+                                </div>
+                                <div class="modal-footer">
+                                  <button onclick="SendEmail('{{client.id}}')" class="btn btn-success">Send</button>
+                                </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div> 
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="card-body">
+                <table id="auditplans" class="table table-bordered table-striped table-responsive-sm">
+                  <thead>
+                    <tr>
+                      <th>Audit Plan For</th>
+                      <th>Start Date</th>
+                      <th>End Date</th>
+                      <th>Finance Year</th>
+                      <th>Progress</th>
+                      <th>Tasks Status</th>
+                      <th>Status</th>
+                      <th>View Audit Plan</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for ap in audit_plans %}
+                    <tr>
+                      <td>{{ ap.auditplanname }}</td>
+
+                      <td>{{ ap.start_date }}</td>
+                      <td>{{ ap.estimated_end_date }}</td>
+                      <td>{{ ap.finance_year }}</td>
+                      <!-- <td>{{ ap.total_tasks }} {{ ap.completed_tasks }} </td> -->
+                      <td style="width:200px">
+                        <div class="row">
+                          <div class="col-8">
+                            <div class="progress progress-sm mt-3">
+                              <div class="progress-bar bg-primary progress-bar-striped" style="width: {{ ap.completed_tasks | prog:ap.total_tasks }}%">
+                              </div>
+                            </div>
+                          </div>
+                          <p class="col-4 mt-2">{{ ap.completed_tasks | prog:ap.total_tasks }}%</p>
+                        </div>
+                      </td>
+                      <td>
+                        {% if ap.is_pending == True %}
+                          <strong class="text-success">Completed</strong>
+                        {% else %}
+                          <strong class="text-danger">Pending</strong>
+                        {% endif %}
+                      </td>
+                      {% if ap.is_audit_plan_locked == True %}
+                      <td style="color:red">LOCKED</td>
+                      {% else %}
+                      <td style="color:green">NOT LOCKED</td>
+                      {% endif %}
+                      <td><a href="{% url 'audit_plan' auditplan_id=ap.id %}">View</a></td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+        </div>
+        <!-- Modals -->
+        <div class="modal fade" id="addTaskModal" tabindex="-1">
+          <div class="modal-dialog" role="document" style="max-width: 900px !important;">
+            <div class="modal-content">
+              <form action="{% url 'add_client_task' client_id=client.id %}" method="post">
+                {% csrf_token %}
+                <div class="modal-header">
+                  <h5 class="modal-title" id="exampleModalLongTitle">Add New Task</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <div class="form-row">
+                    <div class="form-group col-md-12 mb-3">
+                      <label for="taskName" class="text-dark">Task Name</label>
+                      <input type="text" name="task_name" id="task_name" class="form-control" required />
+                    </div>
+                  </div>
+                  <div class="form-row">
+                    <div class="form-group col-md-12 mb-3">
+                      <label for="estimated_days_div" class="text-dark">Estimated Days</label>
+                      <div id="estimated_days_div">HH : <input type="text" name="estimated_hours" style="width:50px;" required> MM :<input type="text" name="estimated_minutes" style="width:50px;" required></div>
+                    </div>
+                  </div>
+                  <div class="form-row">
+                    <div class="form-group col-md-12 mb-3">
+                      <label for="taskName" class="text-dark">Auditing Standard</label>
+                      <input type="text" name="auditing_standard" id="auditing_standard" class="form-control" required/>
+                    </div>
+                  </div>
+                  <div class="form-row">
+                    <div class="form-group col-md-12 mb-3">
+                      <label for="taskName" class="text-dark">International Auditing Standard</label>
+                      <input type="text" name="international_auditing_standard" id="international_auditing_standard"
+                        class="form-control" required/>
+                    </div>
+                  </div>
+                  <div class="form-row">
+                    <div class="form-group col-md-12 mb-3">
+                      <label for="taskName" class="text-dark">Sub Area</label>
+                      <select name="act" id="act" class="custom-select" required>
+                        <option value="-1">Please Select</option>
+                        {% for act in acts %}
+                        <option value="{{ act.id }}">{{ act.act_name }}</option>
+                        {% endfor %}
+                      </select>
+                    </div>
+                  </div>
+                  <div class="form-row">
+                    <div class="form-group col-md-12 mb-3">
+                      <label for="taskName" class="text-dark">Activities</label>
+                      <select name="activity" id="activity" class="custom-select" required>
+                        <option value="-1">Please Select</option>
+                        {% for activity in activities %}
+                        <option value="{{ activity.id }}">{{ activity.activity_name }}</option>
+                        {% endfor %}
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <input type="submit" class="btn btn-success" value="Submit">
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal fade" id="addAuditPlan" tabindex="-1">
+          <div class="modal-dialog" role="document" style="max-width: 900px !important;">
+            <div class="modal-content">
+              <form action="{% url 'add_audit_plan' client_id=client.id %}" method="post">
+                {% csrf_token %}
+                <div class="modal-header">
+                  <h5 class="modal-title" id="exampleModalLongTitle">Create New AuditPlan</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <div class="form-row">
+                    <div class="form-group col-md-12 mb-3">
+                      <label for="audit_plan_name" class="text-dark">Audit Plan Name</label>
+                      <input type="text" name="audit_plan_name" id="audit_plan_name" class="form-control"  required/>
+                    </div>
+                  </div>
+                  <div class="form-row">
+                    <div class="form-group col-md-12 mb-3">
+                      <label for="auditplan_startdate" class="text-dark">Audit Plan Start Date</label>
+                      <input type="date" name="auditplan_startdate" id="auditplan_startdate" class="form-control" required />
+                    </div>
+                  </div>
+                  <div class="form-row">
+                    <div class="form-group col-md-12 mb-3">
+                      <label for="auditplan_enddate" class="text-dark">Audit Plan End Date</label>
+                      <input type="date" name="auditplan_enddate" id="auditplan_enddate" class="form-control" required/>
+                    </div>
+                  </div>
+                  <div class="form-row">
+                    <div class="form-group col-md-12 mb-3">
+                      <label for="auditplan_actual_enddate" class="text-dark">Audit Plan Actual End Date</label>
+                      <input type="date" name="auditplan_actual_enddate" id="auditplan_actual_enddate"
+                        class="form-control" required/>
+                    </div>
+                  </div>
+                  <div class="form-row">
+                    <div class="form-group col-md-12 mb-3">
+                      <label for="auditplan_fy" class="text-dark">Finance Year</label>
+                      <input type="text" name="auditplan_fy" id="auditplan_fy" class="form-control" required/>
+                    </div>
+                  </div>
+                  <div class="form-row">
+                    <div class="form-group col-md-12 mb-3">
+                      <label for="auditplan_frequency" class="text-dark">Audit Plan Frequency</label>
+                      <select name="auditplan_frequency" id="auditplan_frequency" class="form-control" required>
+                        <option value="">Select Frequency</option>
+                        <option value="Daily">Daily</option>
+                        <option value="Weekly">Weekly</option>
+                        <option value="FortNight">FortNight</option>
+                        <option value="Monthly">Monthly</option>
+                        <option value="Quaterly">Quaterly</option>
+                        <option value="Bi Annual">Bi Annual</option>
+                        <option value="Annual">Annual</option>
+                        <option value="Standalone">Standalone</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="form-row">
+                    <div class="form-group col-md-12 mb-3">
+                      <label for="auditplan_ap" class="text-dark">Audit Type</label>
+                      <select name="auditplan_ap" id="auditplan_ap" class="form-control" required>
+                        <option value="">Select Audit Type</option>
+                        {% for a in allap %}
+                        <option value="{{a.id}}">{{a.audit_type_name}}</option>
+                        {% endfor %}
+                      </select>
+                    </div>
+                  </div>
+                  <div class="form-row">
+                    <div class="form-group col-md-12 mb-3">
+                      <input type="checkbox" id="is_billable" name="is_billable" value="True" checked >&nbsp;&nbsp;&nbsp;
+                      <label for="is_billable" class="text-dark">Is this audit plan billable?</label>
+                    </div>
+                  </div>
+
+                </div>
+                <div class="modal-footer">
+                  <input type="submit" class="btn btn-success" value="Submit">
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal fade" id="addInvoice" tabindex="-1">
+          <div class="modal-dialog" role="document" style="max-width: 900px !important;">
+            <div class="modal-content">
+              <form action="{% url 'create_invoice' client_id=client.id %}" method="post"
+                onsubmit="return confirm('Your Audit Plan may not be locked! Do you wish to continue?');">
+                {% csrf_token %}
+                <div class="modal-header">
+                  <h5 class="modal-title" id="exampleModalLongTitle">Create New Invoice</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <div class="row">
+                    <div class="form-group col-md-12 mb-3">
+                      <label for="auditplan_ap" class="text-dark">Audit Plan</label>
+                      <select name="auditplan_ap" id="auditplan_ap" class="custom-select">
+                        <option value="">Select Audit Plan</option>
+                        {% for a in invoices %}
+                        {% if a.invoice_number is None %}
+                        <option value="{{a.id}}">{{a.auditplanname}}</option>
+                        {% endif %}
+                        {% endfor %}
+                      </select>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-12 mb-4">
+                      <label for="invoice_number" class="text-dark">Enter Invoice Number</label>
+                      <input type="text" name="invoice_number" id="invoice_number" class="form-control" />
+                    </div>
+                    <div class="col-md-12 mb-4">
+                      <label for="invoice_date" class="text-dark">Enter Invoice Date</label>
+                      <input type="date" name="invoice_date" id="invoice_date" class="form-control" />
+                    </div>
+                    <div class="col-md-12 mb-4">
+                      <label for="invoice_amount" class="text-dark">Enter Invoice Amount</label>
+                      <input type="text" name="invoice_amount" id="invoice_amount" class="form-control" />
+                    </div>
+                    <div class="col-md-6 mb-4">
+                      <label for="out_of_pocket" class="text-dark">Enter Out of pocket expenses</label>
+                      <input type="text" name="out_of_pocket" id="out_of_pocket" class="form-control" />
+                    </div>
+                    <div class="col-md-6 mb-4">
+                      <label for="total_ope" class="text-dark">Out of pocket expenses Total</label>
+                      <input type="text" name="total_ope" id="total_ope" class="form-control" />
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-12 mb-4">
+                      <label for="tasks" class="text-dark">ADD GST TO OUT OF POCKET EXPENSES ?</label>
+                      <br>
+                      <input type="checkbox" id="ope_add_gst" name="ope_add_gst" value="yes">
+                      <label for="yes">YES</label>
+                    </div>
+                  </div>
+                  <div class="row" id="selectope">
+                    <div class="col-md-4 mb-4">
+                      <label for="ope_igst" class="text-dark">Out of pocket expenses IGST (in %)</label>
+                      <input type="number" name="ope_igst" id="ope_igst" class="form-control" value="0" />
+                    </div>
+                    <div class="col-md-4 mb-4">
+                      <label for="ope_sgst" class="text-dark">Out of pocket expenses SGST (in %)</label>
+                      <input type="number" name="ope_sgst" id="ope_sgst" class="form-control" value="0" />
+                    </div>
+                    <div class="col-md-4 mb-4">
+                      <label for="ope_cgst" class="text-dark">Out of pocket expenses CGST (in %)</label>
+                      <input type="number" name="ope_cgst" id="ope_cgst" class="form-control" value="0" />
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-4 mb-4">
+                      <label for="igst" class="text-dark">Enter IGST (in %)</label>
+                      <input type="text" name="igst" id="igst" class="form-control" />
+                    </div>
+                    <div class="col-md-4 mb-4">
+                      <label for="sgst" class="text-dark">Enter SGST (in %)</label>
+                      <input type="text" name="sgst" id="sgst" class="form-control" />
+                    </div>
+                    <div class="col-md-4 mb-4">
+                      <label for="cgst" class="text-dark">Enter CGST (in %)</label>
+                      <input type="text" name="cgst" id="cgst" class="form-control" />
+                    </div>
+                    <div class="col-md-4 mb-4">
+                      <label for="igsta" class="text-dark">IGST Amount</label>
+                      <input type="text" name="igsta" id="igsta" class="form-control" />
+                    </div>
+                    <div class="col-md-4 mb-4">
+                      <label for="sgsta" class="text-dark">SGST Amount</label>
+                      <input type="text" name="sgsta" id="sgsta" class="form-control" />
+                    </div>
+                    <div class="col-md-4 mb-4">
+                      <label for="cgsta" class="text-dark">CGST Amount</label>
+                      <input type="text" name="cgsta" id="cgsta" class="form-control" />
+                    </div>
+                  </div>
+                  <div class="modal-footer">
+                    <input type="submit" class="btn btn-success" value="Submit">
+                  </div>
+              </form>
+            </div>
+          </div>
+        </div>
+        </div>
+      </section>
+      <!-- /.content -->
+    
+    <!-- /.content-wrapper -->
+    <footer class="main-footer">
+    </footer>
+
+    <!-- Control Sidebar -->
+    <aside class="control-sidebar control-sidebar-dark">
+      <!-- Control sidebar content goes here -->
+    </aside>
+    <!-- /.control-sidebar -->
+  </div>
+  <!-- ./wrapper -->
+
+  <!-- jQuery -->
+  <script src="{% static 'plugins/jquery/jquery.min.js' %}"></script>
+  <!-- jQuery UI 1.11.4 -->
+  <script src="{% static 'plugins/jquery-ui/jquery-ui.min.js' %}"></script>
+  <!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
+  <script>
+    $.widget.bridge('uibutton', $.ui.button)
+  </script>
+  <!-- Bootstrap 4 -->
+  <script src="{% static 'plugins/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+  <!-- SweetAlert2 -->
+  <script src="{% static 'plugins/sweetalert2/sweetalert2.min.js' %}"></script>
+  <!-- ChartJS -->
+  <script src="{% static 'plugins/chart.js/Chart.min.js' %}"></script>
+  <!-- Sparkline -->
+  <script src="{% static 'plugins/sparklines/sparkline.js' %}"></script>
+  <!-- JQVMap -->
+  <script src="{% static 'plugins/jqvmap/jquery.vmap.min.js' %}"></script>
+  <script src="{% static 'plugins/jqvmap/maps/jquery.vmap.usa.js' %}"></script>
+  <!-- jQuery Knob Chart -->
+  <script src="{% static 'plugins/jquery-knob/jquery.knob.min.js' %}"></script>
+  <!-- daterangepicker -->
+  <script src="{% static 'plugins/moment/moment.min.js' %}"></script>
+  <script src="{% static 'plugins/daterangepicker/daterangepicker.js' %}"></script>
+  <!-- Tempusdominus Bootstrap 4 -->
+  <script src="{% static 'plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js' %}"></script>
+  <!-- Summernote -->
+  <script src="{% static 'plugins/summernote/summernote-bs4.min.js' %}"></script>
+  <!-- overlayScrollbars -->
+  <script src="{% static 'plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js' %}"></script>
+  <!-- DataTables -->
+  <script src="{% static 'plugins/datatables/jquery.dataTables.js' %}"></script>
+  <script src="{% static 'plugins/datatables-bs4/js/dataTables.bootstrap4.js' %}"></script>
+
+  <!-- Metis Menu -->
+  <script src="https://cdn.jsdelivr.net/npm/metismenu"></script>
+  <!-- AdminLTE App -->
+  <script src="{% static 'js/adminlte.js' %}"></script>
+  <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
+  <script src="{% static 'js/pages/dashboard.js' %}"></script>
+  <!-- Apex charts -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/apexcharts/3.32.0/apexcharts.min.js"
+    integrity="sha512-JWuHiH5weF9hQAM/H5LaXRekU40IcLV8QgqGtvlR2t6vFNmDdCxkmFDajuHiuN0Tyh3n7HO/qdb3ARyUokKs0A=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script>
+    function sendEmail(id){
+      console.log("Email = ",id);
+      $.ajax({
+      type: "POST",
+      url: "https://dev.theauditassistant.com/partner/client/"+id+"/profile",
+      headers: {'X-CSRFToken': '{{ csrf_token }}'},
+      data: {
+        'get_email': id
+      },
+      success: function(data){
+        console.log(data);
+        if (data.emails.client_email){
+          console.log("1")
+          $('#email_id').val(data.emails.client_email)
+        }
+        else if(data.emails.finance_email){
+          console.log("2")
+          $('#email_id').val(data.emails.finance_email)
+        }
+        else{
+          console.log("3")
+        }
+        
+      }
+    });
+    }
+
+    function SendEmail(id){
+      console.log("Email sent");
+      var email = $('#email_id').val();
+      var message = $('#message').val();
+      console.log(email , message);
+      $.ajax({
+      type: "POST",
+      url: "https://dev.theauditassistant.com/partner/client/"+id+"/profile",
+      headers: {'X-CSRFToken': '{{ csrf_token }}'},
+      data: {
+        'send_email': email,
+        'send_message':message
+      },
+      success: function(data){
+        console.log(data)
+        if(data.send == "yes"){
+          console.log("modal close");
+          $('#SendEmail').modal('hide');
+          $('#message').val("");
+        }
+      }
+    });
+    }
+    
+    $("input").on("change", function () {
+      var ret = parseInt((($("#igst").val() / 100) * $("#invoice_amount").val() || '0'))
+      $("#igsta").val(ret);
+    })
+  </script>
+  <script>
+    $("input").on("change", function () {
+      var ret = parseInt((($("#sgst").val() / 100) * $("#invoice_amount").val() || '0'))
+      $("#sgsta").val(ret);
+    })
+  </script>
+  <script>
+    $("input").on("change", function () {
+      var ret = parseInt((($("#cgst").val() / 100) * $("#invoice_amount").val() || '0'))
+      $("#cgsta").val(ret);
+    })
+  </script>
+  <script>
+    $("input").on("change", function () {
+      var igst = parseInt(((($("#ope_igst").val() / 100) * $("#out_of_pocket").val()) || '0'))
+      var sgst = parseInt(((($("#ope_sgst").val() / 100) * $("#out_of_pocket").val()) || '0'))
+      var cgst = parseInt(((($("#ope_cgst").val() / 100) * $("#out_of_pocket").val()) || '0'))
+      ret = igst + cgst + sgst + parseInt($("#out_of_pocket").val());
+      // ret = ret + parseInt($("#total_ope").val());
+      $("#total_ope").val(ret);
+    })
+  </script>
+  <script>
+    $(() => {
+      $('body').toggleClass('sidebar-collapse');
+
+      $('#auditplans').DataTable({
+        "paging": true,
+        "lengthChange": true,
+        "searching": true,
+        "ordering": true,
+        "info": true,
+        "autoWidth": false,
+      });
+
+      const Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000
+      });
+
+      $('.swalDefaultSuccess').click(function () {
+        Toast.fire({
+          type: 'success',
+          title: 'The task has been started'
+        })
+      });
+
+      $('.taskSubmit').click(function () {
+        Toast.fire({
+          type: 'success',
+          title: 'The submission for the task has been sent for approval!'
+        })
+      });
+
+      $('.swalDefaultError').click(function () {
+        Toast.fire({
+          type: 'error',
+          title: 'The task has been ended!'
+        })
+      });
+
+      $('.metisFolder').metisMenu({
+        toggle: false
+      });
+    });
+
+  </script>
+  <script>
+    $('[name="ope_add_gst"]').on('change', function () {
+      $('#selectope').toggle(this.checked);
+    }).change();
+  </script>
+  <script>
+    var options = {
+      series: [{{ locked_ap | prog:unlocked_ap}}],
+      chart: {
+        height: 250,
+        type: 'radialBar',
+        offsetY: -20
+      },
+      plotOptions: {
+        radialBar: {
+          startAngle: -135,
+          endAngle: 135,
+          dataLabels: {
+            name: {
+              fontSize: '16px',
+              color: undefined,
+              offsetY: 120
+            },
+            value: {
+              offsetY: 76,
+              fontSize: '22px',
+              color: undefined,
+              formatter: function (val) {
+                return val + "%";
+              }
+            }
+          }
+        }
+      },
+      fill: {
+        type: 'gradient',
+        gradient: {
+          shade: 'dark',
+          shadeIntensity: 0.15,
+          inverseColors: false,
+          opacityFrom: 1,
+          opacityTo: 1,
+          stops: [0, 50, 65, 91]
+        },
+      },
+      stroke: {
+        dashArray: 4
+      },
+      labels: ['Audit Plan Lock Status'],
+    };
+
+    var chart = new ApexCharts(document.querySelector("#chart"), options);
+    chart.render();
+  </script>
+  <script>
+    var options = {
+      series: [{{ tasks_completed | prog:tasks_notcompleted}}],
+      chart: {
+        height: 250,
+        type: 'radialBar',
+        offsetY: -20
+      },
+      plotOptions: {
+        radialBar: {
+          startAngle: -135,
+          endAngle: 135,
+          dataLabels: {
+            name: {
+              fontSize: '16px',
+              color: undefined,
+              offsetY: 120
+            },
+            value: {
+              offsetY: 76,
+              fontSize: '22px',
+              color: undefined,
+              formatter: function (val) {
+                return val + "%";
+              }
+            }
+          }
+        }
+      },
+      fill: {
+        type: 'gradient',
+        gradient: {
+          shade: 'dark',
+          shadeIntensity: 0.15,
+          inverseColors: false,
+          opacityFrom: 1,
+          opacityTo: 1,
+          stops: [0, 50, 65, 91]
+        },
+      },
+      stroke: {
+        dashArray: 4
+      },
+      labels: ['Task Status'],
+    };
+
+    var chart = new ApexCharts(document.querySelector("#chart2"), options);
+    chart.render();
+  </script>
+</body>
+
+</html>

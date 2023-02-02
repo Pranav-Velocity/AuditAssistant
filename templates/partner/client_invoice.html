@@ -1,0 +1,455 @@
+{% load static %}
+{% load partner_extras %}
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Client Profile | Dashboard</title>
+  <!-- Tell the browser to be responsive to screen width -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="{% static 'plugins/fontawesome-free/css/all.min.css' %}">
+  <!-- Ionicons -->
+  <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+  <!-- SweetAlert2 -->
+  <link rel="stylesheet" href="{% static 'plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css' %}">
+  <!-- Tempusdominus Bbootstrap 4 -->
+  <link rel="stylesheet" href="{% static 'plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css' %}">
+  <!-- iCheck -->
+  <link rel="stylesheet" href="{% static 'plugins/icheck-bootstrap/icheck-bootstrap.min.css' %}">
+  <!-- JQVMap -->
+  <link rel="stylesheet" href="{% static 'plugins/jqvmap/jqvmap.min.css' %}">
+  <!-- DataTables -->
+  <link rel="stylesheet" href="{% static 'plugins/datatables-bs4/css/dataTables.bootstrap4.css' %}">
+  <!-- Theme style -->
+  <link rel="stylesheet" href="{% static 'css/adminlte.min.css' %}">
+  <!-- overlayScrollbars -->
+  <link rel="stylesheet" href="{% static 'plugins/overlayScrollbars/css/OverlayScrollbars.min.css' %}">
+  <!-- Daterange picker -->
+  <link rel="stylesheet" href="{% static 'plugins/daterangepicker/daterangepicker.css' %}">
+  <!-- summernote -->
+  <link rel="stylesheet" href="{% static 'plugins/summernote/summernote-bs4.css' %}">
+  <!-- Google Font: Source Sans Pro -->
+  <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
+  <!-- Folder view -->
+   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/metismenu/dist/metisMenu.min.css">
+</head>
+<body class="hold-transition sidebar-mini layout-fixed">
+<div class="wrapper">
+
+  <!-- Navbar -->
+  <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+    <!-- Left navbar links -->
+    <ul class="navbar-nav">
+      <li class="nav-item">
+        <a class="nav-link" data-widget="pushmenu" href="#"><i class="fas fa-bars"></i></a>
+      </li>
+    </ul>
+  </nav>
+  <!-- /.navbar -->
+
+  <!-- Main Sidebar Container -->
+  <aside class="main-sidebar sidebar-dark-primary elevation-4">
+    <!-- Brand Logo -->
+    <a href="index3.html" class="brand-link">
+      <img src="{% static 'img/AdminLTELogo.png' %}" alt="AdminLTE Logo" class="brand-image img-circle elevation-3"
+           style="opacity: .8">
+      <span class="brand-text font-weight-light">Audit System</span>
+    </a>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <!-- Sidebar user panel (optional) -->
+      <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+        <div class="image">
+          <img src="{% static 'img/user2-160x160.jpg' %}" class="img-circle elevation-2" alt="User Image">
+        </div>
+        <div class="info">
+          <a href="#" class="d-block"> {{ request.user }}</a>
+        </div>
+      </div>
+
+	  {% include '../includes/sidebar.html' %}
+    </div>
+    <!-- /.sidebar -->
+  </aside>
+
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+    </div>
+    <!-- /.content-header -->
+
+    <!-- Main content -->
+    <section class="content">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <i class="fas fa-list"></i>
+                             &nbsp;&nbsp;Invoicing for <b>{{ client }}</b>
+                        </h3>
+                        <button type="button" class="btn btn-primary float-right mr-1" data-toggle="modal" data-target="#editInvoice">
+                          Edit Invoice
+                        </button>
+                        
+                    </div>
+                    <div class="card-body">
+                        <table id="auditplans" class="table table-bordered table-striped table-responsive">
+                        <thead>
+                            <tr>
+                                <th>Invoice Number</th>
+                                <th>Invoice Date</th>
+                                <th>Assignment Name</th>
+                                <th>Financial Year</th>
+                                <th>Audit Plan For</th>
+                                <th>Invoice Amount</th>
+                                <th>Invoice GST</th>
+                                {% comment %} <th>SGST</th>
+                                <th>CGST</th>  {% endcomment %}
+                                <th>Out of pocket expenses</th>
+                                <th>Total Invoice Amount</th>
+                                <th>Invoice Status</th>
+                                <th>Audit Plan Status</th>
+                                <th>View Audit Plan</th>
+                                <th>Download Invoice</th>
+                                {% comment %} <th>Edit</th> {% endcomment %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for ap in audit_plans %}
+                            {% if ap.invoice_number %}
+                            
+                                <tr>
+                                    <td>{{ ap.invoice_number }}</td>
+                                    <td>{{ ap.invoice_date }}</td>
+                                    <td>{{ ap.audittype.audit_type_name }}</td>
+                                    <td>{{ ap.finance_year }}</td>
+                                    <td>{{ ap.auditplanname }}</td>
+                                    <td>{{ ap.invoice_amount | currency }}</td>
+                                    <td tooltip="tooltip" title="IGST = {{ap.igst_amount | currency}} ({{ap.igst}}%) &#10;SGST = {{ap.sgst_amount | currency}} ({{ap.sgst}}%) &#10;CGST = {{ap.cgst_amount | currency}} ({{ap.cgst}}%)">
+                                      {{ ap.igst_amount | add:ap.cgst_amount | add:ap.sgst_amount | currency}} 
+                                    </td>
+                                    {% comment %} <td>{{ ap.sgst_amount | currency}} <br>({{ ap.sgst }} %)</td>
+                                    <td>{{ ap.cgst_amount | currency}} <br> ({{ ap.cgst }} %)</td> {% endcomment %}
+                                    <td tooltip="tooltip" title="BASE AMOUNT = {{ap.out_of_pocket_expenses|currency}} &#10;IGST = {{ap.out_of_pocket_expenses|div:ap.ope_igst|currency}} ({{ap.ope_igst}}%) &#10;SGST = {{ap.out_of_pocket_expenses|div:ap.ope_sgst|currency}} ({{ap.ope_sgst}}%) &#10;CGST = {{ap.out_of_pocket_expenses|div:ap.ope_cgst|currency}} ({{ap.ope_cgst}}%)">
+                                      {{ ap.total_ope | currency}}
+                                    </td>
+                                    
+                                    <td>{{ ap.invoice_amount | add:ap.cgst_amount | add:ap.igst_amount | add:ap.sgst_amount | add:ap.total_ope | currency}} </td>
+                                    {% if ap.is_invoice_paid == True %}
+                                      <td style="color:green;font-weight:bold">PAID</td>
+                                    {% else %}
+                                      <td style="color:red;font-weight:bold">NOT PAID</td>
+                                    {% endif %}
+                                    {% if ap.is_audit_plan_locked == True %}
+                                      <td style="color:red;font-weight:bold">LOCKED</td>
+                                    {% else %}
+                                      <td style="color:green;font-weight:bold">NOT LOCKED</td>
+                                    {% endif %}
+                                    <td><a href="{% url 'audit_plan' auditplan_id=ap.id %}">View</a></td>
+                                    {% comment %} <td><a href="{% url 'get_invoice' %}" data-toggle="modal" data-target="#editInvoice"><i class="fas fa-edit"></i> </a></td> {% endcomment %}
+                                    <td><a class="btn btn-primary" href="{% url 'client_invoice_download' auditplan_id=ap.id %}">Download</a></td>
+                                </tr>
+                              {% endif %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="editInvoice" tabindex="-1">
+            <div class="modal-dialog" role="document" style="max-width: 900px !important;">
+                <div class="modal-content">
+                    <form action="{% url 'edit_invoice' %}" method="post">
+                    {% csrf_token %}
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLongTitle">Edit Invoice</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                              <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-row">
+                              <div class="form-group col-md-12 mb-3">
+                                  <label for="invoice" class="text-dark">Select Invoice</label>
+                                  <select name="edit_invoice_id" id="edit_invoice_id" class="custom-select">
+                                      <option value="-1">Please Select</option>
+                                      {% for i in audit_plans %}
+                                          <option value="{{ i.invoice_number }}">Invoice Number: {{ i.invoice_number}}, Audit Plan: {{i.auditplanname }}</option>
+                                      {% endfor %}
+                                  </select>
+                              </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group col-md-4 mb-3">
+                                    <label for="edit_invoice_number" class="text-dark">Invoice Number</label>
+                                    <input type="text" name="edit_invoice_number" id="edit_invoice_number" class="form-control" />
+                                </div>
+                                <div class="form-group col-md-4 mb-3">
+                                    <label for="edit_invoice_amount" class="text-dark">Invoice Amount</label>
+                                    <input type="text" name="edit_invoice_amount" id="edit_invoice_amount" class="form-control" />
+                                </div>
+                                <div class="form-group col-md-4 mb-3">
+                                    <label for="edit_invoice_date" class="text-dark">Invoice Date</label>
+                                    <input type="date" name="edit_invoice_date" id="edit_invoice_date" class="form-control" />
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group col-md-6 mb-4">
+                                    <label for="edit_invoice_ope" class="text-dark">Out of pocket expenses amount</label>
+                                    <input type="text" name="edit_invoice_ope" id="edit_invoice_ope" class="form-control" />
+                                </div>
+                                <div class="col-md-6 mb-4">
+                                    <label for="total_ope" class="text-dark">Out of pocket expenses Total</label>
+                                    <input type="text" name="total_ope" id="total_ope" class="form-control" />
+                                </div>
+                                  <div class="form-group col-md-4">
+                                    <label for="ope_igst" class="text-dark">Out of pocket expenses IGST (in %)</label>
+                                    <input type="number" name="ope_igst" id="ope_igst" class="form-control" value="0"/>
+                                  </div>
+                                  <div class="form-group col-md-4">
+                                    <label for="ope_sgst" class="text-dark">Out of pocket expenses SGST (in %)</label>
+                                    <input type="number" name="ope_sgst" id="ope_sgst" class="form-control" value="0"/>
+                                  </div>
+                                  <div class="form-group col-md-4">
+                                    <label for="ope_cgst" class="text-dark">Out of pocket expenses CGST (in %)</label>
+                                    <input type="number" name="ope_cgst" id="ope_cgst" class="form-control" value="0"/>
+                                  </div>
+                                </div>
+                            <div class="form-row">
+                            <div class="col-md-4 mb-4">
+                                  <label for="edit_igst" class="text-dark">Enter IGST (in %)</label>
+                                  <input type="text" name="edit_igst" id="edit_igst" class="form-control" />
+                              </div>
+                              <div class="col-md-4 mb-4">
+                                  <label for="edit_sgst" class="text-dark">Enter SGST (in %)</label>
+                                  <input type="text" name="edit_sgst" id="edit_sgst" class="form-control" />
+                              </div>
+                              <div class="col-md-4 mb-4">
+                                  <label for="edit_cgst" class="text-dark">Enter CGST (in %)</label>
+                                  <input type="text" name="edit_cgst" id="edit_cgst" class="form-control" />
+                              </div>
+                              <div class="col-md-4 mb-4">
+                                      <label for="igsta" class="text-dark">IGST Amount</label>
+                                      <input type="text" name="igsta" id="igsta" class="form-control"/>
+                                  </div>
+                                  <div class="col-md-4 mb-4">
+                                      <label for="sgsta" class="text-dark">SGST Amount</label>
+                                      <input type="text" name="sgsta" id="sgsta" class="form-control"/>
+                                  </div>
+                                  <div class="col-md-4 mb-4">
+                                      <label for="cgsta" class="text-dark">CGST Amount</label>
+                                      <input type="text" name="cgsta" id="cgsta" class="form-control"/>
+                                  </div>
+                            </div>
+                            <hr style="border: 1px solid;">
+                            <div class="form-row">
+                              <div class="col-md-4 mb-4">
+                                <label for="invoice_amount_paid" class="text-dark">Invoice Amount Paid</label>
+                                <input type="text" name="invoice_amount_paid" id="invoice_amount_paid" class="form-control"/>
+                              </div>
+                              <div class="col-md-4 mb-4">
+                                <label for="imtp" class="text-dark">Invoice Amount Left To Pay</label>
+                                <input type="text" name="imtp" id="imtp" class="form-control" disabled/>
+                              </div>
+                              <div class="col-md-4 mb-4">
+                                <label for="invoice_paid_date" class="text-dark">Invoice Paid Date</label>
+                                <input type="date" name="invoice_paid_date" id="invoice_paid_date" class="form-control"/>
+                              </div>
+                              <div class="col-md-6 mb-4">
+                                <input type="checkbox" name="is_invoice_paid" id="is_invoice_paid" class="form-check-label"/> 
+                                  <strong> Is Invoice Amount Fully Paid </strong>
+                              </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <input type="submit" class="btn btn-success" value="Submit">
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- /.content -->
+  </div>
+  <!-- /.content-wrapper -->
+  <footer class="main-footer">
+
+  </footer>
+  <!-- Control Sidebar -->
+  <aside class="control-sidebar control-sidebar-dark">
+    <!-- Control sidebar content goes here -->
+  </aside>
+  <!-- /.control-sidebar -->
+</div>
+<!-- ./wrapper -->
+
+<!-- jQuery -->
+<script src="{% static 'plugins/jquery/jquery.min.js' %}"></script>
+<!-- jQuery UI 1.11.4 -->
+<script src="{% static 'plugins/jquery-ui/jquery-ui.min.js' %}"></script>
+<!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
+<script>
+  $.widget.bridge('uibutton', $.ui.button)
+</script>
+<!-- Bootstrap 4 -->
+<script src="{% static 'plugins/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+<!-- SweetAlert2 -->
+<script src="{% static 'plugins/sweetalert2/sweetalert2.min.js' %}"></script>
+<!-- ChartJS -->
+<script src="{% static 'plugins/chart.js/Chart.min.js' %}"></script>
+<!-- Sparkline -->
+<script src="{% static 'plugins/sparklines/sparkline.js' %}"></script>
+<!-- JQVMap -->
+<script src="{% static 'plugins/jqvmap/jquery.vmap.min.js' %}"></script>
+<script src="{% static 'plugins/jqvmap/maps/jquery.vmap.usa.js' %}"></script>
+<!-- jQuery Knob Chart -->
+<script src="{% static 'plugins/jquery-knob/jquery.knob.min.js' %}"></script>
+<!-- daterangepicker -->
+<script src="{% static 'plugins/moment/moment.min.js' %}"></script>
+<script src="{% static 'plugins/daterangepicker/daterangepicker.js' %}"></script>
+<!-- Tempusdominus Bootstrap 4 -->
+<script src="{% static 'plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js' %}"></script>
+<!-- Summernote -->
+<script src="{% static 'plugins/summernote/summernote-bs4.min.js' %}"></script>
+<!-- overlayScrollbars -->
+<script src="{% static 'plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js' %}"></script>
+<!-- DataTables -->
+<script src="{% static 'plugins/datatables/jquery.dataTables.js' %}"></script>
+<script src="{% static 'plugins/datatables-bs4/js/dataTables.bootstrap4.js' %}"></script>
+
+<!-- Metis Menu -->
+<script src="https://cdn.jsdelivr.net/npm/metismenu"></script>
+<!-- AdminLTE App -->
+<script src="{% static 'js/adminlte.js' %}"></script>
+<!-- AdminLTE dashboard demo (This is only for demo purposes) -->
+<script src="{% static 'js/pages/dashboard.js' %}"></script>
+<script>
+  $("input").on("change", function() {
+    var ret = parseInt((($("#edit_igst").val()/100) * $("#edit_invoice_amount").val() || '0'))
+    $("#igsta").val(ret);
+  })
+</script>
+<script>
+  $("input").on("change", function() {
+    var ret = parseInt((($("#edit_sgst").val()/100) * $("#edit_invoice_amount").val() || '0'))
+    $("#sgsta").val(ret);
+  })
+</script>
+<script>
+  $("input").on("change", function() {
+    var ret = parseInt((($("#edit_cgst").val()/100) * $("#edit_invoice_amount").val() || '0'))
+    $("#cgsta").val(ret);
+  })
+</script>
+<script>
+  $("input").on("change", function() {
+    var igst = parseInt(((($("#ope_igst").val()/100) * $("#edit_invoice_ope").val())  || '0'))
+    var sgst = parseInt(((($("#ope_sgst").val()/100) * $("#edit_invoice_ope").val())  || '0'))
+    var cgst = parseInt(((($("#ope_cgst").val()/100) * $("#edit_invoice_ope").val())  || '0'))
+    ret = igst + cgst + sgst + parseInt($("#edit_invoice_ope").val());
+    // ret = ret + parseInt($("#total_ope").val());
+    $("#total_ope").val(ret);
+  })
+</script>
+<script>
+    $(() => {
+        $('body').toggleClass('sidebar-collapse');
+        $('[data-toggle="tooltip"]').tooltip();
+        $('#auditplans').DataTable({
+            "paging": true,
+            "lengthChange": true,
+            "searching": true,
+            "ordering": true,
+            "info": true,
+            "autoWidth": false,
+        });
+
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000
+        });
+
+        $('.swalDefaultSuccess').click(function() {
+            Toast.fire({
+                type: 'success',
+                title: 'The task has been started'
+            })
+        });
+
+         $('.invoicesubmit').click(function() {
+            Toast.fire({
+                type: 'success',
+                title: 'The submission for the task has been sent for approval!'
+            })
+        });
+
+        $('.swalDefaultError').click(function() {
+            Toast.fire({
+                type: 'error',
+                title: 'The task has been ended!'
+            })
+        });
+
+        $('.metisFolder').metisMenu({
+            toggle: false
+        });
+        $("#edit_invoice_id").on('change', (e) => {
+          let invoice = $('#edit_invoice_id option:selected').val()
+          console.log(invoice)
+          const url = "{% url 'invoice_details' %}"
+          $.ajaxSetup({
+              data: {
+                  csrfmiddlewaretoken: '{{ csrf_token }}'
+              },
+          });
+          $.ajax({  
+              url: url,  
+              method: "POST",  
+              data:{
+                'invoice_number': invoice, 
+              }, 
+              success: function(data) {  
+
+                $('#edit_invoice_number').val(data.invoice_number)
+                $('#edit_invoice_amount').val(data.invoice_amount)
+                $('#edit_invoice_date').val(data.invoice_date)
+                $('#edit_invoice_ope').val(data.ope)
+                $('#edit_igst').val(data.igst)
+                $('#edit_sgst').val(data.sgst)
+                $('#edit_cgst').val(data.cgst)
+                $('#igsta').val(data.igsta)
+                $('#sgsta').val(data.sgsta)
+                $('#cgsta').val(data.cgsta)
+                $('#ope_igst').val(data.ope_igst)
+                $('#ope_cgst').val(data.ope_cgst)
+                $('#ope_sgst').val(data.ope_sgst)
+                $('#total_ope').val(data.total_ope)
+                $('#invoice_paid_date').val(data.invoice_paid_date)
+                $('#invoice_amount_paid').val(data.invoice_amount_paid)
+                $('#imtp').val(parseFloat(data.invoice_amount) + parseFloat(data.igsta) + parseFloat(data.cgsta) + parseFloat(data.sgsta) + parseFloat(data.total_ope) - parseFloat(data.invoice_amount_paid))
+                const check = data.is_invoice_paid
+                console.log(check)
+                if (check)
+                {
+                  $('#is_invoice_paid').prop('checked', true)
+                }
+                else{
+                  $('#is_invoice_paid').prop('checked', false)
+                }
+              }  
+          });
+        });
+    });
+</script>
+</script>
+</body>
+</html>

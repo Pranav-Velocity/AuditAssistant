@@ -1,0 +1,1 @@
+web: gunicorn auditapp.wsgi --log-level debug

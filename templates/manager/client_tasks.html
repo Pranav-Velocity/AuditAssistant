@@ -1,0 +1,894 @@
+{% load static %}
+{% load partner_extras %}
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Client Profile | Dashboard</title>
+  <!-- Tell the browser to be responsive to screen width -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="{% static 'plugins/fontawesome-free/css/all.min.css' %}">
+  <!-- Ionicons -->
+  <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+  <!-- SweetAlert2 -->
+  <link rel="stylesheet" href="{% static 'plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css' %}">
+  <!-- Tempusdominus Bbootstrap 4 -->
+  <link rel="stylesheet" href="{% static 'plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css' %}">
+  <!-- iCheck -->
+  <link rel="stylesheet" href="{% static 'plugins/icheck-bootstrap/icheck-bootstrap.min.css' %}">
+  <!-- JQVMap -->
+  <link rel="stylesheet" href="{% static 'plugins/jqvmap/jqvmap.min.css' %}">
+  <!-- DataTables -->
+  <link rel="stylesheet" href="{% static 'plugins/datatables-bs4/css/dataTables.bootstrap4.css' %}">
+  <!-- Theme style -->
+  <link rel="stylesheet" href="{% static 'css/adminlte.min.css' %}">
+  <!-- overlayScrollbars -->
+  <link rel="stylesheet" href="{% static 'plugins/overlayScrollbars/css/OverlayScrollbars.min.css' %}">
+  <!-- Daterange picker -->
+  <link rel="stylesheet" href="{% static 'plugins/daterangepicker/daterangepicker.css' %}">
+  <!-- summernote -->
+  <link rel="stylesheet" href="{% static 'plugins/summernote/summernote-bs4.css' %}">
+  <!-- Google Font: Source Sans Pro -->
+  <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
+  <!-- Folder view -->
+   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/metismenu/dist/metisMenu.min.css">
+  <link type="text/css" href="{% static 'plugins/datatables-checkboxes/css/checkboxes.css' %}" rel="stylesheet" />
+   <style>
+    .metisFolder {
+  padding-left: 0;
+}
+.metisFolder, .metisFolder ul {
+  list-style: none;
+}
+.metisFolder li {
+  position: relative;
+}
+.metisFolder li a {
+  display: block;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  color: #333;
+  text-decoration: none;
+  outline: 0 none;
+}
+.metisFolder ul:before {
+  position: absolute;
+  border-left: 1px dotted #333;
+  content: "";
+  width: 30px;
+  top: 25px;
+  left: 5px;
+  bottom: 17px;
+}
+.metisFolder ul > li:before {
+  position: absolute;
+  border-top: 1px dotted #333;
+  content: "";
+  width: 30px;
+  top: 13px;
+  left: -33px;
+}
+li.active > a > span.fa-folder-o:before {
+  content: "\f115" !important;
+}
+   </style>
+</head>
+<body class="hold-transition sidebar-mini layout-fixed">
+<div class="wrapper">
+
+  <!-- Navbar -->
+  <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+    <!-- Left navbar links -->
+    <ul class="navbar-nav">
+      <li class="nav-item">
+        <a class="nav-link" data-widget="pushmenu" href="#"><i class="fas fa-bars"></i></a>
+      </li>
+      <li class="nav-item d-none d-sm-inline-block">
+        <a href="index3.html" class="nav-link">Home</a>
+      </li>
+      <li class="nav-item d-none d-sm-inline-block">
+        <a href="#" class="nav-link">Contact</a>
+      </li>
+    </ul>
+
+    <!-- SEARCH FORM -->
+    <form class="form-inline ml-3">
+      <div class="input-group input-group-sm">
+        <input class="form-control form-control-navbar" type="search" placeholder="Search" aria-label="Search">
+        <div class="input-group-append">
+          <button class="btn btn-navbar" type="submit">
+            <i class="fas fa-search"></i>
+          </button>
+        </div>
+      </div>
+    </form>
+
+    <!-- Right navbar links -->
+    <ul class="navbar-nav ml-auto">
+      <!-- Messages Dropdown Menu -->
+      <li class="nav-item dropdown">
+        <a class="nav-link" data-toggle="dropdown" href="#">
+          <i class="far fa-comments"></i>
+          <span class="badge badge-danger navbar-badge">3</span>
+        </a>
+        <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+          <a href="#" class="dropdown-item">
+            <!-- Message Start -->
+            <div class="media">
+              <img src="{% static 'img/user1-128x128.jpg' %}" alt="User Avatar" class="img-size-50 mr-3 img-circle">
+              <div class="media-body">
+                <h3 class="dropdown-item-title">
+                  Brad Diesel
+                  <span class="float-right text-sm text-danger"><i class="fas fa-star"></i></span>
+                </h3>
+                <p class="text-sm">Call me whenever you can...</p>
+                <p class="text-sm text-muted"><i class="far fa-clock mr-1"></i> 4 Hours Ago</p>
+              </div>
+            </div>
+            <!-- Message End -->
+          </a>
+          <div class="dropdown-divider"></div>
+          <a href="#" class="dropdown-item">
+            <!-- Message Start -->
+            <div class="media">
+              <img src="{% static 'img/user8-128x128.jpg' %}" alt="User Avatar" class="img-size-50 img-circle mr-3">
+              <div class="media-body">
+                <h3 class="dropdown-item-title">
+                  John Pierce
+                  <span class="float-right text-sm text-muted"><i class="fas fa-star"></i></span>
+                </h3>
+                <p class="text-sm">I got your message bro</p>
+                <p class="text-sm text-muted"><i class="far fa-clock mr-1"></i> 4 Hours Ago</p>
+              </div>
+            </div>
+            <!-- Message End -->
+          </a>
+          <div class="dropdown-divider"></div>
+          <a href="#" class="dropdown-item">
+            <!-- Message Start -->
+            <div class="media">
+              <img src="{% static 'img/user3-128x128.jpg' %}" alt="User Avatar" class="img-size-50 img-circle mr-3">
+              <div class="media-body">
+                <h3 class="dropdown-item-title">
+                  Nora Silvester
+                  <span class="float-right text-sm text-warning"><i class="fas fa-star"></i></span>
+                </h3>
+                <p class="text-sm">The subject goes here</p>
+                <p class="text-sm text-muted"><i class="far fa-clock mr-1"></i> 4 Hours Ago</p>
+              </div>
+            </div>
+            <!-- Message End -->
+          </a>
+          <div class="dropdown-divider"></div>
+          <a href="#" class="dropdown-item dropdown-footer">See All Messages</a>
+        </div>
+      </li>
+      <!-- Notifications Dropdown Menu -->
+      <li class="nav-item dropdown">
+        <a class="nav-link" data-toggle="dropdown" href="#">
+          <i class="far fa-bell"></i>
+          <span class="badge badge-warning navbar-badge">15</span>
+        </a>
+        <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+          <span class="dropdown-item dropdown-header">15 Notifications</span>
+          <div class="dropdown-divider"></div>
+          <a href="#" class="dropdown-item">
+            <i class="fas fa-envelope mr-2"></i> 4 new messages
+            <span class="float-right text-muted text-sm">3 mins</span>
+          </a>
+          <div class="dropdown-divider"></div>
+          <a href="#" class="dropdown-item">
+            <i class="fas fa-users mr-2"></i> 8 friend requests
+            <span class="float-right text-muted text-sm">12 hours</span>
+          </a>
+          <div class="dropdown-divider"></div>
+          <a href="#" class="dropdown-item">
+            <i class="fas fa-file mr-2"></i> 3 new reports
+            <span class="float-right text-muted text-sm">2 days</span>
+          </a>
+          <div class="dropdown-divider"></div>
+          <a href="#" class="dropdown-item dropdown-footer">See All Notifications</a>
+        </div>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" data-widget="control-sidebar" data-slide="true" href="#">
+          <i class="fas fa-th-large"></i>
+        </a>
+      </li>
+    </ul>
+  </nav>
+  <!-- /.navbar -->
+
+  <!-- Main Sidebar Container -->
+  <aside class="main-sidebar sidebar-dark-primary elevation-4">
+    <!-- Brand Logo -->
+    <a href="index3.html" class="brand-link">
+      <img src="{% static 'img/AdminLTELogo.png' %}" alt="AdminLTE Logo" class="brand-image img-circle elevation-3"
+           style="opacity: .8">
+      <span class="brand-text font-weight-light">Audit System</span>
+    </a>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <!-- Sidebar user panel (optional) -->
+      <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+        <div class="image">
+          <img src="{% static 'img/user2-160x160.jpg' %}" class="img-circle elevation-2" alt="User Image">
+        </div>
+        <div class="info">
+          <a href="#" class="d-block"> {{ request.user }}</a>
+        </div>
+      </div>
+
+	  {% include '../includes/sidebar.html' %}
+    </div>
+    <!-- /.sidebar -->
+  </aside>
+
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0 text-dark"></h1>
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.content-header -->
+
+    <!-- Main content -->
+    <section class="content">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">
+                    <i class="fas fa-list"></i>
+                    Client Details
+                    </h3>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <dl class="row">
+                                <dt class="col-sm-4">Client ID</dt>
+                                <dd class="col-sm-8">{{ client.id }}</dd>
+                                <dt class="col-sm-4">Client Name</dt>
+                                <dd class="col-sm-8">{{ client.client_name }}</dd>
+                                <dt class="col-sm-4">GST Number</dt>
+                                <dd class="col-sm-8">{{ client.gst_no }}</dd>
+                                <dt class="col-sm-4">PAN Number</dt>
+                                <dd class="col-sm-8">{{ client.pan_no }}</dd>
+                                <dt class="col-sm-4">Industries</dt>
+                                <dd class="col-sm-8">
+                                  {% for i in industry %}
+                                    <div class="badge badge-warning">
+                                      {{ i }}
+                                    </div>
+                                  {% endfor %}
+                                </dd>
+                                <dt class="col-sm-4">Types of Audits</dt>
+                                <dd class="col-sm-8">
+                                  {% for type in audittype %}
+                                    <div class="badge badge-info">
+                                      {{ type }}
+                                    </div>
+                                  {% endfor %}
+                                </dd>
+                                <dt class="col-sm-4">Entities</dt>
+                                <dd class="col-sm-8">
+                                  {% for e in entity %}
+                                    <div class="badge badge-success">
+                                      {{ e }}
+                                    </div>
+                                  {% endfor %}
+                                </dd>
+                            </dl>
+                        </div>
+                        
+                        
+                    </div>
+                    
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+          </div>
+        </div>
+       
+    <!-- Content Header (Page header)  -->
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-sm-6">
+            <h3 class="m-0 text-dark">Choose type of assignment: </h3>
+              <label class="pr-3"><input type="radio" class="mr-2"  name="assignment" value="individual" checked="checked">Individual</label>
+              <label class="pr-3"><input type="radio" class="mr-2" name="assignment" value="multiple">Multiple</label>
+            <h3 class="m-0 text-dark">Task Status: </h3>
+              <label class="pr-3"><input type="radio" class="mr-2" name="assignment" value="assigned_task">Assigned Task</label>
+              <label class="pr-3"><input type="radio" class="mr-2" name="assignment" value="approved_task">Approved Task</label>
+              <label class="pr-3"><input type="radio" class="mr-2" name="assignment" value="rejected_task">Rejected Task</label>
+              <label class="pr-3"><input type="radio" class="mr-2" name="assignment" value="reassign">Reassign</label>
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+      </div><!-- /.container-fluid -->
+   
+
+ 
+        <section class="content">
+          <div class="row assignment" id="individual">
+              <div class="col-12">
+                  <div class="card">
+                  <div class="card-header">
+                  <h3 class="card-title">Individual Assignment of Tasks</h3>     
+                  </div>
+                  <!-- /.card-header -->
+                  <div class="card-body">
+                  <table id="tasks" class="table table-bordered table-striped table-responsive">
+                      <thead>
+                      <tr>
+                          <th>Task ID</th>
+                          <th>Task</th>
+                          <th>Sub Area</th>
+                          <th>Activity</th>
+                          <th>Audit Type</th>
+                          <th>Estimated Days</th>
+                          <th>Auditing Standard</th>
+                          <th>International Auditing Standard</th>
+                          <th>Task Type</th>
+                          <th>Task Relevance</th>
+                          <th>Volume of Task</th>
+                          <th>Sample Rate(%)</th>
+                          <th>Assign Task</th>
+                          <th>Action</th>
+                      </tr> 
+                      </thead>
+                      <tbody>
+                        
+                          {% for task in tasks %}
+                          {% if task.user is None %}
+                              <tr>
+                                  <form action="{% url 'assign_task_to_employee' client_id=client.id %}" method="POST">
+                                    {% csrf_token %}
+                                    <td>{{ task.id }}</td>
+                                    <td>{{ task.task_name }}</td>
+                                    <td>{{ task.act.act_name }}</td>
+                                    <td>{{ task.activity.activity_name }}</td>
+                                    <td>{{ task.audit_type.audit_type_name }}</td>
+                                    <td>{{ task.task_estimated_days }}</td>
+                                    <td>{{ task.task_auditing_standard }}</td>
+                                    <td>{{ task.task_international_auditing_standard }}</td>
+                                    <td>
+                                      <select name="task_type" id="tr" class="custom-select" style="width:100px">
+                                        <option value="">Please Select</option>
+                                        <option value="automated">Automated</option>
+                                        <option value="semi-automated">Semi Automated</option>
+                                        <option value="manual">Manual</option>
+                                      </select>
+                                    </td>
+                                    <td>
+                                      <select name="task_relevance" id="tr" class="custom-select" >
+                                        <option value="">Please Select</option>
+                                        <option value="Low">Low</option>
+                                        <option value="Medium">Medium</option>
+                                        <option value="High">High</option>
+                                        <option value="Very High">Very High</option>
+                                        <option value="Critical">Critical</option>
+                                      </select>
+                                    </td>
+                                    <td>
+                                      <input type="text" class="form-control" name="volume" size="7px">
+                                    </td>
+                                    <td>
+                                      <input type="text" class="form-control" name="samplerate" size="7px">
+                                    </td>
+                                    <td>
+                                      <select name="user" id="act" class="custom-select" >
+                                        <option value="-1">Please Select</option>
+                                        {% for user in users %}
+                                            <option value="{{ user.id }}">{{ user.username}}</option>
+                                        {% endfor %}
+                                      </select>
+                                    </td>
+                                    <td> 
+                                      <input type="submit" class="btn btn-success" value="Assign" id="btnaccept">
+                                    </td>
+    
+                                    <input type="hidden" name="task_id" value="{{ task.id }}" />
+                                </form>
+                              </tr>
+                              {% endif %}
+                          {% endfor %}
+                      </tbody>
+                    </table>
+                  </div>
+                  <!-- /.card-body   -->
+                </div>
+              </div>
+          </div>
+    
+          <div class="row assignment" id="multiple">
+              <div class="col-12">
+                  <div class="card">
+                  <div class="card-header">
+                  <h3 class="card-title">Multiple Assignment of Tasks</h3>     
+                  </div>
+                  <!-- /.card-header -->
+                  <div class="card-body">
+                  <form id="multipleTasksForm" action="{% url 'assign_multiple_tasks' client_id=client.id %}" method="POST">
+                    {% csrf_token %}    
+                    <table id="multipleTasks" class="table table-bordered table-striped">
+                      <thead>
+                      <tr>
+                          <th></th>
+                          <th>Task Name</th>
+                          <th>Sub Area</th>
+                          <th>Activity</th>
+                          <th>Audit Type</th>
+                          <th>Estimated Days</th>
+                          <th>Auditing Standard</th>
+                          <th>International Auditing Standard</th>
+                      </tr> 
+                      </thead>
+                      <tbody>
+                        
+                          {% for task in tasks %}
+                          {% if task.user_id is  None %}
+                              <tr>
+                                <td>{{ task.id }}</td> 
+                                <td>{{ task.task_name }}</td>
+                                <td>{{ task.act.act_name }}</td>
+                                <td>{{ task.activity.activity_name }}</td>
+                                <td>{{ task.audit_type.audit_type_name }}</td>
+                                <td>{{ task.task_estimated_days }}</td>
+                                <td>{{ task.task_auditing_standard }}</td>
+                                <td>{{ task.task_international_auditing_standard }}</td>
+                              </tr>
+                              {%endif%}
+                          {% endfor %}
+                      </tbody>
+                    </table>
+                    <hr>
+                    <div class="col-5">
+                      <h6>Select Employee</h6>
+                      <select name="user" id="act" class="custom-select" >
+                        <option value="-1">Please Select</option>
+                        {% for user in users %}
+                            <option value="{{ user.id }}">{{ user.username}}</option>
+                        {% endfor %}
+                      </select>
+                    </div>
+                    <div class="col-5 mt-3">
+                      <input class="btn btn-success" type="submit" value="Assign Tasks" />
+                    </div>
+                  </form>
+                  </div>
+                  <!-- /.card-body   -->
+                </div>
+              </div>
+          </div>
+        </section>
+        <!-- /.content -->
+        <!--assigned task-->
+        <div class="row assignment"   id="assigned_task">
+          <div class="col-12">
+              <div class="card">
+              <div class="card-header">
+              <h3 class="card-title">Assigned Tasks Status</h3>
+              </div>
+              <!-- /.card-header -->
+              <div class="card-body">
+              <table id="tasks" class="table table-bordered table-striped">
+                  <thead>
+                  <tr>
+                  <th>Task ID</th>
+                  <th>Task Name</th>
+                  <th>Client ID</th>
+                   <th>Employee Name</th>
+                   <th>Approvals</th>
+                  </tr>
+                  </thead>
+                  <tbody> 
+                      {% for task in tasks %}
+                      {% if task.is_approved is False and task.is_rejected is False and task.user is not None%}
+                          <tr>
+                              <td>{{ task.id}}</td>
+                              <td>{{ task }}</td>
+                              <td>{{ task.client_id }}</td>
+                              <td>{{ task.user}}</td>
+                               
+                         
+                              <td class="">
+                               {% if task.is_start is True and task.status is False %}
+                               <a href="{% url 'approval' task_id=task.id %}" role="button" class="btn btn-block btn-warning ">Start Working</a>
+                               {% elif task.is_start is True and task.status is True %}
+                               <a href="{% url 'approval' task_id=task.id %}" role="button" class="btn btn-block btn-success ">Waiting For Approval</a>
+                               
+                               {%else%}
+                                <a href="{% url 'approval' task_id=task.id %}" role="button" class="btn btn-block btn-warning ">Not Started</a>
+                               
+                              </td>
+                       {% endif %}
+                       {% endif %}
+                          </tr>
+                      {% endfor %}
+                  </tbody>
+              </table>
+              </div>
+              <!-- /.card-body   -->
+          </div>
+          </div>
+      </div>
+ 
+        <!--/-->
+        <!--Rejected task -->
+        <div class="row assignment"  id="approved_task">
+          <div class="col-12">
+              <div class="card">
+              <div class="card-header">
+              <h3 class="card-title">Approved Tasks</h3>
+              </div>
+              <!-- /.card-header -->
+              <div class="card-body">
+              <table id="tasks" class="table table-bordered table-striped">
+                  <thead>
+                  <tr>
+                  <th>Task ID</th>
+                  <th>Task Name</th>
+                  <th>Client ID</th>
+                   <th>Employee Name</th>
+                   <th>Approvals</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                            {% for task in tasks %}
+                            {% if task.is_approved is True  %}
+                                <tr>
+                                    <td>{{ task.id }}</td>
+                                    <td>{{ task }}</td>
+                                    <td>{{ task.client_id }}</td>
+                                    <td>{{ task.user}}</td>
+                                    <td>
+                                    {% if task.status is True  %}
+                                   
+                                     <a href="{% url 'approval' task_id=task.id %}" role="button" class="btn btn-block btn-success ">Approved</a>
+                            
+                            
+                                     {% endif %}
+                                    </td>
+                             
+                             
+                             {% endif %}
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+              </table>
+              </div>
+              <!-- /.card-body   -->
+          </div>
+          </div>
+      </div>
+ 
+        <!--/-->
+         <!--Rejected task -->
+         <div class="row assignment"   id="rejected_task">
+          <div class="col-12">
+              <div class="card">
+              <div class="card-header">
+              <h3 class="card-title">Rejected Tasks</h3>
+              </div>
+              <!-- /.card-header -->
+              <div class="card-body">
+              <table id="tasks" class="table table-bordered table-striped">
+                  <thead>
+                  <tr>
+                  <th>Task ID</th>
+                  <th>Task Name</th>
+                  <th>Client ID</th>
+                   <th>Employee Name</th>
+                   <th>Approvals</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                            {% for task in tasks %}
+                            {% if task.is_rejected is True %}
+                                <tr>
+                                    <td>{{ task.id }}</td>
+                                    <td>{{ task }}</td>
+                                    <td>{{ task.client_id }}</td>
+                                    <td>{{ task.user}}</td>
+                                    <td>
+                                     <a href="{% url 'approval' task_id=task.id %}" role="button" class="btn btn-block btn-danger ">Rejected</a> 
+                                    </td>
+                             
+                             
+                             {% endif %}
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+              </table>
+              </div>
+              <!-- /.card-body   -->
+          </div>
+          </div>
+      </div>
+ 
+        <!--/-->
+        <!--reassign-->
+        <div class="row assignment"  id="reassign">
+          <div class="col-12">
+              <div class="card">
+              <div class="card-header">
+              <h3 class="card-title">Reassign</h3>
+              </div>
+              <!-- /.card-header -->
+              <div class="card-body">
+              <table id="tasks" class="table table-bordered table-striped">
+                  <thead>
+                  <tr>
+                    <th>Task ID</th>
+                    <th>Task Name</th>
+                    <th>Sub Area</th>
+                    <th>Activity</th>
+                    <th>Client</th>
+                    <th>Estimated Days</th>
+                    <th>Auditing Standard</th>
+                    <th>International Auditing Standard</th>
+                    <th class="text-danger">Remark</th>
+                    <th>Assign Task</th>  
+                    <th>Action</th>
+                 
+                  </tr>
+                  </thead>
+                  <tbody>
+                    {% for task in reassign_tasks %}  
+                      
+                    <tr>
+                        <form action="{% url 'reassign_task' client_id=client.id  %}" method="POST">
+                          {% csrf_token %}
+                          <td>{{ task.id }}</td>
+                          <td>{{ task}}</td>
+                          <td>{{ task.act}}</td>
+                          <td>{{ task.activity}}</td>
+                          <td>{{ task.client.client_name }}</td>
+                          <td>{{ task.task_estimated_days }}</td>
+                          <td>{{ task.task_auditing_standard }}</td>
+                          <td>{{ task.task_international_auditing_standard }}</td>
+                          <td class="text-danger">{{ task.rejection_remark }}</td>
+                          <td>
+                            <select name="user" id="user" class="custom-select">
+                              <option value="-1">Please Select</option>
+                              {% for user in users %}
+                                  <option value="{{ user.id }}">{{ user.username}}</option>
+                              {% endfor %}
+                            </select>
+                          </td>
+                          <td> 
+                            <input type="submit" class="btn btn-success" value="Assign"id="btnaccept">
+                          </td>
+
+                          <input type="hidden" name="task_id" value="{{ task.id }}" />
+                        </form>
+                      </tr>
+                                
+                  {% endfor %}
+                        </tbody>
+              </table>
+              </div>
+              <!-- /.card-body   -->
+          </div>
+          </div>
+      </div>
+ 
+        <!---->
+      </div>
+    </section>
+    <!-- /.content --> 
+  </div>
+  
+  <!-- /.content-wrapper -->
+  <footer class="main-footer">
+</footer>
+
+  <!-- Control Sidebar -->
+  <aside class="control-sidebar control-sidebar-dark">
+    <!-- Control sidebar content goes here -->
+  </aside>
+  <!-- /.control-sidebar -->
+</div>
+<!-- ./wrapper -->
+
+<!-- jQuery -->
+<script src="{% static 'plugins/jquery/jquery.min.js' %}"></script>
+<!-- jQuery UI 1.11.4 -->
+<script src="{% static 'plugins/jquery-ui/jquery-ui.min.js' %}"></script>
+<!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
+<script>
+  $.widget.bridge('uibutton', $.ui.button)
+</script>
+<!-- Bootstrap 4 -->
+<script src="{% static 'plugins/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+<!-- SweetAlert2 -->
+<script src="{% static 'plugins/sweetalert2/sweetalert2.min.js' %}"></script>
+<!-- ChartJS -->
+<script src="{% static 'plugins/chart.js/Chart.min.js' %}"></script>
+<!-- Sparkline -->
+<script src="{% static 'plugins/sparklines/sparkline.js' %}"></script>
+<!-- JQVMap -->
+<script src="{% static 'plugins/jqvmap/jquery.vmap.min.js' %}"></script>
+<script src="{% static 'plugins/jqvmap/maps/jquery.vmap.usa.js' %}"></script>
+<!-- jQuery Knob Chart -->
+<script src="{% static 'plugins/jquery-knob/jquery.knob.min.js' %}"></script>
+<!-- daterangepicker -->
+<script src="{% static 'plugins/moment/moment.min.js' %}"></script>
+<script src="{% static 'plugins/daterangepicker/daterangepicker.js' %}"></script>
+<!-- Tempusdominus Bootstrap 4 -->
+<script src="{% static 'plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js' %}"></script>
+<!-- Summernote -->
+<script src="{% static 'plugins/summernote/summernote-bs4.min.js' %}"></script>
+<!-- overlayScrollbars -->
+<script src="{% static 'plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js' %}"></script>
+<!-- DataTables -->
+<script src="{% static 'plugins/datatables/jquery.dataTables.js' %}"></script>
+<script src="{% static 'plugins/datatables-bs4/js/dataTables.bootstrap4.js' %}"></script>
+<script type="text/javascript" src="{% static 'plugins/datatables-checkboxes/js/checkboxes.min.js' %}"></script>
+<!-- Metis Menu -->
+<script src="https://cdn.jsdelivr.net/npm/metismenu"></script>
+<!-- AdminLTE App -->
+<script src="{% static 'js/adminlte.js' %}"></script>
+<!-- AdminLTE dashboard demo (This is only for demo purposes) -->
+<script src="{% static 'js/pages/dashboard.js' %}"></script>
+
+<script>
+    $(() => {
+        $('body').toggleClass('sidebar-collapse');
+
+          $("#individual").show(); 
+          $("#multiple").hide(); 
+          $("#assigned_task").hide();
+          $("#rejected_task").hide();
+          $("#approved_task").hide();
+          $("#reassign").hide();
+          $('input[type="radio"]').click(function(){
+              let inputValue = $(this).attr("value");
+              if (inputValue === 'individual') {
+                $("#individual").show(); 
+                $("#multiple").hide(); 
+                $("#assigned_task").hide(); 
+                $("#rejected_task").hide();
+                $("#approved_task").hide();
+                $("#reassign").hide();
+              } 
+             
+              else if (inputValue === 'assigned_task') {
+              $("#assigned_task").show(); 
+              $("#individual").hide(); 
+              $("#multiple").hide();
+              $("#rejected_task").hide();
+              $("#approved_task").hide();
+              $("#reassign").hide();
+            }
+            
+            else if (inputValue === 'rejected_task') {
+              $("#rejected_task").show(); 
+              $("#individual").hide(); 
+              $("#multiple").hide(); 
+              $("#assigned_task").hide(); 
+              $("#approved_task").hide();
+              $("#reassign").hide();
+            }
+            else if (inputValue === 'approved_task') {
+              $("#approved_task").show(); 
+              $("#individual").hide(); 
+              $("#multiple").hide(); 
+              $("#rejected_task").hide();
+              $("#assigned_task").hide();
+              $("#reassign").hide();
+              
+            }
+            else if (inputValue === 'reassign') {
+              $("#approved_task").hide(); 
+              $("#individual").hide(); 
+              $("#multiple").hide(); 
+              $("#rejected_task").hide();
+              $("#assigned_task").hide();
+              $("#reassign").show();
+              
+            }
+              else {
+                $("#multiple").show(); 
+                $("#individual").hide(); 
+                $("#assigned_task").hide();
+                $("#rejected_task").hide();
+                $("#approved_task").hide();
+                $("#reassign").hide();
+              }
+          });
+           
+          $('#tasks').DataTable({
+              "paging": true,
+              "lengthChange": true,
+              "searching": true,
+              "ordering": true,
+              "info": true,
+              "autoWidth": false,
+          });
+    
+          const table = $('#multipleTasks').DataTable({
+            "columnDefs": [{
+              "orderable": true,
+              'checkboxes': {
+                 'selectRow': true
+              },
+              "className": 'select-checkbox',
+              "targets": 0
+            }],
+            'select': {
+              'style':    'multi',
+              'selector': 'td:first-child'
+            },
+            'order': [[ 1, 'asc' ]]
+          });
+    
+         $('#multipleTasksForm').on('submit', function(e) {
+            const form = this;
+            const rows_selected = table.column(0).checkboxes.selected();
+            // console.log($(rows_selected));
+            
+            //Iterate over all selected checkboxes
+            $.each(rows_selected, function(index, rowId) {
+               $(form).append(
+                   $('<input>')
+                      .attr('type', 'hidden')
+                      .attr('name', 'task_id')
+                      .val(rowId)
+               );
+            });
+          });
+    
+        
+    
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000
+        });
+
+        $('.swalDefaultSuccess').click(function() {
+            Toast.fire({
+                type: 'success',
+                title: 'The task has been started'
+            })
+        });
+
+         $('.taskSubmit').click(function() {
+            Toast.fire({
+                type: 'success',
+                title: 'The submission for the task has been sent for approval!'
+            })
+        });
+
+        $('.swalDefaultError').click(function() {
+            Toast.fire({
+                type: 'error',
+                title: 'The task has been ended!'
+            })
+        });
+
+        $('.metisFolder').metisMenu({
+            toggle: false
+        });
+
+    });
+
+    
+</script>
+</body>
+</html>

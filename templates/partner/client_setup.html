@@ -1,0 +1,549 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Client Setup</title>
+  <!-- Tell the browser to be responsive to screen width -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="{% static 'plugins/fontawesome-free/css/all.min.css' %}">
+  <!-- Ionicons -->
+  <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+  <!-- Tempusdominus Bbootstrap 4 -->
+  <link rel="stylesheet" href="{% static 'plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css' %}">
+  <!-- iCheck -->
+  <link rel="stylesheet" href="{% static 'plugins/icheck-bootstrap/icheck-bootstrap.min.css' %}">
+  <!-- JQVMap -->
+  <link rel="stylesheet" href="{% static 'plugins/jqvmap/jqvmap.min.css' %}">
+  <!-- DataTables -->
+  <link rel="stylesheet" href="{% static 'plugins/datatables-bs4/css/dataTables.bootstrap4.css' %}">
+  <!-- Theme style -->
+  <link rel="stylesheet" href="{% static 'css/adminlte.min.css' %}">
+  <!-- overlayScrollbars -->
+  <link rel="stylesheet" href="{% static 'plugins/overlayScrollbars/css/OverlayScrollbars.min.css' %}">
+  <!-- Daterange picker -->
+  <link rel="stylesheet" href="{% static 'plugins/daterangepicker/daterangepicker.css' %}">
+  <!-- summernote -->
+  <link rel="stylesheet" href="{% static 'plugins/summernote/summernote-bs4.css' %}">
+  <!-- Google Font: Source Sans Pro -->
+  <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
+  
+  
+  
+  
+  
+  
+
+</head>
+<body class="hold-transition sidebar-mini layout-fixed">
+<div class="wrapper">
+
+  <!-- Navbar -->
+  <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+    <!-- Left navbar links -->
+    <ul class="navbar-nav">
+      <li class="nav-item">
+        <a class="nav-link" data-widget="pushmenu" href="#"><i class="fas fa-bars"></i></a>
+      </li>
+      <li class="nav-item d-none d-sm-inline-block">
+        <a href="index3.html" class="nav-link">Home</a>
+      </li>
+      <li class="nav-item d-none d-sm-inline-block">
+        <a href="#" class="nav-link">Contact</a>
+      </li>
+    </ul>
+
+    <!-- SEARCH FORM -->
+    <form class="form-inline ml-3">
+      <div class="input-group input-group-sm">
+        <input class="form-control form-control-navbar" type="search" placeholder="Search" aria-label="Search">
+        <div class="input-group-append">
+          <button class="btn btn-navbar" type="submit">
+            <i class="fas fa-search"></i>
+          </button>
+        </div>
+      </div>
+    </form>
+
+    <!-- Right navbar links -->
+    <ul class="navbar-nav ml-auto">
+      <!-- Messages Dropdown Menu -->
+      <li class="nav-item dropdown">
+        <a class="nav-link" data-toggle="dropdown" href="#">
+          <i class="far fa-comments"></i>
+          <span class="badge badge-danger navbar-badge">3</span>
+        </a>
+        <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+          <a href="#" class="dropdown-item">
+            <!-- Message Start -->
+            <div class="media">
+              <img src="{% static 'img/user1-128x128.jpg' %}" alt="User Avatar" class="img-size-50 mr-3 img-circle">
+              <div class="media-body">
+                <h3 class="dropdown-item-title">
+                  Brad Diesel
+                  <span class="float-right text-sm text-danger"><i class="fas fa-star"></i></span>
+                </h3>
+                <p class="text-sm">Call me whenever you can...</p>
+                <p class="text-sm text-muted"><i class="far fa-clock mr-1"></i> 4 Hours Ago</p>
+              </div>
+            </div>
+            <!-- Message End -->
+          </a>
+          <div class="dropdown-divider"></div>
+          <a href="#" class="dropdown-item">
+            <!-- Message Start -->
+            <div class="media">
+              <img src="{% static 'img/user8-128x128.jpg' %}" alt="User Avatar" class="img-size-50 img-circle mr-3">
+              <div class="media-body">
+                <h3 class="dropdown-item-title">
+                  John Pierce
+                  <span class="float-right text-sm text-muted"><i class="fas fa-star"></i></span>
+                </h3>
+                <p class="text-sm">I got your message bro</p>
+                <p class="text-sm text-muted"><i class="far fa-clock mr-1"></i> 4 Hours Ago</p>
+              </div>
+            </div>
+            <!-- Message End -->
+          </a>
+          <div class="dropdown-divider"></div>
+          <a href="#" class="dropdown-item">
+            <!-- Message Start -->
+            <div class="media">
+              <img src="{% static 'img/user3-128x128.jpg' %}" alt="User Avatar" class="img-size-50 img-circle mr-3">
+              <div class="media-body">
+                <h3 class="dropdown-item-title">
+                  Nora Silvester
+                  <span class="float-right text-sm text-warning"><i class="fas fa-star"></i></span>
+                </h3>
+                <p class="text-sm">The subject goes here</p>
+                <p class="text-sm text-muted"><i class="far fa-clock mr-1"></i> 4 Hours Ago</p>
+              </div>
+            </div>
+            <!-- Message End -->
+          </a>
+          <div class="dropdown-divider"></div>
+          <a href="#" class="dropdown-item dropdown-footer">See All Messages</a>
+        </div>
+      </li>
+      <!-- Notifications Dropdown Menu -->
+      <li class="nav-item dropdown">
+        <a class="nav-link" data-toggle="dropdown" href="#">
+          <i class="far fa-bell"></i>
+          <span class="badge badge-warning navbar-badge">15</span>
+        </a>
+        <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+          <span class="dropdown-item dropdown-header">15 Notifications</span>
+          <div class="dropdown-divider"></div>
+          <a href="#" class="dropdown-item">
+            <i class="fas fa-envelope mr-2"></i> 4 new messages
+            <span class="float-right text-muted text-sm">3 mins</span>
+          </a>
+          <div class="dropdown-divider"></div>
+          <a href="#" class="dropdown-item">
+            <i class="fas fa-users mr-2"></i> 8 friend requests
+            <span class="float-right text-muted text-sm">12 hours</span>
+          </a>
+          <div class="dropdown-divider"></div>
+          <a href="#" class="dropdown-item">
+            <i class="fas fa-file mr-2"></i> 3 new reports
+            <span class="float-right text-muted text-sm">2 days</span>
+          </a>
+          <div class="dropdown-divider"></div>
+          <a href="#" class="dropdown-item dropdown-footer">See All Notifications</a>
+        </div>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" data-widget="control-sidebar" data-slide="true" href="#">
+          <i class="fas fa-th-large"></i>
+        </a>
+      </li>
+    </ul>
+  </nav>
+  <!-- /.navbar -->
+
+  <!-- Main Sidebar Container -->
+  <aside class="main-sidebar sidebar-dark-primary elevation-4">
+    <!-- Brand Logo -->
+    <a href="index3.html" class="brand-link">
+      <img src="{% static 'img/AdminLTELogo.png' %}" alt="AdminLTE Logo" class="brand-image img-circle elevation-3"
+           style="opacity: .8">
+      <span class="brand-text font-weight-light">Audit System</span>
+    </a>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <!-- Sidebar user panel (optional) -->
+      <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+        <div class="image">
+          <img src="{% static 'img/user2-160x160.jpg' %}" class="img-circle elevation-2" alt="User Image">
+        </div>
+        <div class="info">
+          <a href="#" class="d-block"> {{ request.user }}</a>
+        </div>
+      </div>
+
+	  {% include '../includes/sidebar.html' %}
+    </div>
+    <!-- /.sidebar -->
+  </aside>
+
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0 text-dark"></h1>
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.content-header -->
+
+<section class="content">
+    <body class="">
+    <div class="wrapper ">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                      <p class="card-title">CA Firm Setup</p>
+                    </div>
+                <div class="card-body">
+                <form action="{% url 'add_client' %}" method="post" id="add_client_form">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            <label for="clientName" class="text-dark">Client Name</label>
+                            <input type="text" required name="client_name" id="client_name" class="form-control"/>
+                        </div>
+
+                        <div class="col-md-6 mb-4">
+                            <label for="gst_number" class="text-dark">GSTIN Number</label>
+                                <input type="text" name="gst_number" id="gst_number" class="form-control" />
+                        </div>
+
+                        <div class="col-md-6 mb-4">
+                          <label for="client_email" class="text-dark">Client Email</label>
+                            <input type="email" name="client_email" id="client_email" class="form-control" required/>
+                        </div>
+
+                        <div class="col-md-6 mb-4">
+                          <label for="finance_email" class="text-dark">Finance Email</label>
+                            <input type="email" name="finance_email" id="finance_email" class="form-control" />
+                        </div>
+                      
+                        <div class="col-md-6 mb-4">
+                          <div class="form-group">
+                              <label for="pan_number" class="text-dark">PAN Number</label>
+                              <input type="text" name="pan_number" id="pan_number" class="form-control" />
+                          </div>
+                        </div>
+
+                        <div class="col-md-6 mb-4">
+                          <div class="form-group">
+                              <label for="pan_number" class="text-dark">TAN Number</label>
+                              <input type="text" name="tan_number" id="tan_number" class="form-control" />
+                          </div>
+                        </div>
+                  </div>
+
+                    <div class="row">
+                      <div class="col-md-6 mb-4">
+                        <label for="clientName" class="text-dark">Assign Partner</label>
+                       
+                        <select required name="assigned_partner" id="assigned_partner" class="custom-select">
+                          <option value="">Please Select</option>
+                          {% for p in partners %}
+                              <option value="{{ p.id }}">{{ p.username }}</option>
+                          {% endfor %}
+                        </select>
+                      </div>
+                      <div class="col-md-6 mb-4">
+                        <label for="clientName" class="text-dark">Assign Manager</label>
+                        <select required name="assigned_user" id="assigned_user" class="custom-select" required>
+                          <option value="">Please Select</option>
+                          {% for user in users %}
+                              <option value="{{ user.id }}">{{ user.username }}</option>
+                          {% endfor %}
+                        </select>
+                      </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                      <div class="col-md-12 mb-4" id="industries_div">
+                        
+                        <label for="taskName" class="text-dark">Select Industries:</label>    
+                        <div class="row">
+                          <select  name="industries" multiple required id="industries" class="form-control">
+                            {% for industry in industries %}
+                            <option value="{{ industry.id }}">{{ industry.industry_name }}</option>
+                            {% endfor %}
+                          </select>
+                          
+                          <div class="form-check col-4">
+                            <label class="form-check-label mr-4">
+                                <input class="form-check-input" type="checkbox" id="industries_all">
+                                    <strong>Applicable to all Industries</strong>
+                                <span class="form-check-sign">
+                                    <span class="check"></span>
+                                </span>
+                            </label>
+                          </div>
+                        </div>
+                      </div> 
+                    </div>
+                    <hr>
+                    <div class="row">
+                       <div class="col-md-12 mb-3" id="audittypes">
+                            
+                            <label for="audit_types" class="text-dark">Select Audit Types:</label>
+                            <div class="row">
+                              <select  name="audit_types" multiple required id="audit_types" class="form-control">
+                                {% for audittype in audittypes %}
+                                <option value="{{ audittype.id }}">{{ audittype.audit_type_name }}</option>
+                                {% endfor %}
+                              </select>
+                              <!-- {% for audittype in audittypes %}
+                                <div class="col-6 form-check">
+                                  <input class="form-check-input" type="checkbox" name="audittype" value="{{ audittype.id }}">
+                                  {{ audittype.audit_type_name }}</strong>
+                                </div>    
+                              {% endfor %} -->
+                            </div>
+                        </div>
+                      </div>
+                      <hr>
+                      <div class="row">
+                        
+                        <div class="col-md-12 mb-3" id="entity">
+                            
+                            <label for="taskName" class="text-dark">Select Entities:</label>
+                            <div class="row">
+                              <select  name="entities" multiple required id="entities" class="form-control">
+                                {% for entity in entities %}
+                                <option value="{{ entity.id }}">{{ entity.entity_name }}</option>
+                                {% endfor %}
+                              </select>
+                              <!-- {% for entity in entities %}
+                                <div class="col-6 form-check">
+                                  <input class="form-check-input" type="checkbox" name="entities" value="{{ entity.id }}">
+                                  {{ entity.entity_name }}</strong>
+                                </div>  
+                              {% endfor %} -->
+                              <div class="form-check col-6">
+                                <label class="form-check-label mr-4">
+                                    <input class="form-check-input" type="checkbox" id="entities_all">
+                                        <strong>Applicable to all Entities</strong>
+                                    <span class="form-check-sign">
+                                        <span class="check"></span>
+                                    </span>
+                                </label>
+                              </div>
+                            </div>
+                          </div> 
+                    </div>
+                                              
+                    <div class="row">
+                        <div class="col-md-12">
+                            <button type="button" class="btn btn-success float-right" onclick="AddClient()">Save</button>
+                        </div>
+                    </div>
+                </form>
+                </div>
+            </div>
+            </div>
+        </div>
+        <div class="modal fade" id="addClientModal" tabindex="-1">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLongTitle">Add New Client</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            
+                            
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <input type="submit" class="btn btn-success" value="Submit">
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="cloneClient" tabindex="-1">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <form action="{% url 'clone_client' %}" method="post">
+                        {% csrf_token %}
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLongTitle">Clone Client</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-row">
+                                <div class="form-group col-md-12 mb-4">
+                                    <label for="clients" class="text-dark">Select Client</label>
+                                    <select name="select_client" id="select_client" class="custom-select">
+                                        <option value="-1">Please Select</option>
+                                        {% for client in clients %}
+                                            <option value="{{ client.id }}"> {{ client.client_name }} </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+
+                                <div class="form-group col-md-12 mb-4">
+                                    <label for="clientName" class="text-dark">Client Name</label>
+                                    <input type="text" name="clone_client_name" id="clone_client_name" class="form-control" />
+                                </div>
+
+                                <div class="form-group col-md-12 mb-0">
+                                    <label for="industries" class="text-dark">Select Industry Type</label>
+                                    <select name="clone_client_industry" id="clone_client_industry" class="custom-select">
+                                        <option value="-1">Please Select</option>
+                                        {% for industry in industries %}
+                                            <option value="{{ industry.id }}"> {{ industry.industry_name }} </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+
+                                
+                                <input type="hidden" name="clone_client_id" id="clone_client_id" />
+                                
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <input type="submit" class="btn btn-success" value="Submit">
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+
+</div>
+</section>
+<!-- /.content-wrapper -->
+  <footer class="main-footer">
+  </footer>
+<!-- jQuery -->
+<script src="{% static 'plugins/jquery/jquery.min.js' %}"></script>
+<!-- jQuery UI 1.11.4 -->
+<script src="{% static 'plugins/jquery-ui/jquery-ui.min.js' %}"></script>
+<!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
+<script>
+  $.widget.bridge('uibutton', $.ui.button)
+</script>
+<!-- Bootstrap 4 -->
+<script src="{% static 'plugins/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+<!-- ChartJS -->
+<script src="{% static 'plugins/chart.js/Chart.min.js' %}"></script>
+<!-- Sparkline -->
+<script src="{% static 'plugins/sparklines/sparkline.js' %}"></script>
+<!-- JQVMap -->
+<script src="{% static 'plugins/jqvmap/jquery.vmap.min.js' %}"></script>
+<script src="{% static 'plugins/jqvmap/maps/jquery.vmap.usa.js' %}"></script>
+<!-- jQuery Knob Chart -->
+<script src="{% static 'plugins/jquery-knob/jquery.knob.min.js' %}"></script>
+<!-- daterangepicker -->
+<script src="{% static 'plugins/moment/moment.min.js' %}"></script>
+<script src="{% static 'plugins/daterangepicker/daterangepicker.js' %}"></script>
+<!-- Tempusdominus Bootstrap 4 -->
+<script src="{% static 'plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js' %}"></script>
+<!-- Summernote -->
+<script src="{% static 'plugins/summernote/summernote-bs4.min.js' %}"></script>
+<!-- overlayScrollbars -->
+<script src="{% static 'plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js' %}"></script>
+<!-- DataTables -->
+<script src="{% static 'plugins/datatables/jquery.dataTables.js' %}"></script>
+<script src="{% static 'plugins/datatables-bs4/js/dataTables.bootstrap4.js' %}"></script>
+<!-- AdminLTE App -->
+<script src="{% static 'js/adminlte.js' %}"></script>
+<!-- AdminLTE dashboard demo (This is only for demo purposes) -->
+<script src="{% static 'js/pages/dashboard.js' %}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/additional-methods.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/additional-methods.min.js"></script>
+
+<script>
+    $(() => {
+        $('body').toggleClass('sidebar-collapse');
+        
+        $('#clients').DataTable({
+            "paging": true,
+            "lengthChange": true,
+            "searching": true,
+            "ordering": true,
+            "info": true,
+            "autoWidth": false,
+        });
+
+        $("#industries_all").click(() => {
+            let isChecked = $("#industries_all").is(':checked');
+            if (isChecked)
+              {
+                $('#industries').each(function() { $('#industries option').prop('selected', true); });
+                console.log("yup")
+              }
+            else
+              {
+                $('#industries').each(function() { $('#industries option').prop('selected', false); }); 
+                console.log("nope")
+              }
+        });
+        $("#entities_all").click(() => {
+            let isChecked = $("#entities_all").is(':checked');
+            if (isChecked)
+              {
+                $('#entities').each(function() { $('#entities option').prop('selected', true); });
+                console.log("yup")
+              }
+            else
+              {
+                $('#entities').each(function() { $('#entities option').prop('selected', false); }); 
+                console.log("nope")
+              }
+        });
+    });
+    
+
+    function AddClient(){
+      var client_name = $('#client_name').val();
+      var gst_number = $('#gst_number').val();
+      var client_email = $('#client_email').val();
+      var finance_email = $('#finance_email').val();
+      var pan_number = $('#pan_number').val();
+      var tan_number = $('#tan_number').val();
+      var assigned_partner = $('#assigned_partner').val();
+      var assigned_user = $('#assigned_user').val();
+      var industries = $('#industries').val();
+      var audit_types = $('#audit_types').val();
+      var entities = $('#entities').val();
+      if(client_name.length > 0 && gst_number.length > 0 && client_email.length > 0) {
+        console.log("everything given")
+      }
+      else{
+        console.log("not given")
+      }
+     
+      
+
+      // $('#add_client_form').submit();
+    }
+</script>
+</body>
+</html>

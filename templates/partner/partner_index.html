@@ -1,0 +1,415 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Partner | Index</title>
+  <!-- Tell the browser to be responsive to screen width -->
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="{% static 'plugins/fontawesome-free/css/all.min.css' %}" />
+  <!-- Ionicons -->
+  <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css" />
+  <!-- Tempusdominus Bootstrap 4 -->
+  <link rel="stylesheet"
+    href="{% static 'plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css' %}" />
+  <!-- iCheck -->
+  <link rel="stylesheet" href="{% static 'plugins/icheck-bootstrap/icheck-bootstrap.min.css' %}" />
+  <!-- JQVMap -->
+  <link rel="stylesheet" href="{% static 'plugins/jqvmap/jqvmap.min.css' %}" />
+  <!-- Theme style -->
+  <link rel="stylesheet" href="{% static 'css/adminlte.css' %}" />
+  <!-- overlayScrollbars -->
+  <link rel="stylesheet" href="{% static 'plugins/overlayScrollbars/css/OverlayScrollbars.min.css' %}" />
+  <!-- Daterange picker -->
+  <link rel="stylesheet" href="{% static 'plugins/daterangepicker/daterangepicker.css' %}" />
+  <!-- summernote -->
+  <link rel="stylesheet" href="{% static 'plugins/summernote/summernote-bs4.css' %}" />
+  <!-- Google Font: Source Sans Pro -->
+  <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet" />
+  <!-- Apex charts -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/apexcharts/3.32.0/apexcharts.min.css"
+    integrity="sha512-Tv+8HvG00Few62pkPxSs1WVfPf9Hft4U1nMD6WxLxJzlY/SLhfUPFPP6rovEmo4zBgwxMsArU6EkF11fLKT8IQ=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+
+<body class="hold-transition sidebar-mini layout-fixed">
+  <div class="wrapper">
+    <!-- Navbar -->
+    <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+      <!-- Left navbar links -->
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link" data-widget="pushmenu" href="#"><i class="fas fa-bars"></i></a>
+        </li>
+      </ul>
+    </nav>
+    <!-- /.navbar -->
+
+    <!-- Main Sidebar Container -->
+    <aside class="main-sidebar sidebar-dark-primary elevation-4">
+      <!-- Brand Logo -->
+      <a href="index3.html" class="brand-link">
+        <img src="{% static 'img/AdminLTELogo.png' %}" alt="AdminLTE Logo" class="brand-image img-circle elevation-3"
+          style="opacity: 0.8" />
+        <span class="brand-text font-weight-light">Audit System</span>
+      </a>
+
+      <!-- Sidebar -->
+      <div class="sidebar">
+        <!-- Sidebar user panel (optional) -->
+        <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+          <div class="image">
+            <img src="{% static 'img/user2-160x160.jpg' %}" class="img-circle elevation-2" alt="User Image" />
+          </div>
+          <div class="info">
+            <a href="#" class="d-block"> {{ request.user }}</a>
+          </div>
+        </div>
+        {% include '../includes/sidebar.html' %}
+      </div>
+      <!-- /.sidebar -->
+    </aside>
+    <div class="content-wrapper">
+      <div class="content-header">
+        <div class="row" style="display: flex;align-items: flex-start;">
+          <div class="col-lg-8 col-md-12">
+              <div class="card">
+                <div class="card-header bg-blue-disabled">
+                  <h1 class="card-title">Employee Tasks</h1>
+                  <div class="card-tools">
+                    <!-- Collapse Button -->
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                      <i class="fas fa-minus"></i>
+                    </button>
+                  </div>
+                </div>
+    
+                <div class="card-body">
+                  <!-- Small boxes (Stat box) -->
+                  <div class="row">
+                    <div class="col-md-8 col-12">
+                      <div class="info-box" id="responsive-chart"></div>
+                    </div>
+                    <div class="col-md-4 col-12">
+                      <div class="row">
+                        <div class="col-12">
+                          <a href="{% url 'client_master' %}" class="small-box-footer text-dark">
+                            <!-- small box -->
+                            <div class="info-box">
+                              <div class="info-box-icon bg-warning">
+                                <i class="fa fa-clock text-white"></i>
+                              </div>
+                              <div class="info-box-content">
+                                <h5>Pending Tasks</h5>
+                                <h3>{{ pending_tasks }}</h3>
+                              </div>
+                            </div>
+                          </a>
+                        </div>
+                        <!-- ./col -->
+                        <div class="col-12">
+                          <a href="{% url 'client_master' %}" class="small-box-footer text-dark">
+                            <!-- small box -->
+                            <div class="info-box">
+                              <div class="info-box-icon bg-success">
+                                <i class="fas fa-check-circle text-white"></i>
+                              </div>
+                              <div class="info-box-content">
+                                <h5>Completed Tasks</h5>
+                                <h3>{{ completed_tasks }}</h3>
+                              </div>
+                            </div>
+                          </a>
+                        </div>
+                        <!-- ./col -->
+                        <div class="col-12">
+                          <a href="{% url 'client_master' %}" class="small-box-footer text-dark">
+                            <!-- small box -->
+                            <div class="info-box">
+                              <div class="info-box-icon bg-danger">
+                                <i class="fas fa-exclamation-circle"></i>
+                              </div>
+                              <div class="info-box-content">
+                                <h5>Rejected Tasks</h5>
+                                <h3>{{ rejected_tasks }}</h3>
+                              </div>
+                            </div>
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+          </div>
+          <div class="col-lg-4 col-md-12">
+              <div class="card">
+                <div class="card-header bg-blue-disabled">
+                  <h1 class="card-title">Insights</h1>
+                  <div class="card-tools">
+                    <!-- Collapse Button -->
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                      <i class="fas fa-minus"></i>
+                    </button>
+                  </div>
+                </div>
+    
+                <div class="card-body">
+                  <div class="row">
+                    <div class="col-md-4 col-lg-12">
+                      <!-- small box -->
+                      <a class="text-dark" href="{% url 'partner_tasks' %}">
+                        <div class="info-box">
+                          <div class="info-box-icon bg-primary">
+                            <i class="fa fa-tasks"></i>
+                          </div>
+                          <div class="info-box-content">
+                            <h5>My Tasks</h5>
+                            <h3>{{ all_tasks }}</h3>
+                          </div>
+                        </div>
+                      </a>
+                    </div>
+                    <div class="col-md-4 col-lg-12">
+                      <!-- small box -->
+                      <a class="text-dark" href="{% url 'client_master' %}">
+                        <div class="info-box">
+                          <div class="info-box-icon bg-purple">
+                            <i class="fa fa-users"></i>
+                          </div>
+                          <div class="info-box-content">
+                            <h5>Clients</h5>
+                            <h3>{{ all_clients }}</h3>
+                          </div>
+                          {% comment %}
+                          <a href="{% url 'client_master' %}" class="small-box-footer">More info
+                            <i class="fas fa-arrow-circle-right"></i></a>
+                          {% endcomment %}
+                        </div>
+                      </a>
+                    </div>
+                    <!-- ./col -->
+                    <div class="col-md-4 col-lg-12">
+                      <a href="employee/setup" class="small-box-footer text-dark">
+                        <!-- small box -->
+                        <div class="info-box">
+                          <div class="info-box-icon bg-lightblue">
+                            <i class="fa fa-user-circle"></i>
+                          </div>
+                          <div class="info-box-content">
+                            <h5>Employees</h5>
+                            <h3>{{ completed_tasks }}</h3>
+                          </div>
+                        </div>
+                      </a>
+                    </div>
+                    <!-- ./col -->
+                    
+                  </div>
+                </div>
+              </div>
+            </div>
+        </div>
+          <div class="card">
+            <div class="card-header bg-blue-disabled">
+              <h1 class="card-title">Revenue</h1>
+              <div class="card-tools">
+                <!-- Collapse Button -->
+                <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                  <i class="fas fa-minus"></i>
+                </button>
+              </div>
+            </div>
+            <div class="card-body">
+              <!-- Small boxes (Stat box) -->
+              <div class="row">
+                <!-- ./col -->
+                <div class="col-lg-3 col-12">
+                  <!-- small box -->
+                  <div class="small-box bg-info">
+                    <div class="inner">
+                      <h3>{{ billable_invoices }}</h3>
+                      <h5>Billable Invocies</h5>
+                    </div>
+                    <div class="icon">
+                      <i class="fas fa-file-invoice"></i>
+                    </div>
+                    <a href="{% url 'client_master' %}" class="small-box-footer">More info <i
+                        class="fas fa-arrow-circle-right"></i></a>
+                  </div>
+                </div>
+                <div class="col-lg-3 col-12">
+                  <!-- small box -->
+                  <div class="small-box bg-success">
+                    <div class="inner">
+                      <h3>{{ invoices_generated }}</h3>
+                      <h5>Invocies Generated</h5>
+                    </div>
+                    <div class="icon">
+                      <i class="fas fa-file-invoice"></i>
+                    </div>
+                    <a href="{% url 'client_master' %}" class="small-box-footer">More info <i
+                        class="fas fa-arrow-circle-right"></i></a>
+                  </div>
+                </div>
+                <div class="col-lg-3 col-12">
+                  <!-- small box -->
+                  <div class="small-box bg-danger">
+                    <div class="inner">
+                      <h3>{{ invoices_notgenerated }}</h3>
+                      <h5>Invocies Not Generated</h5>
+                    </div>
+
+                    <div class="icon">
+                      <i class="fas fa-file-invoice"></i>
+                    </div>
+                    <a href="{% url 'client_master' %}" class="small-box-footer">More info <i
+                        class="fas fa-arrow-circle-right"></i></a>
+                  </div>
+                </div>
+                <div class="col-lg-3 col-12">
+                  <!-- small box -->
+                  <div class="small-box bg-primary">
+                    <div class="inner">
+                      <h3>{{ invoices_total }}</h3>
+                      <h5>Invoicing Total</h5>
+                    </div>
+                    <div class="icon">
+                      <i class="fas fa-file-invoice"></i>
+                    </div>
+                    <a href="{% url 'client_master' %}" class="small-box-footer">More info <i
+                        class="fas fa-arrow-circle-right"></i></a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+      </div>
+    </div>
+    <!-- /.content-wrapper -->
+    <footer class="main-footer"></footer>
+
+    <!-- Control Sidebar -->
+    <aside class="control-sidebar control-sidebar-dark">
+      <!-- Control sidebar content goes here -->
+    </aside>
+    <!-- /.control-sidebar -->
+  </div>
+  <!-- ./wrapper -->
+
+  <!-- jQuery -->
+  <script src="{% static 'plugins/jquery/jquery.min.js' %}"></script>
+  <!-- jQuery UI 1.11.4 -->
+  <script src="{% static 'plugins/jquery-ui/jquery-ui.min.js' %}"></script>
+  <!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
+  <script>
+    $.widget.bridge("uibutton", $.ui.button);
+  </script>
+  <!-- Bootstrap 4 -->
+  <script src="{% static 'plugins/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+  <!-- ChartJS -->
+  <script src="{% static 'plugins/chart.js/Chart.min.js' %}"></script>
+  <!-- Sparkline -->
+  <script src="{% static 'plugins/sparklines/sparkline.js' %}"></script>
+  <!-- JQVMap -->
+  <script src="{% static 'plugins/jqvmap/jquery.vmap.min.js' %}"></script>
+  <script src="{% static 'plugins/jqvmap/maps/jquery.vmap.usa.js' %}"></script>
+  <!-- jQuery Knob Chart -->
+  <script src="{% static 'plugins/jquery-knob/jquery.knob.min.js' %}"></script>
+  <!-- daterangepicker -->
+  <script src="{% static 'plugins/moment/moment.min.js' %}"></script>
+  <script src="{% static 'plugins/daterangepicker/daterangepicker.js' %}"></script>
+  <!-- Tempusdominus Bootstrap 4 -->
+  <script src="{% static 'plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js' %}"></script>
+  <!-- Summernote -->
+  <script src="{% static 'plugins/summernote/summernote-bs4.min.js' %}"></script>
+  <!-- overlayScrollbars -->
+  <script src="{% static 'plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js' %}"></script>
+  <!-- AdminLTE App -->
+  <script src="{% static 'js/adminlte.js' %}"></script>
+  <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
+  <script src="{% static 'js/pages/dashboard.js' %}"></script>
+  <!-- Apex charts -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/apexcharts/3.32.0/apexcharts.min.js"
+    integrity="sha512-JWuHiH5weF9hQAM/H5LaXRekU40IcLV8QgqGtvlR2t6vFNmDdCxkmFDajuHiuN0Tyh3n7HO/qdb3ARyUokKs0A=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script>
+    var completed_tasks = "{{completed_tasks}}";
+    var pending_tasks = "{{pending_tasks}}";
+    var rejected_tasks = "{{rejected_tasks}}";
+    console.log(completed_tasks , pending_tasks , rejected_tasks)
+    
+    var options = {
+      series: [
+        {
+          name: "In-Progress Tasks",
+          data: [44, 55, 57, 56, 61, 58, 63, 60, 66],
+        },
+        {
+          name: "Completed Tasks",
+          data: [76, 85, 101, 98, 87, 105, 91, 114, 94],
+        },
+        {
+          name: "Pending Tasks",
+          data: [35, 41, 36, 26, 45, 48, 52, 53, 41],
+        },
+      ],
+      chart: {
+        type: "area",
+        height: 315,
+        toolbar: {
+          show: false,
+        },
+        zoom: {
+          enabled: false,
+        },
+      },
+      dataLabels: {
+        enabled: false,
+      },
+      stroke: {
+        curve: "smooth",
+      },
+      xaxis: {
+        categories: [
+          "Feb",
+          "Mar",
+          "Apr",
+          "May",
+          "Jun",
+          "Jul",
+          "Aug",
+          "Sep",
+          "Oct",
+        ],
+      },
+      yaxis: {
+        title: {
+          text: "No. of Tasks",
+        },
+      },
+      fill: {
+        opacity: 1,
+      },
+      tooltip: {
+        y: {
+          formatter: function (val) {
+            return +val + " Tasks";
+          },
+        },
+      },
+    };
+
+    var chart = new ApexCharts(
+      document.querySelector("#responsive-chart"),
+      options
+    );
+
+    chart.render();
+  </script>
+</body>
+
+</html>

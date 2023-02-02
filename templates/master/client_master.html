@@ -1,0 +1,605 @@
+{% load static %}
+{% load partner_extras %}
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Client Master | Dashboard</title>
+  <!-- Tell the browser to be responsive to screen width -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="{% static 'plugins/fontawesome-free/css/all.min.css' %}">
+  <!-- Ionicons -->
+  <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+  <!-- Tempusdominus Bbootstrap 4 -->
+  <link rel="stylesheet" href="{% static 'plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css' %}">
+  <!-- iCheck -->
+  <link rel="stylesheet" href="{% static 'plugins/icheck-bootstrap/icheck-bootstrap.min.css' %}">
+  <!-- JQVMap -->
+  <link rel="stylesheet" href="{% static 'plugins/jqvmap/jqvmap.min.css' %}">
+  <!-- DataTables -->
+  <link rel="stylesheet" href="{% static 'plugins/datatables-bs4/css/dataTables.bootstrap4.css' %}">
+  <!-- Theme style -->
+  <link rel="stylesheet" href="{% static 'css/adminlte.min.css' %}">
+  <!-- overlayScrollbars -->
+  <link rel="stylesheet" href="{% static 'plugins/overlayScrollbars/css/OverlayScrollbars.min.css' %}">
+  <!-- Daterange picker -->
+  <link rel="stylesheet" href="{% static 'plugins/daterangepicker/daterangepicker.css' %}">
+  <!-- summernote -->
+  <link rel="stylesheet" href="{% static 'plugins/summernote/summernote-bs4.css' %}">
+  <!-- Google Font: Source Sans Pro -->
+  <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
+  <style>
+    .avatar-circle {
+      width: 25px;
+      height: 25px;
+      background-color: brown;
+      text-align: center;
+      border-radius: 50%;
+      -webkit-border-radius: 50%;
+      -moz-border-radius: 50%;
+    }
+
+  </style>
+</head>
+
+<body class="hold-transition sidebar-mini layout-fixed">
+  <div class="wrapper">
+
+    <!-- Navbar -->
+    <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+      <!-- Left navbar links -->
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link" data-widget="pushmenu" href="#"><i class="fas fa-bars"></i></a>
+        </li>
+      </ul>
+    
+    </nav>
+    <!-- /.navbar -->
+
+    <!-- Main Sidebar Container -->
+    <aside class="main-sidebar sidebar-dark-primary elevation-4">
+      <!-- Brand Logo -->
+      <a href="index3.html" class="brand-link">
+        <img src="{% static 'img/AdminLTELogo.png' %}" alt="AdminLTE Logo" class="brand-image img-circle elevation-3"
+          style="opacity: .8">
+        <span class="brand-text font-weight-light">Audit System</span>
+      </a>
+
+      <!-- Sidebar -->
+      <div class="sidebar">
+        <!-- Sidebar user panel (optional) -->
+        <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+          <div class="image">
+            <img src="{% static 'img/user2-160x160.jpg' %}" class="img-circle elevation-2" alt="User Image">
+          </div>
+          <div class="info">
+            <a href="#" class="d-block"> {{ request.user }}</a>
+          </div>
+        </div>
+
+        {% include '../includes/sidebar.html' %}
+      </div>
+      <!-- /.sidebar -->
+    </aside>
+
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+      <!-- Content Header (Page header) -->
+      <div class="content-header">
+        <div class="container-fluid">
+          
+        </div><!-- /.container-fluid -->
+      </div>
+      <!-- /.content-header -->
+
+      <!-- Main content -->
+      <section class="content">
+        <div class="row"> 
+          <div class="col-12">
+            <div class="card" name="my-card" id="my-card">
+              <div class="content-header">
+                <div class="container-fluid">
+                  <div class="card-header">
+                    <p class="card-title">Invoice Details</p>
+                    <div class="card-tools">
+                    <!-- Collapse Button -->
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i></button>
+                  </div>
+                  </div>
+                  
+                </div><!-- /.container-fluid -->
+              </div>
+              <div class="card-body">
+                <div class="row">
+                  <div class="col-xl-4 col-lg-4 col-md-4 col-sm-6">
+                    <!-- small box -->
+                    <div class="info-box" style="height:110px">
+                    <span class="info-box-icon bg-info"><i class="fas fa-receipt"></i></span>
+                      <div class="info-box-content">
+                        <span class="info-box-text">Invoice Billing Status</span>
+                        <span class="info-box-number">{{invoices_generated}} of {{ invoices_generated | add:billable_invoices }}</span>
+                        <div class="progress" style="height:3px">
+                          <div class="progress-bar bg-info" style="width: {{ invoices_generated | prog:billable_invoices }}%"></div>
+                          <div class="progress-bar bg-danger" style="width: {{ invoices_generated | prog2:billable_invoices }}%"></div>
+                        </div>
+                        <span class="progress-description">
+                          {{ invoices_generated | prog:billable_invoices}}%
+                        </span> 
+                      </div>
+                      <div class="progress" style="height:3px">
+                        <div class="progress-bar bg-info" style="width: {{ invoices_paid | prog:invoices_not_paid }}%"></div>
+                      </div>
+                      <span class="progress-description">
+                      </span>
+                      {% comment %} <a href="{% url 'client_master' %}" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a> {% endcomment %}
+                    </div>
+                  </div>
+                  <div class="col-xl-4 col-lg-4 col-md-4 col-sm-6">
+                    <div class="info-box">
+                      <span class="info-box-icon bg-info"><i class="fas fa-file-invoice-dollar"></i></span>
+                      <div class="info-box-content">
+                        <span class="info-box-text">Invoice Billing</span>
+                        <span class="info-box-number">{{invoices_paid}} of {{ invoices_paid | add:invoices_not_paid }}</span>
+                        <div class="progress" style="height:3px">
+                          <div class="progress-bar bg-info" style="width: {{ invoices_paid | prog:invoices_not_paid }}%"></div>
+                          <div class="progress-bar bg-danger" style="width: {{ invoices_paid | prog2:invoices_not_paid }}%"></div>
+                        </div>
+                        <span class="progress-description">
+                          {{ invoices_paid | prog:invoices_not_paid }}%
+                        </span>
+                    </div>
+                  </div>
+                  </div>
+                  <div class="col-xl-4 col-lg-4 col-md-4 col-sm-6">
+                    <div class="info-box">
+                    <span class="info-box-icon bg-info"><i class="fas fa-rupee-sign"></i></span>
+                    <div class="info-box-content">
+                      <span class="info-box-text">Invoice Receipt Status</span>
+                      <span class="info-box-number">{{iap | currency}} &nbsp;&nbsp;of   &nbsp;&nbsp;{{ iap | add:iaup | currency }}</span>
+                      <div class="progress" style="height:3px">
+                        <div class="progress-bar bg-info" style="width: {{ iap | prog:iaup }}%"></div>
+                        <div class="progress-bar bg-danger" style="width: {{ iap | prog2:iaup }}%"></div>
+                      </div>
+                      <span class="progress-description">
+                        {{ iap | prog:iaup }}%
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-12">
+            <div class="card">
+              <div class="card-header">
+                <p class="card-title">Clients</p>
+                <button type="button" class="btn btn-info  float-right ml-3" data-toggle="modal"
+                  data-target="#editClient">
+                  Edit Client
+                </button>
+                <a href="{% url 'client_setup' %}">
+                  <button type="submit" class="btn btn-success float-right">
+                    Add New Client
+                  </button>
+                </a>
+              </div>
+              <!-- /.card-header -->
+              <div class="card-body">
+                <div class="table-responsive">
+                  <table id="clients" class="table table-bordered table-striped" >
+                    <thead style="position: sticky;top: 0">
+                      <tr>
+                        <th>Client ID</th>
+                        <th>Client Name</th>
+                        {% comment %} <th>Employees</th> {% endcomment %}
+                        <th>GST Number</th>
+                        <th>PAN Number</th>
+                        <th>Invoice Totals</th>
+                        <th>Invoice Totals Received</th>
+                        {% comment %} <th>Invoices To Be Billed</th> {% endcomment %}
+                        <th>Audit Plans</th>
+                        <th>Invocies</th>
+                        <th>Edit</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for client in clients %}
+                      <tr>
+                        <td>{{ client.id }}</td>
+                        <td>{{ client.client_name }}</td>
+                        {% comment %} <td>
+                          <ul>
+                          <div class="avatar-circle">
+                            <span class="initials text-white" tooltip="tooltip" title="{{client.assigned_user}}">{{client.assigned_user | truncatechars:2 | upper}}</span>
+                          </div>                          
+                          <div class="avatar-circle">
+                            <span class="initials text-white" tooltip="tooltip" title="{{client.assigned_partner}}">{{client.assigned_partner | truncatechars:2 | upper}}</span>
+                          </div>                          
+                        </ul> {% endcomment %}
+                        </td>
+                        <td>{{ client.gst_no }}</td>
+                        <td>{{ client.pan_no }}</td>
+                        
+                        {% for c in client_invoicing %}
+  
+                          {% if c.client_id == client.id %}
+                          <td> 
+                            {% if c.total_price != None and c.total_price %}
+                            
+                              {% comment %} {{ c.total_price | add:c.ofp | add:c.igst | add:c.cgst | add:c.sgst }} {% endcomment %}
+                              {{ c.total_price | add:c.ofp | add:c.cgst | add:c.sgst | add:c.igst | currency   }}
+                            {% elif c.total_price == 0.0%}
+                              0
+                            {% else %}  
+                              0
+                            {% endif %}
+                          
+                          </td>
+                          <td>  
+                            {% if c.total_price_paid != None and c.total_price_paid %}
+                              {{ c.total_price_paid | currency }}
+                            {% else %}
+                              {{ 0 | currency }}
+                            {% endif %}
+                          </td>
+                          {% comment %} <td>  
+                            {% if c.non_billable and c.non_billable != True %}
+                              {{ c.invoices|subtract:c.non_billable }}
+                            {% else %}
+                              0
+                            {% endif %}
+                          </td> {% endcomment %}
+  
+                          {% else %}
+                            {% comment %} <td>0</td> {% endcomment %}
+  
+                          {% endif %}
+  
+                        {% endfor %}
+                        
+                        <td><a href="{% url 'client_profile' client_id=client.id %}">View</a></td>
+                        <td><a href="{% url 'view_client_invoicing' client_id=client.id %}">View</a></td>
+                        <td>
+                          <a role="btn" class="btn btn-primary" onclick="edit_client_function('{{client.id}}')">
+                              Edit
+                          </a>
+                        </td>
+                      </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              <!-- /.card-body -->
+            </div>
+          </div>
+        </div>
+        <div class="modal fade" id="editClient" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+          aria-hidden="true">
+          <div class="modal-dialog" role="document" style="max-width: 900px !important;">
+            <!-- Edit Activity Form -->
+            <form method="POST" action="{% url 'edit_client' %}">
+              {% csrf_token %}
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="exampleModalLongTitle">Edit Client</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <div class="form-row">
+                    <div class="form-group col-md-12 mb-3">
+                      <label for="acts" class="text-dark">Select Client</label>
+                      <select name="client_id" id="client_id" class="custom-select">
+                        <option value="">Please Select</option>
+                        {% for client in clients %}
+                        <option value="{{ client.id }}">{{ client.client_name }}</option>
+                        {% endfor %}
+                      </select>
+                    </div>
+                    <div class="col-md-6 mb-4">
+                      <label for="clientName" class="text-dark">Client Name</label>
+                      <input type="text" name="client_name" id="client_name" class="form-control" />
+                    </div>
+
+                    <div class="col-md-6 mb-4">
+                      <label for="gst_number" class="text-dark">GSTIN Number</label>
+                      <input type="text" name="gst_number" id="gst_number" class="form-control" />
+                    </div>
+                    <div class="col-md-6 mb-4">
+                      <label for="pan_number" class="text-dark">PAN Number</label>
+                      <input type="text" name="pan_number" id="pan_number" class="form-control" />
+                    </div>
+                    <div class="col-md-6 mb-4">
+                      <label for="pan_number" class="text-dark">TAN Number</label>
+                      <input type="text" name="tan_number" id="tan_number" class="form-control" />
+                    </div>
+                    <div class="col-md-6 mb-4">
+                      <label for="clientManager" class="text-dark">Assign Manager</label>
+                      <select name="assigned_user" id="manager" class="custom-select">
+                        <option value="-1">Please Select</option>
+                        {% for user in users %}
+                        <option value="{{ user.id }}">{{ user.username }}</option>
+                        {% endfor %}
+                      </select>
+                    </div>
+
+
+
+                    <div class="col-md-12 mb-4" id="industries">
+                        
+                      <label for="taskName" class="text-dark">Select Industries:</label>    
+                      <div class="row">
+                        <select  name="industries" multiple required id="industries" class="form-control">
+                          {% for industry in industries %}
+                          <option value="{{ industry.id }}">{{ industry.industry_name }}</option>
+                          {% endfor %}
+                        </select>
+                        
+                        <div class="form-check col-4">
+                          <label class="form-check-label mr-4">
+                              <input class="form-check-input" type="checkbox" id="industries_all">
+                                  <strong>Applicable to all Industries</strong>
+                              <span class="form-check-sign">
+                                  <span class="check"></span>
+                              </span>
+                          </label>
+                        </div>
+                      </div>
+                    </div> 
+
+                    <div class="col-md-12 mb-3">
+                            
+                      <label for="audit_types" class="text-dark">Select Audit Types:</label>
+                      <div class="row">
+                        <select  name="audit_types" id="audit_types" multiple required  class="form-control">
+                          {% for audittype in audittypes %}
+                          <option value="{{ audittype.id }}">{{ audittype.audit_type_name }}</option>
+                          {% endfor %}
+                        </select>
+                        <!-- {% for audittype in audittypes %}
+                          <div class="col-6 form-check">
+                            <input class="form-check-input" type="checkbox" name="audittype" value="{{ audittype.id }}">
+                            {{ audittype.audit_type_name }}</strong>
+                          </div>    
+                        {% endfor %} -->
+                      </div>
+                  </div>
+
+                  <div class="col-md-12 mb-3" id="entity">
+                            
+                    <label for="taskName" class="text-dark">Select Entities:</label>
+                    <div class="row">
+                      <select  name="entities" multiple required id="entities" class="form-control">
+                        {% for entity in entities %}
+                        <option value="{{ entity.id }}">{{ entity.entity_name }}</option>
+                        {% endfor %}
+                      </select>
+                      <!-- {% for entity in entities %}
+                        <div class="col-6 form-check">
+                          <input class="form-check-input" type="checkbox" name="entities" value="{{ entity.id }}">
+                          {{ entity.entity_name }}</strong>
+                        </div>  
+                      {% endfor %} -->
+                      <div class="form-check col-6">
+                        <label class="form-check-label mr-4">
+                            <input class="form-check-input" type="checkbox" id="entities_all">
+                                <strong>Applicable to all Entities</strong>
+                            <span class="form-check-sign">
+                                <span class="check"></span>
+                            </span>
+                        </label>
+                      </div>
+                    </div>
+                  </div> 
+                  </div>
+                  <div class="modal-footer">
+                    <input type="submit" class="btn btn-success" value="Submit">
+                  </div>
+                </div>
+            </form>
+          </div>
+        </div>
+      </section>
+      <!-- /.content -->
+    </div>
+    <!-- /.content-wrapper -->
+    <footer class="main-footer">
+    </footer>
+
+    <!-- Control Sidebar -->
+    <aside class="control-sidebar control-sidebar-dark">
+      <!-- Control sidebar content goes here -->
+    </aside>
+    <!-- /.control-sidebar -->
+  </div>
+  <!-- ./wrapper -->
+
+  <!-- jQuery -->
+  <script src="{% static 'plugins/jquery/jquery.min.js' %}"></script>
+  <!-- jQuery UI 1.11.4 -->
+  <script src="{% static 'plugins/jquery-ui/jquery-ui.min.js' %}"></script>
+  <!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
+  <script>
+    $.widget.bridge('uibutton', $.ui.button)
+  </script>
+  <!-- Bootstrap 4 -->
+  <script src="{% static 'plugins/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+  <!-- ChartJS -->
+  <script src="{% static 'plugins/chart.js/Chart.min.js' %}"></script>
+  <!-- Sparkline -->
+  <script src="{% static 'plugins/sparklines/sparkline.js' %}"></script>
+  <!-- JQVMap -->
+  <script src="{% static 'plugins/jqvmap/jquery.vmap.min.js' %}"></script>
+  <script src="{% static 'plugins/jqvmap/maps/jquery.vmap.usa.js' %}"></script>
+  <!-- jQuery Knob Chart -->
+  <script src="{% static 'plugins/jquery-knob/jquery.knob.min.js' %}"></script>
+  <!-- daterangepicker -->
+  <script src="{% static 'plugins/moment/moment.min.js' %}"></script>
+  <script src="{% static 'plugins/daterangepicker/daterangepicker.js' %}"></script>
+  <!-- Tempusdominus Bootstrap 4 -->
+  <script src="{% static 'plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js' %}"></script>
+  <!-- Summernote -->
+  <script src="{% static 'plugins/summernote/summernote-bs4.min.js' %}"></script>
+  <!-- overlayScrollbars -->
+  <script src="{% static 'plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js' %}"></script>
+  <!-- DataTables -->
+  <script src="{% static 'plugins/datatables/jquery.dataTables.js' %}"></script>
+  <script src="{% static 'plugins/datatables-bs4/js/dataTables.bootstrap4.js' %}"></script>
+  <!-- AdminLTE App -->
+  <script src="{% static 'js/adminlte.js' %}"></script>
+  <!-- AdminLTE dashboard demo (This is only for demo purposes) -->
+  <script src="{% static 'js/pages/dashboard.js' %}"></script>
+
+  <script>
+    $("#industries_all").click(() => {
+    let isChecked = $("#industries_all").is(':checked');
+    if (isChecked)
+      {
+        $('#industries').each(function() { $('#industries option').prop('selected', true); });
+        console.log("yup")
+      }
+    else
+      {
+        $('#industries').each(function() { $('#industries option').prop('selected', false); }); 
+        console.log("nope")
+      }
+});
+$("#entities_all").click(() => {
+    let isChecked = $("#entities_all").is(':checked');
+    if (isChecked)
+      {
+        $('#entities').each(function() { $('#entities option').prop('selected', true); });
+        console.log("yup")
+      }
+    else
+      {
+        $('#entities').each(function() { $('#entities option').prop('selected', false); }); 
+        console.log("nope")
+      }
+});
+    function edit_client_function(id){
+      $('#industries').each(function() { $('#industries option').prop('selected', false); });
+      $('#entities').each(function() { $('#entities option').prop('selected', false); });
+      $('#audit_types').each(function() { $('#audit_types option').prop('selected', false); });
+      console.log(id);
+      $.ajax({
+      type: "POST",
+      url: "{% url 'get_clientdetails' %}",
+      headers: {'X-CSRFToken': '{{ csrf_token }}'},
+      data: {
+        'client_id': id
+      },
+      success: function(data){
+        console.log("data",data)
+        $('#editClient').modal('show')
+        $('#client_id').val(data.client)
+        $(".entities").prop('checked', false);
+        $(".audittypes").prop('checked', false);
+        $(".industries").prop('checked', false);
+        const entities = data.entities
+        const audittypes = data.audittype
+        const industries = data.industries
+        function removeDuplicates(arr) {
+        var unique = [];
+            arr.forEach(element => {
+                if (!unique.includes(element)) {
+                    unique.push(element);
+                }
+            });
+            return unique;
+        }
+ 
+        
+        
+        $.each(entities, (index, value) => {
+          // console.log("ENTITIES : ",$('#entities option[value='+value+']').text())
+          $('#entities option[value='+value+']').attr('selected',true);
+        })
+        $.each(industries, (index, value) => {
+          // console.log("INDUSTRIES : ",$('#industries option[value='+value+']').text())
+          $('#industries option[value='+value+']').attr('selected',true);
+        })
+        $.each(audittypes, (index, value) => {
+          // console.log("AUDIT TYPE : ",$('#audit_types option[value='+value+']').text())
+          $('#audit_types option[value='+value+']').attr('selected',true);
+        })
+
+        $('#client_name').val(data.name)
+        $('#gst_number').val(data.gst)
+        $('#pan_number').val(data.pan)
+        $('#tan_number').val(data.tan)
+        $('#manager').val(data.manager)
+      }
+    });
+    }
+    $(() => {
+      $('body').toggleClass('sidebar-collapse');
+      $('[data-toggle="tooltip"]').tooltip();
+      $('#my-card').CardWidget(options);
+      $('#clients').DataTable({
+        "paging": true,
+        "lengthChange": true,
+        "searching": true,
+        "ordering": true,
+        "info": true,
+        "autoWidth": false,
+      });
+      
+      $("#client_id").on('change', (e) => {
+        let client = $('#client_id option:selected').val()
+        console.log(client)
+        const url = "{% url 'get_clientdetails' %}"
+        $.ajaxSetup({
+          data: {
+            csrfmiddlewaretoken: '{{ csrf_token }}'
+          },
+        });
+        $.ajax({
+          url: url,
+          method: "POST",
+          data: {
+            'client_id': client,
+          },
+          success: function (data) {
+            console.log("run")
+            $(".entities").prop('checked', false);
+            $(".audittypes").prop('checked', false);
+            $(".industries").prop('checked', false);
+            const entities = data.entities
+            const audittypes = data.audittype
+            const industries = data.industries
+            console.log(entities) 
+            $.each(entities, (index, value) => {
+              // console.log("editBox" + value)
+              $("#editBox" + value).prop('checked', true);
+            })
+            $.each(industries, (index, value) => {
+              // console.log("editBox" + value)
+              $("#editind" + value).prop('checked', true);
+            })
+            $.each(audittypes, (index, value) => {
+              // console.log("editBox" + value)
+              $("#editAT" + value).prop('checked', true);
+            })
+
+            $('#client_name').val(data.name)
+            $('#gst_number').val(data.gst)
+            $('#pan_number').val(data.pan)
+            $('#tan_number').val(data.tan)
+            $('#manager').val(data.manager)
+          }
+        });
+      });
+      
+    });
+
+  </script>
+</body>
+
+</html>

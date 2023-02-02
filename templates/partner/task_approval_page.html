@@ -1,0 +1,451 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Partner | Approve Task</title>
+  <!-- Tell the browser to be responsive to screen width -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="{% static 'plugins/fontawesome-free/css/all.min.css' %}">
+  <!-- Ionicons -->
+  <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+  <!-- SweetAlert2 -->
+  <link rel="stylesheet" href="{% static 'plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css' %}">
+  <!-- Tempusdominus Bbootstrap 4 -->
+  <link rel="stylesheet" href="{% static 'plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css' %}">
+  <!-- iCheck -->
+  <link rel="stylesheet" href="{% static 'plugins/icheck-bootstrap/icheck-bootstrap.min.css' %}">
+  <!-- JQVMap -->
+  <link rel="stylesheet" href="{% static 'plugins/jqvmap/jqvmap.min.css' %}">
+  <!-- DataTables -->
+  <link rel="stylesheet" href="{% static 'plugins/datatables-bs4/css/dataTables.bootstrap4.css' %}">
+  <!-- Theme style -->
+  <link rel="stylesheet" href="{% static 'css/adminlte.min.css' %}">
+  <!-- overlayScrollbars -->
+  <link rel="stylesheet" href="{% static 'plugins/overlayScrollbars/css/OverlayScrollbars.min.css' %}">
+  <!-- Daterange picker -->
+  <link rel="stylesheet" href="{% static 'plugins/daterangepicker/daterangepicker.css' %}">
+  <!-- summernote -->
+  <link rel="stylesheet" href="{% static 'plugins/summernote/summernote-bs4.css' %}">
+  <!-- Google Font: Source Sans Pro -->
+  <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
+</head>
+<body class="hold-transition sidebar-mini layout-fixed">
+<div class="wrapper">
+
+  <!-- Navbar -->
+  <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+    <!-- Left navbar links -->
+    <ul class="navbar-nav">
+      <li class="nav-item">
+        <a class="nav-link" data-widget="pushmenu" href="#"><i class="fas fa-bars"></i></a>
+      </li>
+      <li class="nav-item d-none d-sm-inline-block">
+        <a href="index3.html" class="nav-link">Home</a>
+      </li>
+      <li class="nav-item d-none d-sm-inline-block">
+        <a href="#" class="nav-link">Contact</a>
+      </li>
+    </ul>
+
+    <!-- SEARCH FORM -->
+    <form class="form-inline ml-3">
+      <div class="input-group input-group-sm">
+        <input class="form-control form-control-navbar" type="search" placeholder="Search" aria-label="Search">
+        <div class="input-group-append">
+          <button class="btn btn-navbar" type="submit">
+            <i class="fas fa-search"></i>
+          </button>
+        </div>
+      </div>
+    </form>
+
+    <!-- Right navbar links -->
+    <ul class="navbar-nav ml-auto">
+      <!-- Messages Dropdown Menu -->
+      <li class="nav-item dropdown">
+        <a class="nav-link" data-toggle="dropdown" href="#">
+          <i class="far fa-comments"></i>
+          <span class="badge badge-danger navbar-badge">3</span>
+        </a>
+        <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+          <a href="#" class="dropdown-item">
+            <!-- Message Start -->
+            <div class="media">
+              <img src="{% static 'img/user1-128x128.jpg' %}" alt="User Avatar" class="img-size-50 mr-3 img-circle">
+              <div class="media-body">
+                <h3 class="dropdown-item-title">
+                  Brad Diesel
+                  <span class="float-right text-sm text-danger"><i class="fas fa-star"></i></span>
+                </h3>
+                <p class="text-sm">Call me whenever you can...</p>
+                <p class="text-sm text-muted"><i class="far fa-clock mr-1"></i> 4 Hours Ago</p>
+              </div>
+            </div>
+            <!-- Message End -->
+          </a>
+          <div class="dropdown-divider"></div>
+          <a href="#" class="dropdown-item">
+            <!-- Message Start -->
+            <div class="media">
+              <img src="{% static 'img/user8-128x128.jpg' %}" alt="User Avatar" class="img-size-50 img-circle mr-3">
+              <div class="media-body">
+                <h3 class="dropdown-item-title">
+                  John Pierce
+                  <span class="float-right text-sm text-muted"><i class="fas fa-star"></i></span>
+                </h3>
+                <p class="text-sm">I got your message bro</p>
+                <p class="text-sm text-muted"><i class="far fa-clock mr-1"></i> 4 Hours Ago</p>
+              </div>
+            </div>
+            <!-- Message End -->
+          </a>
+          <div class="dropdown-divider"></div>
+          <a href="#" class="dropdown-item">
+            <!-- Message Start -->
+            <div class="media">
+              <img src="{% static 'img/user3-128x128.jpg' %}" alt="User Avatar" class="img-size-50 img-circle mr-3">
+              <div class="media-body">
+                <h3 class="dropdown-item-title">
+                  Nora Silvester
+                  <span class="float-right text-sm text-warning"><i class="fas fa-star"></i></span>
+                </h3>
+                <p class="text-sm">The subject goes here</p>
+                <p class="text-sm text-muted"><i class="far fa-clock mr-1"></i> 4 Hours Ago</p>
+              </div>
+            </div>
+            <!-- Message End -->
+          </a>
+          <div class="dropdown-divider"></div>
+          <a href="#" class="dropdown-item dropdown-footer">See All Messages</a>
+        </div>
+      </li>
+      <!-- Notifications Dropdown Menu -->
+      <li class="nav-item dropdown">
+        <a class="nav-link" data-toggle="dropdown" href="#">
+          <i class="far fa-bell"></i>
+          <span class="badge badge-warning navbar-badge">15</span>
+        </a>
+        <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+          <span class="dropdown-item dropdown-header">15 Notifications</span>
+          <div class="dropdown-divider"></div>
+          <a href="#" class="dropdown-item">
+            <i class="fas fa-envelope mr-2"></i> 4 new messages
+            <span class="float-right text-muted text-sm">3 mins</span>
+          </a>
+          <div class="dropdown-divider"></div>
+          <a href="#" class="dropdown-item">
+            <i class="fas fa-users mr-2"></i> 8 friend requests
+            <span class="float-right text-muted text-sm">12 hours</span>
+          </a>
+          <div class="dropdown-divider"></div>
+          <a href="#" class="dropdown-item">
+            <i class="fas fa-file mr-2"></i> 3 new reports
+            <span class="float-right text-muted text-sm">2 days</span>
+          </a>
+          <div class="dropdown-divider"></div>
+          <a href="#" class="dropdown-item dropdown-footer">See All Notifications</a>
+        </div>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" data-widget="control-sidebar" data-slide="true" href="#">
+          <i class="fas fa-th-large"></i>
+        </a>
+      </li>
+    </ul>
+  </nav>
+  <!-- /.navbar -->
+
+  <!-- Main Sidebar Container -->
+  <aside class="main-sidebar sidebar-dark-primary elevation-4">
+    <!-- Brand Logo -->
+    <a href="index3.html" class="brand-link">
+      <img src="{% static 'img/AdminLTELogo.png' %}" alt="AdminLTE Logo" class="brand-image img-circle elevation-3"
+           style="opacity: .8">
+      <span class="brand-text font-weight-light">Audit System</span>
+    </a>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <!-- Sidebar user panel (optional) -->
+      <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+        <div class="image">
+          <img src="{% static 'img/user2-160x160.jpg' %}" class="img-circle elevation-2" alt="User Image">
+        </div>
+        <div class="info">
+          <a href="#" class="d-block"> {{ request.user }}</a>
+        </div>
+      </div>
+
+	  {% include '../includes/sidebar.html' %}
+    </div>
+    <!-- /.sidebar -->
+  </aside>
+
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0 text-dark"></h1>
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.content-header -->
+
+    <!-- Main content -->
+    <section class="content">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">
+                    <i class="fas fa-list"></i>
+                    Task Details
+                    </h3>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                  <div class="row">
+                      <div class="col-md-8">
+                          <dl class="row">
+                              <dt class="col-sm-4">Task ID</dt>
+                              <dd class="col-sm-8">{{ task.id }}</dd>
+                              <dt class="col-sm-4">Task Name</dt>
+                              <dd class="col-sm-8">{{ task }}</dd>
+                              <dt class="col-sm-4">Sub Area Name</dt>
+                              <dd class="col-sm-8">{{ task.act  }}</dd>
+                              <dt class="col-sm-4">Activity Name</dt>
+                              <dd class="col-sm-8">{{ task.activity }}</dd> 
+                              <dt class="col-sm-4">Client Name</dt>
+                              <dd class="col-sm-8">{{ client.client_name }}</dd>
+                              <dt class="col-sm-4">Auditing Standard</dt>
+                              <dd class="col-sm-8">{{ task.task_auditing_standard }}</dd>
+                              
+                              <dt class="col-sm-4">International Auditing Standard</dt>
+                              <dd class="col-sm-8">{{ task.task_international_auditing_standard }}</dd>
+                              
+                              <dt class="col-sm-4">Estimated Days</dt>
+                              <dd class="col-sm-8">{{ estimated_time  }} Hours</dd>
+
+                              {% if task.task_start_date %}
+                                  <dt class="col-sm-4">Start Date</dt>
+                                  <dd class="col-sm-8">{{ task.task_start_datetime }}</dd>
+                              {% endif %}
+
+                              {% if estimated_end_date %}
+                                  <dt class="col-sm-4">Estimated End Date</dt>
+                                  <dd class="col-sm-8">{{ estimated_end_date }}</dd>
+                              {% endif %}
+
+                              {% if task.task_end_date %}
+                                  <dt class="col-sm-4">Actual End Date</dt>
+                                  {% if in_time %}
+                                      <dd class="col-sm-8"><span class="bg-success">{{ task.task_end_datetime }}</span></dd>
+                                  {% else %}
+                                      <dd class="col-sm-8"><span class="bg-danger">{{ task.task_end_datetime }}</span></dd>
+                                  {% endif %}
+                              {% endif %}
+                              
+                          </dl>
+                      </div>
+                        
+                        <div class="col-md-4">
+                            <div class="text-center">
+                                {% if task.task_start_date  %}
+                                  <!-- File Upload-->
+                            <div class="text-center">
+                                    <form action="{% url 'approve_tasks' task_id=task.id %}" method="POST" enctype="multipart/form-data">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="taskId" value="{{ task.id }}">
+                                        {% if  task.is_start is True %}
+                                        {%if task.status is True and task.is_approved_partner is False %}
+                                        <div class="row">
+                                          <div class="form-group">
+                                                <label for="exampleInputFile">Partner File Submission</label>
+                                                  <div class="custom-file">
+                                                      <input type="file" name="attachment" id="taskSubmission">
+                                                  </div>
+                                              <select name="feedback" id="" class="custom-select" style="width:440px">
+                                                <option value="">Select Comments</option>
+                                                <option value="closed">Closed</option>
+                                                <option value="review">Needs review see comments</option>
+                                                <option value="obervation">Observation area</option>
+                                                <option value="qualification">Qualification area</option>
+                                                <option value="other">Other Matters to be reported Management Attention</option>
+                                                <option value="include">Include in Audit Committee presentation</option>
+                                                <option value="suggestion">Suggestions on controls</option>
+                                                <option value="value">Value Addition</option>
+                                              </select>
+                                           </div>
+                                              <button role=" button" class="btn btn-block btn-success taskSubmit swalDefaultSuccess">Approve</button>
+                                            {% endif %}
+                                            <div class="form-group col-12">
+                                                
+                                                <hr>
+                                                {% comment %} <input type="submit" class="btn btn-block btn-success  col-5 float-right" value="Send for Approval"> {% endcomment %}
+                                                {% if task.attachment_file %}
+                                                  <a role="btn" class="btn btn-primary col-12" href="{{ task.attachment_file.url }}" download="{{ task.attachment_file.url }}">
+                                                    <i class="fa fa-download" aria-hidden="true"></i>
+                                                      Download Submission
+                                                  </a>
+                                                {% endif %}
+                                                <br>
+                                            </div>
+                                            <div class="form-group col-12">
+                                                {% if task.manager_attachment_file %}
+                                                  <a role="btn" class="btn btn-primary col-12" href="http://127.0.0.1:8000\media{{ manager_file_location }}" download="http://127.0.0.1:8000\media{{ manager_file_location }}">
+                                                    <i class="fa fa-download" aria-hidden="true"></i>
+                                                      Download Manager Submission
+                                                  </a>
+                                                {% endif %}
+                                            </div>
+                                        {%endif%}
+                                    </form>
+                                    </div>
+                      <!-- /File Upload-->
+
+                                {% endif %}
+                                {% if  task.is_rejected is True %}
+                                  <button type="button" class="btn btn-block btn-danger " disabled>Manager Rejected</button>
+                                {% elif task.status is True and task.is_approved is True %}
+                                  <button type="button" class="btn btn-block btn-success col-12" disabled>Manager Approved</button>
+                                {% elif task.is_rejected is False and task.status is True and task.partner_feedback is False%}
+                                  <button role="button" class="btn btn-block btn-danger" id="driver"> Reject </button>
+                                
+                                  <div class="form-group" id="text">
+                                    <form action="{% url 'reject_task' task_id=task.id %}" method="POST">
+                                      {% csrf_token %}
+                                    <label>Remark</label>
+                                    <textarea class="form-control"  name="remark" rows="6" placeholder="Remark required" required title="please fill the text for rejection "></textarea>
+                                    <input type="submit" class="btn btn-success TaskRejected" value="Submit">
+                                    </form>
+                                </div>
+                                  
+                                {% endif %}
+                                <hr>
+                                {% if  task.is_rejected is True %}
+                                  <button type="button" class="btn btn-block btn-danger " disabled>Partner Rejected</button>
+                                {% elif task.status is True and task.is_approved_partner is True %}
+                                  <button type="button" class="btn btn-block btn-success col-12" disabled>Partner Approved</button>
+                                {% endif %}
+                                
+                              </div>
+                        </div>
+                    </div>
+                    
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+          </div>
+        </div>
+    </section>
+    <!-- /.content -->
+  </div>
+  <!-- /.content-wrapper -->
+  <footer class="main-footer">
+  </footer>
+
+  <!-- Control Sidebar -->
+  <aside class="control-sidebar control-sidebar-dark">
+    <!-- Control sidebar content goes here -->
+  </aside>
+  <!-- /.control-sidebar -->
+</div>
+<!-- ./wrapper -->
+
+<!-- jQuery -->
+<script src="{% static 'plugins/jquery/jquery.min.js' %}"></script>
+<!-- jQuery UI 1.11.4 -->
+<script src="{% static 'plugins/jquery-ui/jquery-ui.min.js' %}"></script>
+<!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
+<script>
+  $.widget.bridge('uibutton', $.ui.button)
+</script>
+<!-- Bootstrap 4 -->
+<script src="{% static 'plugins/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+<!-- SweetAlert2 -->
+<script src="{% static 'plugins/sweetalert2/sweetalert2.min.js' %}"></script>
+<!-- ChartJS -->
+<script src="{% static 'plugins/chart.js/Chart.min.js' %}"></script>
+<!-- Sparkline -->
+<script src="{% static 'plugins/sparklines/sparkline.js' %}"></script>
+<!-- JQVMap -->
+<script src="{% static 'plugins/jqvmap/jquery.vmap.min.js' %}"></script>
+<script src="{% static 'plugins/jqvmap/maps/jquery.vmap.usa.js' %}"></script>
+<!-- jQuery Knob Chart -->
+<script src="{% static 'plugins/jquery-knob/jquery.knob.min.js' %}"></script>
+<!-- daterangepicker -->
+<script src="{% static 'plugins/moment/moment.min.js' %}"></script>
+<script src="{% static 'plugins/daterangepicker/daterangepicker.js' %}"></script>
+<!-- Tempusdominus Bootstrap 4 -->
+<script src="{% static 'plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js' %}"></script>
+<!-- Summernote -->
+<script src="{% static 'plugins/summernote/summernote-bs4.min.js' %}"></script>
+<!-- overlayScrollbars -->
+<script src="{% static 'plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js' %}"></script>
+<!-- DataTables -->
+<script src="{% static 'plugins/datatables/jquery.dataTables.js' %}"></script>
+<script src="{% static 'plugins/datatables-bs4/js/dataTables.bootstrap4.js' %}"></script>
+<!-- AdminLTE App -->
+<script src="{% static 'js/adminlte.js' %}"></script>
+<!-- AdminLTE dashboard demo (This is only for demo purposes) -->
+<script src="{% static 'js/pages/dashboard.js' %}"></script>
+
+<script>
+    $(() => {
+        $('body').toggleClass('sidebar-collapse');
+        
+        $('#tasks').DataTable({
+            "paging": true,
+            "lengthChange": true,
+            "searching": true,
+            "ordering": true,
+            "info": true,
+            "autoWidth": false,
+        });
+
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000
+        });
+
+        $('.swalDefaultSuccess').click(function() {
+            Toast.fire({
+                type: 'success',
+                title: 'The task has been approved'
+            })
+        });
+
+         $('.taskSubmit').click(function() {
+            Toast.fire({
+                type: 'success',
+                title: 'The submission for the task has been sent for approval!'
+            })
+        });
+
+        $('.swalDefaultError').click(function() {
+            Toast.fire({
+                type: 'error',
+                title: 'The task has been rejected!'
+            })
+        });
+    });
+    $().ready = function() {
+      $('#text').hide();
+      
+      $("#driver").click(function() {
+          $('#text').toggle();
+      });
+    }();  
+</script>
+</body>
+</html>

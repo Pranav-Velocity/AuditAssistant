@@ -1,0 +1,90 @@
+<div class="col-sm-4">
+    <div class="card card-primary">
+      <div class="card-header">
+        <h3 class="card-title">Task Status </h3>
+        <div class="card-tools">
+          <button
+            type="button"
+            class="btn btn-tool"
+            data-card-widget="collapse"
+          >
+            <i class="fas fa-minus"></i>
+          </button>
+          <button
+            type="button"
+            class="btn btn-tool"
+            data-card-widget="remove"
+          >
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="chartjs-size-monitor">
+          <div class="chartjs-size-monitor-expand">
+            <div class=""></div>
+          </div>
+          <div class="chartjs-size-monitor-shrink">
+            <div class=""></div>
+          </div>
+        </div>
+        <div id="chart">
+          <div id="responsive-chart"></div>
+        </div>
+      </div>
+      <!-- /.card-body -->
+    </div>
+  </div>
+<script>
+    var options = {
+        chart: {
+          width: "100%",
+          height: 380,
+          type: "donut"
+        },
+        plotOptions: {
+          bar: {
+            horizontal: true
+          }
+        },
+        dataLabels: {
+          enabled: false
+        },
+        stroke: {
+          width: 1,
+          colors: ["#fff"]
+        },
+        series: [5, 2, 2],
+        labels: ['Rejected Tasks', 'Completed Tasks', 'Pending Tasks'],
+        colors: ['#f53b00','#048528','#fed403'],
+        legend: {
+          position: "bottom",
+          containerMargin: {
+            left: 35,
+            right: 60
+          }
+        },
+        responsive: [
+          {
+            breakpoint: 1000,
+            options: {
+              plotOptions: {
+                bar: {
+                  horizontal: false
+                }
+              },
+              legend: {
+                position: "bottom"
+              }
+            }
+          }
+        ]
+      };
+
+      var chart = new ApexCharts(
+        document.querySelector("#responsive-chart"),
+        options
+      );
+
+      chart.render();
+</script>

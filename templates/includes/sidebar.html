@@ -1,0 +1,370 @@
+<!-- Sidebar Menu -->
+<nav class="mt-2">
+  <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+    <!-- Add icons to the links using the .nav-icon class
+         with font-awesome or any other icon font library -->
+    {% if request.user.is_partner %}
+      <li class="nav-item">
+        <a href="{% url 'partner_index' %}" class="nav-link">
+          <i class="nav-icon fas fa-chart-line"></i>
+          <p>
+            Dashboard
+          </p>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="{% url 'client_master' %}" class="nav-link">
+          <i class="nav-icon fas fa-users"></i>
+          <p>
+            Clients
+          </p>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="{% url 'reports' %}" class="nav-link">
+          <i class="nav-icon fas fa-users"></i>
+          <p>
+            Reports
+          </p>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a href="{% url 'client_setup' %}" class="nav-link">
+          <i class="nav-icon fas fa-user-plus"></i>
+          <p>
+            Setup New Client
+          </p>
+        </a>
+      </li>
+      
+    </li>
+    <li class="nav-item has-treeview menu-collapsable">
+      <a href="#" class="nav-link">
+        <i class="nav-icon fas fa-tasks"></i>
+          <p>
+            Tasks
+            <i class="right fas fa-angle-left"></i>
+          </p>
+        </a>
+        <ul class="nav nav-treeview">
+          <li class="nav-item">
+            <a href="{% url 'partner_list_of_clients' %}" class="nav-link">
+              <i class="nav-icon fas fa-users"></i>
+              <p>List of Clients</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{%url 'partner_approval_pending_tasks'%}" class="nav-link">
+              <i class="nav-icon far fa-clock"></i>
+              <p>
+               Approvals Pending
+              </p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{%url 'partner_tasks'%}" class="nav-link">
+              <i class="nav-icon far fa-clock"></i>
+              <p>
+               My Tasks
+              </p>
+            </a>
+          </li>
+          
+        </ul>
+    </li>
+      <li class="nav-item has-treeview menu-open">
+        <a href="#" class="nav-link">
+            <i class="nav-icon fas fa-tachometer-alt"></i>
+            <p>
+              Masters
+              <i class="right fas fa-angle-left"></i>
+            </p>
+          </a>
+          <ul class="nav nav-treeview">
+            <li class="nav-item">
+              <a href="{% url 'render_areas_master' %}" class="nav-link">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Areas Master</p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="{% url 'render_acts_master' %}" class="nav-link">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Sub Areas Master</p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="{% url 'render_activity_label_master' %}" class="nav-link">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Activity Label</p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="{% url 'render_activity_master' %}" class="nav-link">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Activity Master</p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="{% url 'render_task_master' %}" class="nav-link">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Task Master</p>
+              </a>
+            </li>
+            
+            
+            <li class="nav-item">
+              <a href="{% url 'render_industry_master' %}" class="nav-link">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Industry Master</p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="{% url 'render_audittype_master' %}" class="nav-link">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Audit Type Master</p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="{% url 'render_entity_master' %}" class="nav-link">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Entity Master</p>
+              </a>
+            </li>
+          </ul>
+      </li>
+  <br>
+  <li class="nav-item btn-danger">
+    <a href="{% url 'logout' %}" class="nav-link">
+      <i class="nav-icon fas fa-sign-out-alt "></i>
+      <p>Logout</p>
+    </a>
+  </li>
+      
+    {% elif request.user.is_articleholder %}
+    <li class="nav-item">
+      <a href="{%url 'article_dashboard'%}" class="nav-link">
+        <i class="nav-icon fas fa-chart-line"></i>
+        <p> 
+          Dashboard 
+        </p>
+      </a>
+    <li class="nav-item">
+      <a href="{%url 'article_index'%}" class="nav-link">
+        <i class="nav-icon fas fa-tasks"></i>
+        <p>
+          Assigned Tasks
+        </p>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a href="{%url 'tasks_pending'%}" class="nav-link">
+        <i class="nav-icon far fa-clock"></i>
+        <p>
+         Approvals Pending
+        </p>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a href="{%url 'all_task_tasks_status'%}" class="nav-link">
+        <i class="nav-icon far fa-check-circle"></i>
+        <p>
+          Approved Tasks 
+        </p>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a href="{% url 'all_rejected_tasks_history' %}" class="nav-link">
+        <i class="nav-icon far fa-times-circle"></i>
+        <p>Rejected Tasks
+        </p>
+      </a>
+    </li>
+    <br>
+    <li class="nav-item">
+      <a href="{% url 'logout' %}" class="nav-link">
+        <i class="nav-icon fas fa-sign-out-alt"></i>
+      
+        <p>
+          Logout
+        </p>
+      </a>
+    </li>
+    {% elif request.user.is_auditorclerk %}
+    <li class="nav-item">
+      <a href="{% url 'auditor_dashboard' %}" class="nav-link">
+        <i class="nav-icon fas fa-chart-line"></i>
+        <p>
+          Dashboard
+        </p>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a href="{% url 'auditor_index' %}" class="nav-link">
+        <i class="nav-icon fas fa-tasks"></i>
+        <p>
+          Assigned Tasks
+        </p>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a href="{% url 'approval_tasks_pending' %}" class="nav-link">
+        <i class="nav-icon fas fa-clock"></i>
+        <p>
+          Approvals Pending
+        </p>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a href="{% url 'auditor_all_task_tasks_status' %}" class="nav-link">
+        <i class="nav-icon far fa-check-circle"></i>
+        <p>
+         Approved Tasks 
+        </p>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a href="{% url 'auditor_all_rejected_tasks_history' %}" class="nav-link">
+        <i class="nav-icon far fa-times-circle"></i>
+        <p>
+          Rejected Tasks
+        </p>
+      </a>
+    </li>
+    <br>
+    <li class="nav-item">
+      <a href="{% url 'logout' %}" class="nav-link">
+        <i class="nav-icon fas fa-sign-out-alt"></i>
+      
+        <p>
+          Logout
+        </p>
+      </a>
+    </li>
+    {% elif request.user.is_manager %}
+      <li class="nav-item has-treeview">
+      <a href="{% url 'manager_dashboard' %}" class="nav-link">
+        <i class="nav-icon fas fa-chart-line"></i>
+        <p>
+        Dashboard
+        </p>
+      </a>
+    </li>
+       
+    <li class="nav-item">
+      <a href="{% url 'list_of_clients' %}" class="nav-link">
+        <i class="nav-icon fas fa-users"></i>
+        <p>List of Clients</p>
+      </a>
+    </li>
+  </li>
+  <li class="nav-item">
+    <a href="{% url 'manager_tasks' %}" class="nav-link">
+      <i class="nav-icon fas fa-users"></i>
+      <p>Tasks</p>
+    </a>
+  </li>
+</li>
+      <li class="nav-item has-treeview menu-open">
+        <a href="#" class="nav-link">
+          <i class="nav-icon fas fa-tasks"></i>
+          <p>
+            Article Tasks
+            <i class="fas fa-angle-left right"></i>
+          </p>
+        </a>
+        <ul class="nav nav-treeview">
+          <li class="nav-item">
+            <a href="{% url 'all_task_status' %}" class="nav-link">
+              <i class="far fa-circle nav-icon"></i>
+              <p>Client Tasks Status</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{% url 'manager_index' %}" class="nav-link">
+              <i class="far fa-circle nav-icon"></i>
+              <p>Approved Tasks</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{% url 'approval_pending_tasks' %}" class="nav-link">
+              <i class="far fa-circle nav-icon"></i>
+              <p>Pending Approval Tasks</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{% url 'is_rejected_tasks' %}" class="nav-link">
+              <i class="far fa-circle nav-icon"></i>
+              <p>Rejected Tasks</p>
+            </a>
+          </li>
+          
+          
+         </ul>
+  
+      <br>
+        <li class="nav-item">
+          <a href="{% url 'logout' %}" class="nav-link">
+            <i class="nav-icon fas fa-sign-out-alt"></i>
+            <p>Logout</p>
+          </a>
+        </li>
+        {% elif request.user.is_main_client %}
+        <li class="nav-item">
+          <a href="{% url 'client_dashboard' %}" class="nav-link">
+            <i class="nav-icon fas fa-chart-line"></i>
+            <p> 
+              Dashboard 
+            </p>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="{% url 'adduser' %}" class="nav-link">
+            <i class="nav-icon fas fa-tasks"></i>
+            <p>
+              Add Users
+            </p>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="#" class="nav-link">
+            <i class="nav-icon far fa-clock"></i>
+            <p>
+             File Storage
+            </p>
+          </a>
+        </li>
+        <br>
+        <li class="nav-item">
+          <a href="{% url 'logout' %}" class="nav-link">
+            <i class="nav-icon fas fa-sign-out-alt"></i>
+            <p>Logout</p>
+          </a>
+        </li>
+        {% elif request.user.is_super_admin %}
+        <li class="nav-item">
+          <a href="{% url 'super_admin_dashboard' %}" class="nav-link">
+            <i class="nav-icon fas fa-chart-line"></i>
+            <p> 
+              Dashboard
+            </p>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="{% url 'add_main_client' %}" class="nav-link">
+            <i class="nav-icon fas fa-chart-line"></i>
+            <p> 
+              Add Client
+            </p>
+          </a>
+        </li>
+      
+        <br>
+        <li class="nav-item">
+          <a href="{% url 'logout' %}" class="nav-link">
+            <i class="nav-icon fas fa-sign-out-alt"></i>
+            <p>Logout</p>
+          </a>
+        </li>
+      {% endif %}
+         
