@@ -1,0 +1,137 @@
+{% extends 'includes/masterpage.html' %}
+{% block title %} <title>Files Created</title> {% endblock title %}
+{% block content %} 
+        <div class="content-wrapper">
+            <div class="content-header">
+              
+                <div class="card">
+                  <div class="card-header bg-blue-disabled">
+                    <h1 class="card-title">Users</h1>
+                    <div class="card-tools">
+                      <!-- Collapse Button -->
+                      <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                        <i class="fas fa-minus"></i>
+                      </button>
+                    </div>
+                  </div>
+                  <div class="card-body">
+                    <!-- Small boxes (Stat box) -->
+                    <div class="row">
+                      <!-- ./col -->
+                      <div class="col-lg-12">
+                          <table class="table" id="files_count_table">
+                              <thead>
+                                <tr>
+                                  <th scope="col">#</th>
+                                  <th scope="col">First Name</th>
+                                  <th scope="col">Last Name</th>
+                                  <th scope="col">UserName</th>
+                                  <th scope="col">Total Files</th>
+                                  
+                                </tr>
+                              </thead>
+                              <tbody>
+                                  {% for i in data %}
+                                <tr>
+                                  <th scope="row">{{forloop.counter}}</th>
+                                  <td>{{i.first_name|upper }}</td>
+                                  <td>{{i.last_name|upper }}</td>
+                                  <td>{{i.username|upper }}</td>
+                                  <td>{{i.files}}</td>
+                                  
+                                </tr>
+                                {% endfor %}
+                              </tbody>
+                            </table>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+            </div>
+          </div>
+
+
+    <div class="modal fade" id="showClients" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLongTitle">Audit Clients</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" id="showClient_modal_table_body">
+                    
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success" data-dismiss="modal" aria-label="Close">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="EditMainClient" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLongTitle">Audit Clients</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-row">
+                        <div class="form-group col-md-12 mb-3">
+                            <label for="client_first_name">Client First Name</label>
+                            <input type="text" class="form-control" id="client_first_name">
+                        </div>
+                        <div class="form-group col-md-12 mb-3">
+                            <label for="client_last_name">Client Last Name</label>
+                            <input type="text" class="form-control" id="client_last_name">
+                        </div>
+                        <div class="form-group col-md-12 mb-3">
+                            <label for="client_user_name">Client UserName</label>
+                            <input type="text" class="form-control" id="client_user_name">
+                        </div>
+                        <div class="form-group col-md-12 mb-3">
+                            <label for="client_email">Client Email ID</label>
+                            <input type="text" class="form-control" id="client_email">
+                        </div>
+                        <div class="form-group col-md-12 mb-3">
+                            <label for="client_password">Client Password</label>
+                            <input type="password" class="form-control" id="client_password">
+                        </div>
+                        <div class="form-group col-md-12 mb-3">
+                            <label for="client_max_users">Client Max User Creation Allowed</label>
+                            <input type="number" class="form-control noscroll" id="client_max_users">
+                        </div>
+                        <div class="form-group col-md-12 mb-3">
+                            <label for="client_max_files">Client Max Files Upload Allowed</label>
+                            <input type="number" class="form-control noscroll" id="client_max_files">
+                        </div>
+                    </div>
+                    
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success" id="save_client_edit" onclick="SaveEditClient($(this).val())">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endblock content %}
+    {% block script %}
+
+    <script>
+        
+
+        $(() => {
+            $('body').toggleClass('sidebar-collapse');
+        });
+
+        $(document).ready( function () {
+            $('#files_count_table').DataTable();
+        });
+
+       
+
+    </script>
+    {% endblock script %}

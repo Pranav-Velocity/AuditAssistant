@@ -1,0 +1,248 @@
+{% extends 'includes/masterpage.html' %}
+{% load partner_extras %}
+{% block title %} <title>Individual Uploads</title> {% endblock title %}
+{% block content %} 
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <div class="content-header">
+          <div class="container-fluid">
+            <div class="row mb-2">
+              <div class="col-sm-6">
+                <h1 class="m-0 text-dark"></h1>
+              </div><!-- /.col -->
+            </div><!-- /.row -->
+          </div><!-- /.container-fluid -->
+        </div>
+        <!-- /.content-header -->
+    
+        <!-- Main content -->
+        <section class="content">
+            {% if error %}
+              <div class="alert alert-danger">
+                {{ error }}
+              </div>
+            {% endif %}
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                    <div class="card-header">
+                    <h3 class="card-title">Files</h3>
+                    
+                        
+                      
+                    </div>
+                    <!-- /.card-header -->
+                    <div class="card-body">
+                        <table id="employees" class="table table-bordered table-striped">
+                            <thead>
+                            <tr>
+                                <th>Employee ID</th>
+                                <th>Employee First Name</th>
+                                <th>Employee Last Name</th>
+                                <th>Employee UserName</th>
+                                <th>Total File Uploads</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                              <tr>	
+                                <td>{{ request.user.id }}</td>
+                                <td>{{ request.user.first_name }}</td>
+                                <td>{{ request.user.last_name }}</td>
+                                <td>{{ request.user.username }}</td>
+                                <td>Process Notes : {{ process_notes }}<br>
+                                  Activity Process Notes : {{ activity_process_notes }}
+                                </td>
+                              </tr>
+
+                                {% for user in users %}
+                                    <tr>	
+                                        <td>{{ user.user.id }}</td>
+                                        <td>{{ user.user.first_name }}</td>
+                                        <td>{{ user.user.last_name }}</td>
+                                        <td>{{ user.user.username }}</td>
+                                        <td>{{ user.count }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        <hr>
+                        
+                    </div>
+                    <!-- /.card-body -->
+                </div>
+                </div>
+            </div>
+    
+            <!-- Modals -->
+            <!-- Add Regulation -->
+            <div class="modal fade" id="addRegulation" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <!-- Add Regulation Form -->
+                    <form method="POST"> 
+                        {% csrf_token %}
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLongTitle">Add New Employee</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="form-row">
+                                    <div class="form-group col-md-12 mb-3">
+                                        <label for="employee_fname" class="text-dark">Employee First Name</label>
+                                        <input type="text" name="employee_fname" id="employee_fname" class="form-control" required />
+                                    </div>
+                                    <div class="form-group col-md-12 mb-3">
+                                        <label for="employee_lname" class="text-dark">Employee Last Name</label>
+                                        <input type="text" name="employee_lname" id="employee_lname" class="form-control" required />
+                                    </div>
+                                    <div class="form-group col-md-12 mb-3">
+                                        <label for="employee_username" class="text-dark">Employee Username</label>
+                                        <input type="text" name="employee_username" id="employee_username" class="form-control" required />
+                                    </div>
+                                    <div class="form-group col-md-12 mb-3">
+                                        <label for="employee_password" class="text-dark">Employee Password</label>
+                                        <input type="password" name="employee_password" id="employee_password" class="form-control" required />
+                                    </div>
+                                    <div class="form-group col-md-12 mb-3">
+                                        <label for="employee_email" class="text-dark">Employee Email Address</label>
+                                        <input type="Email" name="employee_email" id="employee_email" class="form-control" required />
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12 mb-3" id="industries">
+                                            <h5>Select Employee Role: </h5>
+                                            <input type="radio" id="Partner" name="role" value="partner">
+                                            <label for="Partner">Partner</label>&nbsp&nbsp&nbsp
+                                            <input type="radio" id="Manager" name="role" value="manager">
+                                            <label for="Manager">Manager</label>&nbsp&nbsp&nbsp
+                                            <input type="radio" id="Auditor" name="role" value="auditor">
+                                            <label for="Auditer">Auditor</label>&nbsp&nbsp&nbsp
+                                            <input type="radio" id="Article" name="role" value="article">
+                                            <label for="Article">Article Holder</label>
+                                        </div> 
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <input type="submit" class="btn btn-success" value="Submit">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+    
+    
+            <!-- Edit Regulation -->
+            <div class="modal fade" id="editRegulation" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <!-- Edit Regulation Form -->
+                    <form method="POST">
+                        {% csrf_token %}
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLongTitle">Edit Employee</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            
+                            <div class="modal-body">
+                                <div class="form-row">
+                                    <div class="form-group col-md-12 mb-3">
+                                        <label for="regulations" class="text-dark">Select Employee</label>
+                                        <select name="user_id" id="user_id" class="custom-select">
+                                            <option value="-1">Please Select</option>
+                                            {% for user in users %}
+                                                <option value="{{ user.id }}">{{ user.username }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-md-12 mb-3">
+                                        <label for="regulationName" class="text-dark">New Password</label>
+                                        <input type="password" name="new_password" id="new_password" class="form-control" required />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <input type="submit" class="btn btn-success" value="Submit">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+        <!-- /.content -->
+      </div>
+      {% endblock content %}
+      {% block script %}
+  <script>
+    var options = {
+      series: [
+        {
+          name: "In-Progress Tasks",
+          data: [44, 55, 57, 56, 61, 58, 63, 60, 66],
+        },
+        {
+          name: "Completed Tasks",
+          data: [76, 85, 101, 98, 87, 105, 91, 114, 94],
+        },
+        {
+          name: "Pending Tasks",
+          data: [35, 41, 36, 26, 45, 48, 52, 53, 41],
+        },
+      ],
+      chart: {
+        type: "area",
+        height: 315,
+        toolbar: {
+          show: false,
+        },
+        zoom: {
+          enabled: false,
+        },
+      },
+      dataLabels: {
+        enabled: false,
+      },
+      stroke: {
+        curve: "smooth",
+      },
+      xaxis: {
+        categories: [
+          "Feb",
+          "Mar",
+          "Apr",
+          "May",
+          "Jun",
+          "Jul",
+          "Aug",
+          "Sep",
+          "Oct",
+        ],
+      },
+      yaxis: {
+        title: {
+          text: "No. of Tasks",
+        },
+      },
+      fill: {
+        opacity: 1,
+      },
+      tooltip: {
+        y: {
+          formatter: function (val) {
+            return +val + " Tasks";
+          },
+        },
+      },
+    };
+
+    var chart = new ApexCharts(
+      document.querySelector("#responsive-chart"),
+      options
+    );
+
+    chart.render();
+  </script>
+{% endblock script %}

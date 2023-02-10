@@ -1,0 +1,128 @@
+{% extends 'includes/masterpage.html' %}
+{% block title %} <title>All Task Status</title> {% endblock title %}
+{% block content %} 
+    <div class="content-wrapper">
+      <!-- Content Header (Page header) -->
+      <div class="content-header">
+        <div class="container-fluid">
+          <div class="row mb-2">
+            <div class="col-sm-6">
+              <h1 class="m-0 text-dark"></h1>
+            </div><!-- /.col -->
+          </div><!-- /.row -->
+        </div><!-- /.container-fluid -->
+      </div>
+      <!-- /.content-header -->
+
+      <!-- Main content -->
+      <section class="content">
+
+        <div class="row">
+          <div class="col-12">
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">Tasks Status</h3>
+                <div class="row">
+                <div class="col-7">  </div> 
+                <div class="form-group col-5"> 
+                  <form action="{% url 'all_task_status'%}" method="POST">
+                    {%csrf_token%}
+                    <select class="form-control select2" name="client" id="client">
+                      <option value="-1">Please Select</option>
+                      {% for client in all_clients_data %}
+                      <option value="{{ client.id }}">{{ client.client_name}}</option>
+                      {% endfor %}
+                    </select>&nbsp;
+                    <input type="submit" value='submit' class="btn btn-success"/>
+                  </form>
+                </div>
+                </div>
+              </div>
+              <!-- /.card-header -->
+              <div class="card-body">
+                <table id="tasks" class="table table-bordered table-striped">
+
+                  <thead>
+
+
+                    <tr>
+                      <th>Task ID</th>
+                      <th>Task Name</th>
+                      <th>Client Name</th>
+                      <th>Employee Name</th>
+                      <th>Approvals</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for task in tasks %}
+                    {% if task.user is not None %}
+                    <tr>
+
+                      <td>{{ task.id }}</td>
+                      <td>{{ task.task_name }}</td>
+                      <td>{{ task.client }}</td>
+                      <td>{{ task.user}}</td>
+                      <td>
+                        {% if task.status is True and task.is_approved is True %}
+
+                        <a href="{% url 'approval' task_id=task.id %}" role="button"
+                          class="btn btn-block btn-success swalDefaultSuccess">Approved</a>
+
+
+                        {% elif task.is_rejected is True %}
+
+                        <a href="{% url 'approval' task_id=task.id %}" role="button"
+                          class="btn btn-block btn-danger swalDefaultSuccess">Rejected</a>
+
+                        {% elif task.is_start is True and task.status is False %}
+                        <a href="{% url 'approval' task_id=task.id %}" role="button"
+                          class="btn btn-block btn-warning swalDefaultSuccess">Start Working</a>
+                        {% elif task.is_start is True and task.status is True %}
+                        <a href="{% url 'approval' task_id=task.id %}" role="button"
+                          class="btn btn-block btn-success swalDefaultSuccess">Waiting For Approval</a>
+
+                        {% else%}
+                        <a href="{% url 'approval' task_id=task.id %}" role="button"
+                          class="btn btn-block btn-warning swalDefaultSuccess">Not Started</a>
+                        {% endif %}
+                      </td>
+
+
+                      {% endif %}
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+
+                </table>
+
+              </div>
+              <!-- /.card-body   -->
+
+            </div>
+          </div>
+        </div>
+
+      </section>
+      <!-- /.content -->
+    </div>
+    {% endblock content %}
+    {% block script %}
+  <script>
+    $(function(){
+      $('.select2').select2()
+    })
+    $(() => {
+      $('body').toggleClass('sidebar-collapse');
+
+      $('#tasks').DataTable({
+        "paging": true,
+        "lengthChange": true,
+        "searching": true,
+        "ordering": true,
+        "info": true,
+        "autoWidth": false, 
+      });
+    });
+
+  </script>
+{% endblock script %}

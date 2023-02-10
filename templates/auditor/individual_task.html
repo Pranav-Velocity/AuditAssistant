@@ -1,0 +1,230 @@
+{% include 'includes/masterpage.html' %}
+{% block title %} <title>Task</title> {% endblock title %}
+{% block content %} 
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0 text-dark"></h1>
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.content-header -->
+
+    <!-- Main content -->
+    <section class="content">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">
+                    <i class="fas fa-list"></i>
+                    Task Details
+                    </h3>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <dl class="row">
+                                <dt class="col-sm-4">Task ID</dt>
+                                <dd class="col-sm-8">{{ task.id }}</dd>
+                                <dt class="col-sm-4">Task Name</dt>
+                                <dd class="col-sm-8">{{ task }}</dd>
+                                <dt class="col-sm-4">Sub Area Name</dt>
+                                <dd class="col-sm-8">{{ task.act }}</dd>
+                                <dt class="col-sm-4">Activity Name</dt>
+                                <dd class="col-sm-8">{{ task.activity }}</dd>
+                                <dt class="col-sm-4">Client Name</dt>
+                                <dd class="col-sm-8">{{ client.client_name }}</dd>
+                                <dt class="col-sm-4">Auditing Standard</dt>
+                                <dd class="col-sm-8">{{ task.task_auditing_standard }}</dd>
+                                <dt class="col-sm-4">International Auditing Standard</dt>
+                                <dd class="col-sm-8">{{ task.task_international_auditing_standard }}</dd>
+                                <dt class="col-sm-4">Estimated Days</dt>
+                                <dd class="col-sm-8">{{ estimated_time }} Hours</dd>
+
+                                {% if task.task_start_datetime %}
+                                    <dt class="col-sm-4">Start Date</dt>
+                                    <dd class="col-sm-8">{{ task.task_start_datetime }}</dd>
+                                {% endif %}
+
+                                {% if estimated_end_date %}
+                                    <dt class="col-sm-4">Estimated End Date</dt>
+                                    <dd class="col-sm-8">{{ estimated_end_date }}</dd>
+                                {% endif %}
+
+                                {% if task.task_end_datetime %}
+                                    <dt class="col-sm-4">Actual End Date</dt>
+                                    {% if in_time %}
+                                        <dd class="col-sm-8"><span class="bg-success">{{ task.task_end_datetime }}</span></dd>
+                                    {% else %}
+                                        <dd class="col-sm-8"><span class="bg-danger">{{ task.task_end_datetime }}</span></dd>
+                                    {% endif %}
+                                {% endif %}
+                          <!-- File attachment UI-->
+                                    <dt class="col-sm-4">Attachment_File</dt>
+                                {% if file_location %}
+                                    <dd class="col-sm-8"><span class="bg-danger">
+                                    <a role="btn" class="btn btn-primary" href="/media/{{ file_location }}" download="/media/{{ file_location }}">
+                                    <i class="fa fa-download" aria-hidden="true"></i>  Download Submission</a></span></dd>
+                                {%else%}
+                                    <dd class="col-sm-8"><span class="bg-danger">File Not Attached</span></dd>    
+                                {% endif %}
+                          <!--/File attachment UI-->
+                              </dl>
+                        </div>
+                        <!-- File Upload-->
+                        <div class="col-md-4">
+                            <div class="text-center">
+                                {% if task.status is False %}
+                                    <form action="{% url 'auditor_task_submission' task.id %}" method="post" enctype="multipart/form-data">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="taskId" value="{{ task.id }}">
+                                        {% if  task.is_start is True %}
+                                          <div class="row">
+                                            <div class="form-group">
+                                                <label for="exampleInputFile">Task Submission</label>
+                                                  <div class="custom-file">
+                                                      <input type="file" name="attachment" id="taskSubmission">
+                                                  </div> 
+                                            </div>
+                                            <div class="form-group col-12">
+                                                <label>Remark</label>
+                                                <textarea class="form-control" cols="6" name="remark" rows="6" placeholder="Remark"></textarea>
+                                                <hr>
+                                                <input type="submit" class="btn btn-block btn-success taskSubmit" value="Send for Approval">
+                                            </div>
+                                        </div>
+                                {%endif%}
+                                    </form>
+                                {% endif %}
+                                <!--/File Upload-->
+                                {% comment 'Fix this start date and end date button' %}
+                                  {% elif task.task_end_date is None %}
+                                       <a href="{% url 'end_task' task_id=task.id %}" role="button" class="btn btn-block btn-danger swalDefaultError">End Task</a>
+                                  {% else %}
+                                      <a href="{% url 'start_task' task_id=task.id %}" role="button" class="btn btn-block btn-success swalDefaultSuccess">Start Task</a> 
+                                {% endcomment %}
+                               
+                               
+                                {% if task.status is True and task.is_rejected is True or task.is_reject is True %}
+                                 <!-- Rejected Task Status-->
+                                  <button type="button" class="btn btn-block btn-danger " disabled>Rejected</button>
+                                <!-- /Rejected Task Status-->
+                                
+                                <!-- Approval Pending Task Status-->
+                                {% elif task.status is True %}
+                                  <button type="button" class="btn btn-block btn-warning " disabled>Approval Pending</button>
+                                <!-- /Approval Pending Task Status-->
+                                {%endif%}
+
+                              <!-- Accept to work and Reject not to work-->
+                                {% if task.is_start is False and task.is_reject is False and task.is_rejected is False%}
+                                <a href="{% url 'auditor_start_working' task_id=task.id %}" role="button" class="btn btn-block btn-primary AcceptTask">Accept Task</a>
+                                <button role="button" class="btn btn-block btn-danger" id="driver">Reject </button>
+                                <!-- Reject Remark -->
+                                <div class="form-group" id="text">  
+                                    <form action="{% url 'auditor_rejected_task_remark' task_id=task.id %}" method="POST">
+                                      {% csrf_token %}
+                                      <label>Remark</label>
+                                      <textarea class="form-control"  name="remark" rows="6" placeholder="Remark"></textarea>
+                                      <input type="submit" class="btn btn-success RejectTask" value="Submit">
+                                    </form>
+                                </div>
+                                <!-- /Reject Remark -->
+                               <!-- Rework or Reject Task when Manger rejected it-->
+                                {%endif%}
+                              <!-- /-->
+                             
+                                {% if task.is_start is False and task.is_reject is False and task.is_rejected is True %}
+                                <a href="{% url 'auditor_start_working' task_id=task.id %}" role="button" class="btn btn-block btn-primary AcceptTask">RE-Work</a>
+                                <button role="button" class="btn btn-block btn-danger" id="driver">Reject </button>
+                                <!-- Reject Remark -->
+                                <div class="form-group" id="text">  
+                                    <form action="{% url 'auditor_rejected_task_remark' task_id=task.id %}" method="POST">
+                                        {% csrf_token %}
+                                        <label>Remark</label>
+                                        <textarea class="form-control"  name="remark" rows="6" placeholder="Remark"></textarea>
+                                        <input type="submit" class="btn btn-success RejectTask" value="Submit">
+                                    </form>
+                              </div>
+                              {%endif%}
+                              <!-- /Reject Remark -->
+                            <!-- /-->
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+            <!-- /.card-body -->
+        </div>
+        <!-- /.card -->
+      </div>
+    </div>
+</section>
+<!-- /.content -->
+</div>
+{% endblock content %}
+{% block script %}
+
+<script>
+$(() => {
+    $('body').toggleClass('sidebar-collapse');
+    
+    $('#tasks').DataTable({
+        "paging": true,
+        "lengthChange": true,
+        "searching": true,
+        "ordering": true,
+        "info": true,
+        "autoWidth": false,
+    });
+
+    const Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000
+    });
+
+    $('.swalDefaultSuccess').click(function() {
+        Toast.fire({
+            type: 'success',
+            title: 'The task has been started'
+        })
+    });
+
+     $('.taskSubmit').click(function() {
+        Toast.fire({
+            type: 'success',
+            title: 'The submission for the task has been sent for approval!'
+        })
+    });
+
+    $('.RejectTask').click(function() {
+        Toast.fire({
+            type: 'error',
+            title: 'The task has been rejected!'
+        })
+    });
+    $('.AcceptTask').click(function() {
+      Toast.fire({
+          type: 'info',
+          title: 'The task has been Accepted!'
+      })
+  });
+});
+$().ready = function() {
+  $('#text').hide();
+  
+  $("#driver").click(function() {
+      $('#text').toggle();
+  });
+
+}();
+</script>
+{% endblock script %}

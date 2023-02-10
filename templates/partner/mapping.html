@@ -1,0 +1,64 @@
+{% extends 'includes/masterpage.html' %}
+{% block title %} <title>Partner Tasks</title> {% endblock title %}
+{% block content %} 
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0 text-dark">Task Mapping</h1>
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.content-header -->
+
+    <!-- Main content -->
+    <section class="content">
+        <div class="card-body">
+                <table id="mapping" class="table table-bordered table-striped">
+                    <thead>
+                    <tr>
+                        <th>Activity ID</th>
+                        <th>Audit Type ID</th>
+                        <th>Entity ID</th>
+                        <th>Industry ID</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        {% for auditmapping in auditmappings %}
+                            <tr>
+                                <td>{{ auditmapping.activity }}</td>
+                                <td>{{ auditmapping.audittype }}</td>
+                                <td>{{ auditmapping.entity }}</td>
+                                <td>{{ auditmapping.industry }}</td>
+                                {% comment %} <td>{{ tasks.activity_id }}</td>
+                                <td>{{ tasks.act_id }}</td> {% endcomment %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                </div>
+    </section>
+    <!-- /.content -->
+  </div>
+  {% endblock content %}
+  {% block script %}
+
+<script>
+$(() => {
+        $('body').toggleClass('sidebar-collapse');
+        
+        $('#mapping').DataTable({
+            "paging": true,
+            "lengthChange": true,
+            "searching": true,
+            "ordering": true,
+            "info": true,
+            "autoWidth": false,
+        });
+    });
+</script>
+{% endblock script %}
+

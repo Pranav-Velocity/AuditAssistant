@@ -1,0 +1,309 @@
+{% extends 'includes/masterpage.html' %}
+{% block title %} <title>Dashboard</title> {% endblock title %}
+{% block content %}    
+<div class="content-wrapper">
+      <div class="content-header">
+        <div class="row" style="display: flex;align-items: flex-start;">
+          <div class="col-lg-8 col-md-12">
+              <div class="card">
+                <div class="card-header bg-blue-disabled">
+                  <h1 class="card-title">Employee Tasks</h1>
+                  <div class="card-tools">
+                    <!-- Collapse Button -->
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                      <i class="fas fa-minus"></i>
+                    </button>
+                  </div>
+                </div>
+    
+                <div class="card-body">
+                  <!-- Small boxes (Stat box) -->
+                  <div class="row">
+                    <div class="col-md-8 col-12">
+                      <div class="info-box" id="responsive-chart"></div>
+                    </div>
+                    <div class="col-md-4 col-12">
+                      <div class="row">
+                        <div class="col-12">
+                          <a href="{% url 'client_master' %}" class="small-box-footer text-dark">
+                            <!-- small box -->
+                            <div class="info-box">
+                              <div class="info-box-icon bg-warning">
+                                <i class="fa fa-clock text-white"></i>
+                              </div>
+                              <div class="info-box-content">
+                                <h5>Pending Tasks</h5>
+                                <h3>{{ pending_tasks }}</h3>
+                              </div>
+                            </div>
+                          </a>
+                        </div>
+                        <!-- ./col -->
+                        <div class="col-12">
+                          <a href="{% url 'client_master' %}" class="small-box-footer text-dark">
+                            <!-- small box -->
+                            <div class="info-box">
+                              <div class="info-box-icon bg-success">
+                                <i class="fas fa-check-circle text-white"></i>
+                              </div>
+                              <div class="info-box-content">
+                                <h5>Completed Tasks</h5>
+                                <h3>{{ completed_tasks }}</h3>
+                              </div>
+                            </div>
+                          </a>
+                        </div>
+                        <!-- ./col -->
+                        <div class="col-12">
+                          <a href="{% url 'client_master' %}" class="small-box-footer text-dark">
+                            <!-- small box -->
+                            <div class="info-box">
+                              <div class="info-box-icon bg-danger">
+                                <i class="fas fa-exclamation-circle"></i>
+                              </div>
+                              <div class="info-box-content">
+                                <h5>Rejected Tasks</h5>
+                                <h3>{{ rejected_tasks }}</h3>
+                              </div>
+                            </div>
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+          </div>
+          <div class="col-lg-4 col-md-12">
+              <div class="card">
+                <div class="card-header bg-blue-disabled">
+                  <h1 class="card-title">Insights</h1>
+                  <div class="card-tools">
+                    <!-- Collapse Button -->
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                      <i class="fas fa-minus"></i>
+                    </button>
+                  </div>
+                </div>
+    
+                <div class="card-body">
+                  <div class="row">
+                    <div class="col-md-4 col-lg-12">
+                      <!-- small box -->
+                      <a class="text-dark" href="{% url 'partner_tasks' %}">
+                        <div class="info-box">
+                          <div class="info-box-icon bg-primary">
+                            <i class="fa fa-tasks"></i>
+                          </div>
+                          <div class="info-box-content">
+                            <h5>My Tasks</h5>
+                            <h3>{{ all_tasks }}</h3>
+                          </div>
+                        </div>
+                      </a>
+                    </div>
+                    <div class="col-md-4 col-lg-12">
+                      <!-- small box -->
+                      <a class="text-dark" href="{% url 'client_master' %}">
+                        <div class="info-box">
+                          <div class="info-box-icon bg-purple">
+                            <i class="fa fa-users"></i>
+                          </div>
+                          <div class="info-box-content">
+                            <h5>Clients</h5>
+                            <h3>{{ all_clients }}</h3>
+                          </div>
+                          {% comment %}
+                          <a href="{% url 'client_master' %}" class="small-box-footer">More info
+                            <i class="fas fa-arrow-circle-right"></i></a>
+                          {% endcomment %}
+                        </div>
+                      </a>
+                    </div>
+                    <!-- ./col -->
+                    <div class="col-md-4 col-lg-12">
+                      <a href="employee/setup" class="small-box-footer text-dark">
+                        <!-- small box -->
+                        <div class="info-box">
+                          <div class="info-box-icon bg-lightblue">
+                            <i class="fa fa-user-circle"></i>
+                          </div>
+                          <div class="info-box-content">
+                            <h5>Employees</h5>
+                            <h3>{{ completed_tasks }}</h3>
+                          </div>
+                        </div>
+                      </a>
+                    </div>
+                    <!-- ./col -->
+                    
+                  </div>
+                </div>
+              </div>
+            </div>
+        </div>
+          <div class="card">
+            <div class="card-header bg-blue-disabled">
+              <h1 class="card-title">Revenue</h1>
+              <div class="card-tools">
+                <!-- Collapse Button -->
+                <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                  <i class="fas fa-minus"></i>
+                </button>
+              </div>
+            </div>
+            <div class="card-body">
+              <!-- Small boxes (Stat box) -->
+              <div class="row">
+                <!-- ./col -->
+                <div class="col-lg-3 col-12">
+                  <!-- small box -->
+                  <div class="small-box bg-info">
+                    <div class="inner">
+                      <h3>{{ billable_invoices }}</h3>
+                      <h5>Billable Invocies</h5>
+                    </div>
+                    <div class="icon">
+                      <i class="fas fa-file-invoice"></i>
+                    </div>
+                    <a href="{% url 'client_master' %}" class="small-box-footer">More info <i
+                        class="fas fa-arrow-circle-right"></i></a>
+                  </div>
+                </div>
+                <div class="col-lg-3 col-12">
+                  <!-- small box -->
+                  <div class="small-box bg-success">
+                    <div class="inner">
+                      <h3>{{ invoices_generated }}</h3>
+                      <h5>Invocies Generated</h5>
+                    </div>
+                    <div class="icon">
+                      <i class="fas fa-file-invoice"></i>
+                    </div>
+                    <a href="{% url 'client_master' %}" class="small-box-footer">More info <i
+                        class="fas fa-arrow-circle-right"></i></a>
+                  </div>
+                </div>
+                <div class="col-lg-3 col-12">
+                  <!-- small box -->
+                  <div class="small-box bg-danger">
+                    <div class="inner">
+                      <h3>{{ invoices_notgenerated }}</h3>
+                      <h5>Invocies Not Generated</h5>
+                    </div>
+
+                    <div class="icon">
+                      <i class="fas fa-file-invoice"></i>
+                    </div>
+                    <a href="{% url 'client_master' %}" class="small-box-footer">More info <i
+                        class="fas fa-arrow-circle-right"></i></a>
+                  </div>
+                </div>
+                <div class="col-lg-3 col-12">
+                  <!-- small box -->
+                  <div class="small-box bg-primary">
+                    <div class="inner">
+                      <h3>{{ invoices_total }}</h3>
+                      <h5>Invoicing Total</h5>
+                    </div>
+                    <div class="icon">
+                      <i class="fas fa-file-invoice"></i>
+                    </div>
+                    <a href="{% url 'client_master' %}" class="small-box-footer">More info <i
+                        class="fas fa-arrow-circle-right"></i></a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+      </div>
+    </div>
+   {% endblock content %}
+{% block script %}
+  <script>
+    $(() => {
+        $('body').toggleClass('sidebar-collapse');
+        
+        $('#clients').DataTable({
+            "paging": true,
+            "lengthChange": true,
+            "searching": true,
+            "ordering": true,
+            "info": true,
+            "autoWidth": false,
+        });
+    });
+    var completed_tasks = "{{completed_tasks}}";
+    var pending_tasks = "{{pending_tasks}}";
+    var rejected_tasks = "{{rejected_tasks}}";
+    console.log(completed_tasks , pending_tasks , rejected_tasks)
+    
+    var options = {
+      series: [
+        {
+          name: "In-Progress Tasks",
+          data: [44, 55, 57, 56, 61, 58, 63, 60, 66],
+        },
+        {
+          name: "Completed Tasks",
+          data: [76, 85, 101, 98, 87, 105, 91, 114, 94],
+        },
+        {
+          name: "Pending Tasks",
+          data: [35, 41, 36, 26, 45, 48, 52, 53, 41],
+        },
+      ],
+      chart: {
+        type: "area",
+        height: 315,
+        toolbar: {
+          show: false,
+        },
+        zoom: {
+          enabled: false,
+        },
+      },
+      dataLabels: {
+        enabled: false,
+      },
+      stroke: {
+        curve: "smooth",
+      },
+      xaxis: {
+        categories: [
+          "Feb",
+          "Mar",
+          "Apr",
+          "May",
+          "Jun",
+          "Jul",
+          "Aug",
+          "Sep",
+          "Oct",
+        ],
+      },
+      yaxis: {
+        title: {
+          text: "No. of Tasks",
+        },
+      },
+      fill: {
+        opacity: 1,
+      },
+      tooltip: {
+        y: {
+          formatter: function (val) {
+            return +val + " Tasks";
+          },
+        },
+      },
+    };
+
+    var chart = new ApexCharts(
+      document.querySelector("#responsive-chart"),
+      options
+    );
+
+    chart.render();
+  </script>
+  {% endblock script %}

@@ -1,0 +1,718 @@
+{% extends 'includes/masterpage.html' %}
+{% block title %} <title>Activity Master</title> {% endblock title %}
+{% block content %} 
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0 text-dark"></h1>
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </div>
+    <!-- Main content -->
+    <section class="content">
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                    <div class="card-header">
+                    <h3 class="card-title">Activities</h3>
+                    <button type="button" class="btn btn-info  float-right ml-3" data-toggle="modal" data-target="#editActivity">
+                          Edit Activity
+                      </button>
+                    <button type="button" class="btn btn-primary float-right" data-toggle="modal" data-target="#addActivity">
+                          Add New Activity
+                    </button>
+                    </div>
+                    <!-- /.card-header -->
+                    <div class="card-body">
+                        <table id="activities" class="table table-bordered table-striped">
+                            <thead>
+                            <tr>
+                                <th>Activity ID</th>
+                                <th>Activity Name</th>
+                                <th>Sub Area</th>
+                                <th>Label</th>
+                                <th>Request List From Client</th>
+                                <th>Edit</th>
+                                <th>Action</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                                {% for activity in activities %}
+                                    <tr> 
+                                        <td>{{ activity.id }}</td>   
+                                        <td>{{ activity.activity_name }}</td>
+                                        <td>{{ activity.act }}</td>
+                                        <td> {{ activity.label }}
+                                        {% if activity.process_notes %}
+                                        <td style="text-align:center;"> 
+                                          <a role="btn" class="btn btn-primary" href="/media/{{ activity.process_notes }}" download="/media/{{ activity.process_notes }}">
+                                            <i class="fas fa-paperclip" aria-hidden="true"></i>
+                                          </a>
+                                        </td>
+                                        {% else %}
+                                        <td style="text-align:center;"> 
+                                          <a role="btn" class="btn">
+                                            <i class="fas fa-paperclip" aria-hidden="true"></i>
+                                          </a>
+                                        </td>
+                                      {% endif %}
+                                      <td>
+                                          <a role="btn" class="btn btn-primary" onclick="edit_activity_function('{{activity.id}}')">
+                                              Edit
+                                          </a>
+                                        </td>
+                                        <td>
+                                            <a role="btn" class="btn btn-danger" href="{% url 'remove_activity' activity_id=activity.id %}"
+                                                    onclick="return confirm('Are you sure you want to delete this activity?');">
+                                                Delete
+                                            </a>
+                                        </td>
+                                    
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- /.card-body -->
+                </div>
+                </div>
+            </div>
+
+        <!-- Modals -->
+        <!-- Add Activities -->
+        <div class="modal fade" id="addActivity" tabindex="-1" role="dialog"
+            aria-labelledby="myModalLabel" aria-hidden="true" >
+            <div class="modal-dialog" role="document" style="max-width: 900px !important;">
+                <!-- Add Activity Form -->
+                <form method="POST" action="{% url 'add_activity' %}" enctype="multipart/form-data" id="addactivity_form">
+                    {% csrf_token %}
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLongTitle">Add New Activity</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-row">
+                                <div class="form-group col-md-12 mb-3">
+                                    <label for="activityName" class="text-dark">Activity Name</label>
+                                    <input type="text" name="activity_name" id="activity_name" class="form-control" required />
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group col-md-12 mb-3">
+                                    <label for="activityDescription" class="text-dark">Activity Description</label>
+                                    <input type="text" name="activity_description" id="activity_description" class="form-control" required />
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group col-md-12 mb-3">
+                                    <label for="label" class="text-dark">Select Label</label>
+
+                                    <select name="label" id="label" class="custom-select">
+                                      <option value="">Please Select</option>
+
+                                      {% for l in label %}
+                                        <option value="{{ l.id }}">{{ l.activity_label_name }}</option>
+                                      {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group col-md-12 mb-3">
+                                    <label for="act" class="text-dark">Select Sub Area</label>
+
+                                    <select name="act" id="act" class="custom-select">
+                                      <option value="">Please Select</option>
+
+                                      {% for act in acts %}
+                                        <option value="{{ act.id }}">{{ act.act_name  }}</option>
+                                      {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group col-md-12 mb-3">
+                                    <label for="taskName" class="text-dark">Industries</label>    
+                                    <div class="row">
+                                      <select  name="industries" multiple id="industries" class="form-control">
+                                        {% for industry in industries %}
+                                        <option value="{{ industry.id }}">{{ industry.industry_name }}</option>
+                                        {% endfor %}
+                                      </select>
+                                      
+                                      <div class="form-check col-4">
+                                        <label class="form-check-label mr-4">
+                                            <input class="form-check-input" type="checkbox" id="industries_all">
+                                                <strong>Applicable to all Industries</strong>
+                                            <span class="form-check-sign">
+                                                <span class="check"></span>
+                                            </span>
+                                        </label>
+                                      </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group col-md-12 mb-3">
+                                    <label for="audittype" class="text-dark">Select Audit Type</label>
+                                    <div class="row">
+                                      <select  name="audittype" multiple id="audittype" class="form-control">
+                                        {% for audittype in audittypes %}
+                                        <option value="{{ audittype.id }}">{{ audittype.audit_type_name }}</option>
+                                        {% endfor %}
+                                      </select>
+                                      <!-- {% for audittype in audittypes %}
+                                        <div class="col-6 form-check">
+                                          <input class="form-check-input" type="checkbox" name="audittype" value="{{ audittype.id }}">
+                                          {{ audittype.audit_type_name }}</strong>
+                                        </div>    
+                                      {% endfor %} -->
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group col-md-12 mb-3">
+                                    <label for="taskName" class="text-dark">Entities</label>    
+                                    <div class="row">
+                                      <select  name="entities" multiple id="entities" class="form-control">
+                                        {% for entity in entities %}
+                                        <option value="{{ entity.id }}">{{ entity.entity_name }}</option>
+                                        {% endfor %}
+                                      </select>
+                                      <!-- {% for entity in entities %}
+                                        <div class="col-6 form-check">
+                                          <input class="form-check-input" type="checkbox" name="entities" value="{{ entity.id }}">
+                                          {{ entity.entity_name }}</strong>
+                                        </div>  
+                                      {% endfor %} -->
+                                      <div class="form-check col-6">
+                                        <label class="form-check-label mr-4">
+                                            <input class="form-check-input" type="checkbox" id="entities_all">
+                                                <strong>Applicable to all Entities</strong>
+                                            <span class="form-check-sign">
+                                                <span class="check"></span>
+                                            </span>
+                                        </label>
+                                      </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                              <div class="form-group col-md-12 mb-3">
+                                <label for="exampleInputFile">Request List From Client</label>
+                                  <div class="custom-file">
+                                      <input type="file" name="attachment" id="attachment">
+                                  </div>
+                              </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <input type="submit" class="btn btn-success" value="Submit">
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Edit Activity -->
+        <div class="modal fade" id="editActivity" tabindex="-1" role="dialog"
+            aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document" style="max-width: 900px !important;">
+                <!-- Edit Activity Form -->
+                <form method="POST" action="{% url 'edit_activity' %}" id="editactivity_form">
+                    {% csrf_token %}
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLongTitle">Edit Activity</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-row">
+                                <div class="form-group col-md-12 mb-3">
+                                    <label for="acts" class="text-dark">Select Activity</label>
+                                    <select name="edit_activity_id" id="edit_activity_id" class="custom-select">
+                                        <option value="">Please Select</option>
+                                        {% for activity in activities %}
+                                            <option value="{{ activity.id }}">{{ activity.activity_name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-12 mb-3">
+                                    <label for="regulationName" class="text-dark">Activity Name</label>
+                                    <input type="text" name="edit_activity_name" id="edit_activity_name" class="form-control" required />
+                                </div>
+                                <div class="form-group col-md-12 mb-3">
+                                    <label for="activityDescription" class="text-dark">Activity Description</label>
+                                    <input type="text" name="edit_activity_description" id="edit_activity_description" class="form-control" required />
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group col-md-12 mb-3">
+                                    <label for="edit_label" class="text-dark">Select Label</label>
+                                    <select name="edit_label" id="edit_label" class="custom-select" required>
+                                      <option value="">Please Select</option>
+                                      {% for l in label %}
+                                        <option value="{{ l.id }}">{{ l.activity_label_name }}</option>
+                                      {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group col-md-12 mb-3">
+                                    <label for="act" class="text-dark">Select Sub Area</label>
+                                    <select name="edit_act" id="edit_act" class="custom-select" required>
+                                      <option value="">Please Select</option>
+                                      {% for act in acts %}
+                                        <option value="{{ act.id }}">{{ act.act_name }}</option>
+                                      {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group col-md-12 mb-3">
+                                    <label for="taskName" class="text-dark">Industries</label>    
+                                    <div class="row">
+                                      <!-- {% for industry in industries %}
+                                        <div class="col-4 form-check">
+                                          <input class="form-check-input" type="checkbox" name="edit_industries" id="editind{{industry.id}}" value="{{ industry.id }}">
+                                          {{ industry.industry_name }}</strong>
+                                        </div>  
+                                      {% endfor %} -->
+                                      <select  name="edit_industries" multiple id="editBox_industries" class="form-control">
+                                        {% for industry in industries %}
+                                        <option value="{{ industry.id }}">{{ industry.industry_name }}</option>
+                                        {% endfor %}
+                                      </select>
+                                      <div class="form-check col-4">
+                                        <label class="form-check-label mr-4">
+                                            <input class="form-check-input" type="checkbox" id="edit_industries_all">
+                                                <strong>Applicable to all Industries</strong>
+                                            <span class="form-check-sign">
+                                                <span class="check"></span>
+                                            </span>
+                                        </label>
+                                      </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group col-md-12 mb-3">
+                                    <label for="audittype" class="text-dark">Select Audit Type</label>
+                                    <div class="row">
+                                      <!-- {% for audittype in audittypes %}
+                                        <div class="col-6 form-check">
+                                          <input class="form-check-input audittypes" type="checkbox" name="edit_audittype" id="editAT{{audittype.id}}" value="{{ audittype.id }}">
+                                          {{ audittype.audit_type_name }}</strong>
+                                        </div>    
+                                      {% endfor %} -->
+                                      <select  name="edit_audittype" multiple id="editBox_audittype" class="form-control">
+                                        {% for audittype in audittypes %}
+                                        <option value="{{ audittype.id }}">{{ audittype.audit_type_name }}</option>
+                                        {% endfor %}
+                                      </select>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group col-md-12 mb-3" id="entity">
+                                    <label for="edit_entities" class="text-dark">Entities</label>    
+                                    <div class="row">
+                                      <!-- {% for entity in entities %}
+                                        <div class="col-6 form-check">
+                                          <input class="form-check-input entities" type="checkbox" name="edit_entities" id="editBox{{entity.id}}" value="{{ entity.id }}">
+                                          {{ entity.entity_name }}</strong>
+                                        </div>  
+                                      {% endfor %} -->
+                                      <select  name="edit_entities" multiple id="editBox_entities" class="form-control">
+                                        {% for entity in entities %}
+                                        <option value="{{ entity.id }}">{{ entity.entity_name }}</option>
+                                        {% endfor %}
+                                      </select>
+                                      <div class="form-check col-6">
+                                        <label class="form-check-label mr-4">
+                                            <input class="form-check-input" type="checkbox" id="edit_entities_all">
+                                                <strong>Applicable to all Entities</strong>
+                                            <span class="form-check-sign">
+                                                <span class="check"></span>
+                                            </span>
+                                        </label>
+                                      </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        </div>
+                        <div class="modal-footer">
+                            <input type="submit" class="btn btn-success" value="Submit">
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="modal fade" id="Request_List_Modal" tabindex="-1">
+          <div class="modal-dialog" role="document" style="max-width: 900px !important;">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="exampleModalLongTitle">Processed Notes <input type="text" id="request_list_task_id"> </h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <div class="row">
+                    <div class="col-sm-4">
+                      <div class="mb-3">
+                        <div id="download_request_list">
+
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <hr>
+                  <div class="row">
+                    <div class="col-sm-3">
+                      <div class="mb-3">
+                        <input type="file" id="request_list_file" class="form-control-file" >
+                      </div>
+                    </div>
+                    <div class="col-sm-4">
+                      <div class="mb-3">
+                        <button class="btn btn-primary" onclick="save_request_list()">Save</button>
+                      </div>
+                    </div>
+                  </div>
+                  
+                </div>
+              </div>
+          </div>
+      </div>
+
+    </section>
+    <!-- /.content -->
+  </div>
+  {% endblock content %}
+  {% block script %}
+
+<script>
+function edit_activity_function(id){
+    $('#editBox_industries').each(function() { $('#editBox_industries option').prop('selected', false); });
+    $('#editBox_entities').each(function() { $('#editBox_entities option').prop('selected', false); });
+    $('#editBox_audittype').each(function() { $('#editBox_audittype option').prop('selected', false); });
+    console.log(id);
+    $.ajax({
+      type: "POST",
+      url: "{% url 'edit_id_activity' %}",
+      headers: {'X-CSRFToken': '{{ csrf_token }}'},
+      data: {
+        "activity_id":id,
+      },
+      success: function(data){
+        console.log(data);
+        $(".entities").prop('checked', false);
+        $(".audittypes").prop('checked', false);
+        $(".industries").prop('checked', false);
+        const entities = data.entities
+        const audittypes = data.audittype
+        const industries = data.industries
+        $('#edit_activity_id').val(data.activity_id)
+        // console.log(entities)
+        $.each(entities, (index, value) => {
+          // console.log("ENTITIES : ",$('#editBox_entities option[value='+value+']').text())
+          $('#editBox_entities option[value='+value+']').attr('selected',true);
+
+        })
+        $.each(industries, (index, value) => {
+          // console.log("INDUSTRIES : ",$('#editBox_industries option[value='+value+']').text())
+          $('#editBox_industries option[value='+value+']').attr('selected',true);
+        })
+        $('#edit_act').val(data.act)
+        $('#edit_label').val(data.label)
+        $('#edit_activity_name').val(data.name)
+        $('#edit_activity_description').val(data.desc)
+        $.each(audittypes, (index, value) => {
+          // console.log("AUDIT TYPE : ",$('#editBox_audittype option[value='+value+']').text())
+          $('#editBox_audittype option[value='+value+']').attr('selected',true);
+        })
+        $('#editActivity').modal('show')
+
+      }
+    });
+    
+  }
+    $(() => {
+        $('body').toggleClass('sidebar-collapse');
+        
+        $('#activities').DataTable({
+            "paging": true,
+            "lengthChange": true,
+            "searching": true,
+            "ordering": true,
+            "info": true,
+            "autoWidth": false,
+        });
+
+
+        // ----------------------------------------------------------------------------------------------------
+        // For Adding New Activity
+        $("#industries_all").click(() => {
+            let isChecked = $("#industries_all").is(':checked');
+            if (isChecked)
+              {
+                $('#industries').each(function() { $('#industries option').prop('selected', true); });
+                console.log("yup")
+              }
+            else
+              {
+                $('#industries').each(function() { $('#industries option').prop('selected', false); }); 
+                console.log("nope")
+              }
+        });
+        $("#entities_all").click(() => {
+            let isChecked = $("#entities_all").is(':checked');
+            if (isChecked)
+              {
+                $('#entities').each(function() { $('#entities option').prop('selected', true); });
+                console.log("yup")
+              }
+            else
+              {
+                $('#entities').each(function() { $('#entities option').prop('selected', false); }); 
+                console.log("nope")
+              }
+        });
+        // ----------------------------------------------------------------------------------------------------
+        // For Editing Activity
+        $("#edit_industries_all").click(() => {
+            let isChecked = $("#edit_industries_all").is(':checked');
+            if (isChecked)
+              {
+                $('#editBox_industries').each(function() { $('#editBox_industries option').prop('selected', true); });
+                console.log("yup")
+              }
+            else
+              {
+                $('#editBox_industries').each(function() { $('#editBox_industries option').prop('selected', false); }); 
+                console.log("nope")
+              }
+        });
+
+        $("#edit_entities_all").click(() => {
+            let isChecked = $("#edit_entities_all").is(':checked');
+            if (isChecked)
+              {
+                $('#editBox_entities').each(function() { $('#editBox_entities option').prop('selected', true); });
+                console.log("yup")
+              }
+            else
+              {
+                $('#editBox_entities').each(function() { $('#editBox_entities option').prop('selected', false); }); 
+                console.log("nope")
+              }
+        });
+        // ----------------------------------------------------------------------------------------------------
+
+        $("#edit_activity_id").on('change', (e) => {
+          let activity = $('#edit_activity_id option:selected').val()
+          // console.log(activity)
+          const url = "{% url 'get_entities' %}"
+          $.ajaxSetup({
+              data: {
+                  csrfmiddlewaretoken: '{{ csrf_token }}'
+              },
+          });
+          // var elements_entities = document.getElementById("editBox_entities").options;
+          // var elements_industries = document.getElementById("editBox_industries").options;
+          // var elements_audittype = document.getElementById("editBox_audittype").options;
+          
+
+          // for(var i = 0; i < elements_entities.length; i++){
+          //   elements_entities[i].selected = false;
+          // }
+          // for(var i = 0; i < elements_industries.length; i++){
+          //   elements_industries[i].selected = false;
+          // }
+          // for(var i = 0; i < elements_audittype.length; i++){
+          //   elements_audittype[i].selected = false;
+          // }
+          $.ajax({  
+              url: url,  
+              method: "POST",  
+              data:{
+                'edit_activity_id': activity, 
+              }, 
+              success: function(data) {  
+                
+                // console.log(data)
+                $(".entities").prop('checked', false);
+                $(".audittypes").prop('checked', false);
+                $(".industries").prop('checked', false);
+                const entities = data.entities
+                const audittypes = data.audittype
+                const industries = data.industries
+                // console.log(entities)
+                $.each(entities, (index, value) => {
+                  // console.log("ENTITIES : ",$('#editBox_entities option[value='+value+']').text())
+                  $('#editBox_entities option[value='+value+']').attr('selected',true);
+
+                })
+                $.each(industries, (index, value) => {
+                  // console.log("INDUSTRIES : ",$('#editBox_industries option[value='+value+']').text())
+                  $('#editBox_industries option[value='+value+']').attr('selected',true);
+                })
+                $('#edit_act').val(data.act)
+                $('#edit_label').val(data.label)
+                $('#edit_activity_name').val(data.name)
+                $('#edit_activity_description').val(data.desc)
+                $.each(audittypes, (index, value) => {
+                  // console.log("AUDIT TYPE : ",$('#editBox_audittype option[value='+value+']').text())
+                  $('#editBox_audittype option[value='+value+']').attr('selected',true);
+                })
+                
+              }  
+          });
+        });
+        $("#industries_all").click(() => {
+            let isChecked = $("#industries_all").is(':checked');
+            if (isChecked)
+              $('input[name=industries]').each(function() { this.checked = true; });
+            else
+              $('input[name=industries]').each(function() { this.checked = false; });
+        });
+
+        
+        $("#entities_all").click(() => {
+            let isChecked = $("#entities_all").is(':checked');
+            if (isChecked)
+              $('input[name=entities]').each(function() { this.checked = true; });
+            else
+              $('input[name=entities]').each(function() { this.checked = false; });
+        });
+        $("#edit_industries_all").click(() => {
+            let isChecked = $("#edit_industries_all").is(':checked');
+            if (isChecked)
+              $('input[name=edit_industries]').each(function() { this.checked = true; });
+            else
+              $('input[name=edit_industries]').each(function() { this.checked = false; });
+        });
+
+        
+        $("#edit_entities_all").click(() => {
+            let isChecked = $("#edit_entities_all").is(':checked');
+            if (isChecked)
+              $('input[name=edit_entities]').each(function() { this.checked = true; });
+            else
+              $('input[name=edit_entities]').each(function() { this.checked = false; });
+        });
+    });
+
+    $("#editactivity_form").on("submit", function(e){
+      e.preventDefault()
+      edit_getindustries = $('#editBox_industries option:selected').text()
+      edit_getentities = $('#editBox_entities option:selected').text()
+      edit_getaudittype = $('#editBox_audittype option:selected').text()
+      
+      var edit_is_industries , edit_is_entities , edit_is_audittype;
+
+      if(edit_getindustries){
+        edit_is_industries = "yes"
+      }
+      else{
+        edit_is_industries = "no"
+      }
+
+      if(edit_getentities){
+        edit_is_entities = "yes"
+      }
+      else{
+        edit_is_entities = "no"
+      }
+
+      if(edit_getaudittype){
+        edit_is_audittype = "yes"
+      }
+      else{
+        edit_is_audittype = "no"
+      }
+      if(edit_is_industries == "yes" && edit_is_audittype == "yes"  && edit_is_entities == "yes"){
+        $('#editactivity_form').unbind('submit').submit();
+      }
+      else{
+        alert("Please Select Industries , Audit Type , Entities")
+      }
+      
+      
+      
+    });
+    
+    
+
+    jQuery('#addactivity_form').validate({
+      rules:{
+        activity_name:{
+          required:true,
+        },
+        activity_description:{
+          required:true,
+        },
+        label:{
+          required:true,
+        },
+        act:{
+          required:true,
+        },
+        industries:{
+          required:true,
+        },
+        audittype:{
+          required:true,
+        },
+        entities:{
+          required:true,
+        },
+      },
+      messages:{
+        activity_name:{
+          required:"Please Enter Activity Name",
+        },
+        activity_description:{
+          required:"Please Enter Activity Description",
+        },
+        label:{ 
+          required:"Please select any one from list",
+        },
+        act:{
+          required:"Please select any one from list",
+        },
+        industries:{
+          required:"Please select any one or multiple from list",
+        },
+        audittype:{
+          required:"Please select any one or multiple from list",
+        },
+        entities:{
+          required:"Please select any one or multiple from list",
+        },
+      },
+      subitHandler:function(form){
+        form.submit();
+      }
+    });
+</script>
+{% endblock script %}

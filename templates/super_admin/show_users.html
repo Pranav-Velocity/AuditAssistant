@@ -1,0 +1,557 @@
+{% extends 'includes/masterpage.html' %}
+{% block title %} <title>Users</title> {% endblock title %}
+{% block content %} 
+
+<div class="content-wrapper">
+  <div class="content-header">
+    
+      <div class="card">
+        <div class="card-header bg-blue-disabled">
+          <h1 class="card-title">Users</h1>
+          <div class="card-tools">
+            <!-- Collapse Button -->
+            <button type="button" class="btn btn-tool" data-card-widget="collapse">
+              <i class="fas fa-minus"></i>
+            </button>
+          </div>
+        </div>
+        <div class="card-body">
+          <!-- Small boxes (Stat box) -->
+          <div class="row">
+            <!-- ./col -->
+            <div class="col-lg-12">
+                <table class="table" id="all_users_table">
+                    <thead>
+                      <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Clients</th>
+                        <th scope="col">Users</th>
+                        <th scope="col">Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                        {% for i in users %}
+                      <tr>
+                        <th scope="row">{{forloop.counter}}</th>
+                        <td>{{i.main_client|upper }}</td>
+                        <td>
+                            <ol>
+                                {% for j in i.users %}
+                                <button class="btn btn-success">{{j}}</button>
+                                {% endfor %}
+                            </ol> 
+                        </td>
+                        <td>
+                            <button class="btn btn-primary" onclick="EditUser('{{i.main_client.id}}')">Edit</button>
+                            <button class="btn btn-danger" onclick="DeleteUser('{{i.main_client.id}}')">Delete</button>
+                        </td>
+                      </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header bg-blue-disabled">
+          <h1 class="card-title">Generate Reports</h1>
+          <div class="card-tools">
+            <!-- Collapse Button -->
+            <button type="button" class="btn btn-tool" data-card-widget="collapse">
+              <i class="fas fa-minus"></i>
+            </button>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="form-row">
+            <div class="form-group col-md-2 mb-3">
+              <label for="search_username">UserName / Email</label>
+              <input type="text" class="form-control" id="search_username">
+            </div>
+            <div class="form-group col-md-2 mb-3">
+              <label for="search_account_type">Select Billing Type</label>
+              <select class="form-control" id="search_account_type" required>
+                  <option value="" selected>Select</option>
+                  <option value="Trial">Trial</option>
+                  <option value="Purchased">Purchased</option>
+              </select>
+            </div>
+            <div class="form-group col-md-2 mb-3">
+              <label for="search_start_date">From</label>
+              <input type="date" class="form-control" id="search_start_date">
+            </div>
+            <div class="form-group col-md-2 mb-3">
+              <label for="search_end_date">To</label>
+              <input type="date" class="form-control" id="search_end_date">
+            </div>
+            <div class="form-group col-md-2 mb-3">
+              <label for="search_days_remaining">Days Remaining Less Than</label>
+              <input type="number" class="form-control" id="search_days_remaining">
+            </div>
+            <div class="form-group col-md-2 mb-3">
+              <label for="search_payment_mode">Select Payment Mode <span class="compulsory">*</span> </label>
+              <select class="form-control" id="search_payment_mode" required>
+                  <option value="" selected>Select</option>
+                  <option value="Trial">Trial</option>
+                  <option value="Cash Deposited in the Bank">Cash Deposited in the Bank</option>
+                  <option value="Cheque">Cheque</option>
+                  <option value="CASH">CASH</option>
+                  <option value="NEFT">NEFT</option>
+                  <option value="RTGS">RTGS</option>
+                  <option value="DEBIT/CREDIT CARD">DEBIT/CREDIT CARD</option>
+                  <option value="IMPS">IMPS</option>
+                  <option value="UPI">UPI</option>
+                  <option value="GPAY">GPAY</option>
+                  <option value="EaseBuzz">EaseBuzz</option>
+                  <option value="PL/PG">PL/PG</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="col-sm-12">
+              <button class="btn btn-primary" onclick="SearchClients()">Search</button>
+            </div>
+          </div>
+          
+        </div>
+      </div>
+      <div class="card" id="reports_data" style="display:none;">
+        <div class="card-header bg-blue-disabled">
+          <h1 class="card-title">Reports Data</h1>
+          <div class="card-tools">
+            <!-- Collapse Button -->
+            <button type="button" class="btn btn-tool" data-card-widget="collapse">
+              <i class="fas fa-minus"></i>
+            </button>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="form-row" id="reports_data_table">
+            <div class="col-md-12">
+              <table class="table" id="all_users_table">
+                <thead>
+                  <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Account Type</th>
+                    <th scope="col">Start Date</th>
+                    <th scope="col">End Date</th>
+                    <th scope="col">Remaining Days</th>
+                    
+                  </tr>
+                </thead>
+                <tbody id="reports_data_table_body">
+                </tbody>
+              </table>
+              <div class="row">
+                <div class="col-sm-4"  style="display:block;">
+                  <input type="text" id="ids_of_report">
+                </div>
+                <div class="col-md-2">
+                  <button class="btn btn-success" onclick="export_pdf()">Export PDF</button>
+                </div>
+                <div class="col-md-2">
+                  <button class="btn btn-primary" onclick="export_excel()">Export EXCEL</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+  </div>
+</div>
+      <div class="modal fade" id="EditUserModal" tabindex="-1">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLongTitle">Edit User</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-row">
+                        <div class="form-group col-md-12 mb-3">
+                            <label for="user" class="text-dark">Select User</label>
+                            <select name="user" id="user" class="custom-select">
+                                <option value="-1">Please Select</option>
+                                
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-12 mb-3">
+                            <label for="edit_username" class="text-dark">User Name</label>
+                            <input type="text" name="edit_username" id="edit_username" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-12 mb-3">
+                            <label for="edit_first_name" class="text-dark">First Name</label>
+                            <input type="text" name="edit_first_name" id="edit_first_name" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-12 mb-3">
+                            <label for="edit_last_name" class="text-dark">Last Name</label>
+                            <input type="text" name="edit_last_name" id="edit_last_name" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-12 mb-3">
+                            <label for="edit_email_id" class="text-dark">Email ID</label>
+                            <input type="email" name="edit_email_id" id="edit_email_id" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-12 mb-3">
+                            <label for="edit_password" class="text-dark">Password</label>
+                            <input type="password" name="edit_password" id="edit_password" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-success" onclick="validation()">Update</button>
+                </div>
+               
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="DeleteUserModal" tabindex="-1">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLongTitle2">Delete User</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-row">
+                        <div class="form-group col-md-12 mb-3">
+                            <label for="delete_user" class="text-dark">Select User</label>
+                            <select name="delete_user" id="delete_user" class="custom-select">
+                                
+                                
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-danger" onclick="Delete()">Delete</button>
+                </div>
+               
+            </div>
+        </div>
+    </div>
+    {% endblock content %}
+    {% block script %}
+
+    
+    <script>
+
+      function SearchClients(){
+        var username = $('#search_username').val();
+        var start_date = $('#search_start_date').val();
+        var end_date = $('#search_end_date').val();
+        var account_type = $('#search_account_type').val();
+        var days_remaining = $('#search_days_remaining').val()
+        var payment_mode = $('#search_payment_mode').val()
+        console.log(start_date + ' ' + end_date + ' ' + account_type )
+        if(username.length > 0 | start_date.length > 0 | end_date.length > 0 | account_type.length > 0 | days_remaining.length > 0 | payment_mode.length >0){
+          // console.log(username , start_date , end_date , account_type , days_remaining , payment_mode)
+          $.ajax({ 
+              data: {
+                  'username': username,
+                  'start_date': start_date,
+                  'end_date': end_date,
+                  'account_type': account_type,
+                  'days_remaining': days_remaining,
+                  'payment_mode': payment_mode      
+              }, 
+              type: 'POST', 
+              headers: { 'X-CSRFToken': '{{ csrf_token }}' },
+              url: "{% url 'main_client_reports' %}", 
+              success: function (response) { 
+                $('#ids_of_report').val('')
+                // console.log(response)
+                $('#reports_data_table_body').empty();
+                if(response.data.length > 0){
+                  $('#reports_data').css('display', 'block');
+                  var data = response.data;
+                  data.forEach(myfunction);
+                  var count = 0;
+                  function myfunction(item,count){
+                    var add_values = $('#ids_of_report').val();
+                    if(add_values.length <= 0){
+                      $('#ids_of_report').val( item.user_id )
+                    }
+                    else{
+                      $('#ids_of_report').val($('#ids_of_report').val() + "," + item.user_id )
+                    }
+                    count = count + 1;
+                    console.log(item)
+                    
+                    $('#reports_data_table_body').append(`
+                    <tr>
+                      <th scope="row">${count}</th>
+                      <td>${item.first_name} ${item.last_name}</td>
+                      <td>${item.email}</td>
+                      <td>${item.billing_details.account_type}</td>
+                      <td>${item.billing_details.start_date}</td>
+                      <td>${item.billing_details.end_date}</td>
+                      <td>${item.remaining_days}</td>
+                    `);
+                  }
+                }
+                else{
+                  $('#reports_data').css('display', 'none');
+                }
+              }
+            });
+        }
+        
+      }
+
+
+      $( document ).ready(function() {
+          $('#search_username').val("");
+          $('#search_start_date').val("");
+          $('#search_end_date').val("");
+          $('#search_days_remaining').val("");
+          $("option:selected").prop("selected", false);
+      });
+      $(document).on("wheel", "input[type=number]", function (e) {
+            $(this).blur();
+        });
+
+        $(() => {
+            $('body').toggleClass('sidebar-collapse');
+        });
+
+        $(document).ready( function () {
+            $('#files_count_table').DataTable();
+        });
+    
+      $(document).ready( function () {
+        $('#all_users_table').DataTable();
+      });
+      function EditUser(id){
+          console.log("id :",id)
+          $.ajax({ // create an AJAX call...
+              data: {
+                  'edit_users': id
+              }, // get the form data
+              type: 'POST', // GET or POST
+              headers: { 'X-CSRFToken': '{{ csrf_token }}' },
+              url: "{% url 'show_users' %}", // the file to call
+              success: function (response) { 
+                  $('#EditUserModal').modal('show');
+                  $('#user').empty();
+
+                  console.log(response)
+                  if (response.data.length > 0) {
+                  var data = response.data;
+                  data.forEach(myfunction);
+
+                  function myfunction(item){
+                      console.log(item)
+                      $('#user').append(`
+                      <option value="${item.id}">${item.first_name} ${item.last_name} - ${item.username}</option>
+                      `);
+                  // <option value="{{ task.id }}">{{ task.task_name }}</option>
+
+                  }
+                  }
+              }
+          });
+      }
+
+      function validation(){
+        
+        var edit_first_name = $('#edit_first_name').val();
+        var edit_last_name = $('#edit_last_name').val();
+        var edit_email_id = $('#edit_email_id').val();
+        var valid_firstname , valid_lastname , valid_email = "yes"
+        var name_regex = /^[A-Za-z]+$/;
+        var email_regex = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+        if(edit_first_name.length > 0 | edit_last_name.length > 0 | edit_email_id.length > 0) {
+          if(edit_first_name.length > 0){
+            if(name_regex.test(edit_first_name) == true){
+              valid_firstname = "yes"
+            }
+            else{
+              valid_firstname = "no"
+              $( "#edit_first_name" ).focus();
+            }
+          }
+          if(edit_last_name.length > 0){
+            if(name_regex.test(edit_last_name) == true){
+              valid_lastname = "yes"
+            }
+            else{
+              valid_lastname = "no"
+              $( "#edit_last_name" ).focus();
+            }
+          }
+          if(edit_email_id.length > 0){
+            if(email_regex.test(edit_email_id) == true){
+              valid_email = "yes"
+            }
+            else{
+              valid_email = "no"
+              $( "#edit_email_id" ).focus();
+            }
+          }
+          console.log(valid_firstname,valid_lastname,valid_email)
+          if(valid_firstname == "yes" && valid_lastname == "yes" && valid_email == "yes"){
+            SaveUser();
+          }
+        }
+        else{
+          SaveUser();
+        }
+        
+        // if(edit_first_name.length > 0 | edit_last_name.length > 0){
+        //   var regex = /^[A-Za-z]+$/;
+        //   if (regex.test(edit_first_name) == true || regex.test(edit_last_name) == true){
+        //     console.log("valid firstname")
+        //   }
+        //   else{
+        //     console.log("Invalid firstname")
+            
+        //     // $( "#edit_first_name" ).focus();
+        //   }
+        // }
+        // else if(edit_email_id.length > 0){
+        //   var regex = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+        //   if (regex.test(edit_email_id) == true){
+        //     SaveUser();
+        //   }
+        //   else{
+        //     $( "#edit_email_id" ).focus();
+        //   }
+        // }
+      }
+
+      function SaveUser(){
+          var user = $('#user').val();
+          if(user != -1){
+              var edit_username = $('#edit_username').val();
+              var edit_first_name = $('#edit_first_name').val();
+              var edit_last_name = $('#edit_last_name').val();
+              var edit_email_id = $('#edit_email_id').val();
+              var edit_password = $('#edit_password').val();
+              
+              console.log(user , edit_username , edit_first_name , edit_last_name , edit_email_id , edit_password)
+              $.ajax({ // create an AJAX call...
+                  data: {
+                      'user': user,
+                      'edit_username': edit_username,
+                      'edit_first_name': edit_first_name,
+                      'edit_last_name': edit_last_name,
+                      'edit_email_id': edit_email_id,
+                      'edit_password': edit_password,
+                  }, // get the form data
+                  type: 'POST', // GET or POST
+                  headers: { 'X-CSRFToken': '{{ csrf_token }}' },
+                  url: "{% url 'save_user' %}", // the file to call
+                  success: function (response) { 
+                      window.location.reload();
+                      
+                  }
+              });
+          }
+          
+      }
+
+      function DeleteUser(id){
+
+          console.log("delete user :",id)
+          $.ajax({ // create an AJAX call...
+              data: {
+                  'edit_users': id
+              }, // get the form data
+              type: 'POST', // GET or POST
+              headers: { 'X-CSRFToken': '{{ csrf_token }}' },
+              url: "{% url 'show_users' %}", // the file to call
+              success: function (response) { 
+                  $('#delete_user').empty();
+                  console.log(response)
+                  $('#DeleteUserModal').modal('show');
+                  
+                  if (response.data.length > 0) {
+                      $('#delete_user').append('<option value="-1">Please Select</option>')
+                      var data = response.data;
+                      data.forEach(myfunction);
+                      
+                      function myfunction(item){
+                          console.log(item);
+                          $('#delete_user').append(`
+                              <option value="${item.id}">${item.first_name} ${item.last_name} - ${item.username}</option>
+                          `);
+                      // <option value="{{ task.id }}">{{ task.task_name }}</option>
+                      }
+                  }
+                  
+              }
+          });
+      }
+      
+      function Delete(){
+          var delete_user = $('#delete_user').val();
+          if(delete_user != -1){
+              $.ajax({ // create an AJAX call...
+                  data: {
+                      'delete_user': delete_user
+                  }, // get the form data
+                  type: 'POST', // GET or POST
+                  headers: { 'X-CSRFToken': '{{ csrf_token }}' },
+                  url: "{% url 'delete_user' %}", // the file to call
+                  success: function (response) { 
+                      window.location.reload();
+                      
+                  }
+              });
+          }
+          
+      }
+      
+      function export_excel()
+        {
+          window.location = `http://127.0.0.1:8000/superadmin/export_excel/${$('#ids_of_report').val()}`
+        }
+
+      function export_pdf()
+        {
+          window.location = `http://127.0.0.1:8000/superadmin/export_pdf/${$('#ids_of_report').val()}`
+        }
+
+      // document.getElementById("user").onchange = function () {
+      // var user_id = this.value;
+      // if (user_id == -1){
+      //     console.log("error")
+      // }
+      // else{
+      //     console.log(user_id)
+      //     $.ajax({ // create an AJAX call...
+      //         data: {
+      //             'user_id': user_id
+      //         }, // get the form data
+      //         type: 'POST', // GET or POST
+      //         headers: { 'X-CSRFToken': '{{ csrf_token }}' },
+      //         url: "{% url 'get_single_user' %}", // the file to call
+      //         success: function (response) { 
+      //             console.log(response);
+      //             if (response.data.length > 0){
+                      
+      //             }
+      //         }
+      //     });
+      // }
+      // }
+    </script>
+    {% endblock script %}

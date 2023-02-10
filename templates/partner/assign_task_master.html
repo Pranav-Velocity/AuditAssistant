@@ -1,0 +1,206 @@
+{% extends 'includes/masterpage.html' %}
+{% block title %} <title>Dashboard</title> {% endblock title %}
+{% block content %}    
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h3 class="m-0 text-dark">Choose type of assignment: </h3>
+            
+            <label class="pr-3"><input type="radio" class="mr-2"  name="assignment" value="individual" checked="checked">Individual</label>
+
+            <label class="pr-3"><input type="radio" class="mr-2" name="assignment" value="multiple">Multiple</label>
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.content-header -->
+
+    <!-- Main content -->
+    <section class="content">
+      <div class="row assignment" id="individual">
+          <div class="col-12">
+              <div class="card">
+              <div class="card-header">
+              <h3 class="card-title">Individual Assignment of Tasks</h3>     
+              </div>
+              <!-- /.card-header -->
+              <div class="card-body">
+              <table id="tasks" class="table table-bordered table-striped">
+                  <thead>
+                  <tr>
+                      <th>Task</th>
+                      <th>Sub</th>
+                      <th>Activity</th>
+                      <th>Client</th>
+                      <th>Estimated Days</th>
+                      <th>Auditing Standard</th>
+                      <th>International Auditing Standard</th>
+                      <th>Assign Task</th>
+                      <th>Action</th>
+                  </tr> 
+                  </thead>
+                  <tbody>
+                      {% for task in tasks %}
+                          <tr>
+                              <form action="{% url 'partner_assign_task_to_employee' %}" method="POST">
+                                {% csrf_token %}
+                                <td>{{ task.task_name }}</td>
+                                <td>{{ task.act.act_name }}</td>
+                                <td>{{ task.activity.activity_name }}</td>
+                                <td>{{ task.client.client_name }}</td>
+                                <td>{{ task.task_estimated_days }}</td>
+                                <td>{{ task.task_auditing_standard }}</td>
+                                <td>{{ task.task_international_auditing_standard }}</td>
+                                
+                                <td>
+                                  <select name="user" id="act" class="custom-select" >
+                                    <option value="-1">Please Select</option>
+                                    {% for user in users %}
+                                        <option value="{{ user.id }}">{{ user.username}}</option>
+                                    {% endfor %}
+                                  </select>
+                                </td>
+                                <td> 
+                                  <input type="submit" class="btn btn-success" value="Assign"id="btnaccept">
+                                </td>
+
+                                <input type="hidden" name="task_id" value="{{ task.id }}" />
+                            </form>
+                          </tr>
+                      {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+              <!-- /.card-body   -->
+            </div>
+          </div>
+      </div>
+
+      <div class="row assignment" id="multiple">
+          <div class="col-12">
+              <div class="card">
+              <div class="card-header">
+              <h3 class="card-title">Multiple Assignment of Tasks</h3>     
+              </div>
+              <!-- /.card-header -->
+              <div class="card-body">
+              <!-- Add client id in multiple task assignment -->
+              <form id="multipleTasksForm" action="" method="POST">
+                {% csrf_token %}    
+                <table id="multipleTasks" class="table table-bordered table-striped">
+                  <thead>
+                  <tr>
+                      <th></th>
+                      <th>Task Name</th>
+                      <th>Sub Area</th>
+                      <th>Activity</th>
+                      <th>Client</th>
+                      <th>Estimated Days</th>
+                      <th>Auditing Standard</th>
+                      <th>International Auditing Standard</th>
+                  </tr> 
+                  </thead>
+                  <tbody>
+                      {% for task in tasks %}
+                          <tr>
+                            <td>{{ task.id }}</td> 
+                            <td>{{ task.task_name }}</td>
+                            <td>{{ task.aact.act_name }}</td>
+                            <td>{{ task.activity.activity_name }}</td>
+                            <td>{{ task.client.client_name }}</td>
+                            <td>{{ task.task_estimated_days }}</td>
+                            <td>{{ task.task_auditing_standard }}</td>
+                            <td>{{ task.task_international_auditing_standard }}</td>
+                          </tr>
+                      {% endfor %}
+                  </tbody>
+                </table>
+                <hr>
+                <div class="col-5">
+                  <h6>Select Employee</h6>
+                  <select name="user" id="act" class="custom-select" >
+                    <option value="-1">Please Select</option>
+                    {% for user in users %}
+                        <option value="{{ user.id }}">{{ user.username}}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+                <div class="col-5 mt-3">
+                  <input class="btn btn-success" type="submit" value="Assign Tasks" />
+                </div>
+              </form>
+              </div>
+              <!-- /.card-body   -->
+            </div>
+          </div>
+      </div>
+    </section>
+    <!-- /.content -->
+  </div>
+  {% endblock content %}
+
+  {% block script %}
+<script>
+  $(() => {
+      $('body').toggleClass('sidebar-collapse');
+      $("#individual").show(); 
+      $("#multiple").hide(); 
+      
+      $('input[type="radio"]').click(function(){
+          let inputValue = $(this).attr("value");
+          if (inputValue === 'individual') {
+            $("#individual").show(); 
+            $("#multiple").hide();  
+          } else {
+            $("#multiple").show(); 
+            $("#individual").hide(); 
+          }
+      });
+      
+      $('#tasks').DataTable({
+          "paging": true,
+          "lengthChange": true,
+          "searching": true,
+          "ordering": true,
+          "info": true,
+          "autoWidth": false,
+      });
+
+      const table = $('#multipleTasks').DataTable({
+        "columnDefs": [{
+          "orderable": true,
+          'checkboxes': {
+             'selectRow': true
+          },
+          "className": 'select-checkbox',
+          "targets": 0
+        }],
+        'select': {
+          'style':    'multi',
+          'selector': 'td:first-child'
+        },
+        'order': [[ 1, 'asc' ]]
+      });
+
+     $('#multipleTasksForm').on('submit', function(e) {
+        const form = this;
+        const rows_selected = table.column(0).checkboxes.selected();
+        // console.log($(rows_selected));
+        
+        //Iterate over all selected checkboxes
+        $.each(rows_selected, function(index, rowId) {
+           $(form).append(
+               $('<input>')
+                  .attr('type', 'hidden')
+                  .attr('name', 'task_id')
+                  .val(rowId)
+           );
+        });
+      });
+  });
+    
+</script>
+{% endblock script %}

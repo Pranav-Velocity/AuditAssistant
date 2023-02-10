@@ -1,0 +1,222 @@
+{% extends 'includes/masterpage.html' %}
+{% block title %} <title>Task Approval</title> {% endblock title %}
+{% block content %}  
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0 text-dark"></h1>
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.content-header -->
+
+    <!-- Main content -->
+    <section class="content">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">
+                    <i class="fas fa-list"></i>
+                    Task Details
+                    </h3>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                  <div class="row">
+                      <div class="col-md-8">
+                          <dl class="row">
+                              <dt class="col-sm-4">Task ID</dt>
+                              <dd class="col-sm-8">{{ task.id }}</dd>
+                              <dt class="col-sm-4">Task Name</dt>
+                              <dd class="col-sm-8">{{ task }}</dd>
+                              <dt class="col-sm-4">Sub Area Name</dt>
+                              <dd class="col-sm-8">{{ task.act  }}</dd>
+                              <dt class="col-sm-4">Activity Name</dt>
+                              <dd class="col-sm-8">{{ task.activity }}</dd> 
+                              <dt class="col-sm-4">Client Name</dt>
+                              <dd class="col-sm-8">{{ client.client_name }}</dd>
+                              <dt class="col-sm-4">Auditing Standard</dt>
+                              <dd class="col-sm-8">{{ task.task_auditing_standard }}</dd>
+                              
+                              <dt class="col-sm-4">International Auditing Standard</dt>
+                              <dd class="col-sm-8">{{ task.task_international_auditing_standard }}</dd>
+                              
+                              <dt class="col-sm-4">Estimated Days</dt>
+                              <dd class="col-sm-8">{{ estimated_time  }} Hours</dd>
+
+                              {% if task.task_start_date %}
+                                  <dt class="col-sm-4">Start Date</dt>
+                                  <dd class="col-sm-8">{{ task.task_start_datetime }}</dd>
+                              {% endif %}
+
+                              {% if estimated_end_date %}
+                                  <dt class="col-sm-4">Estimated End Date</dt>
+                                  <dd class="col-sm-8">{{ estimated_end_date }}</dd>
+                              {% endif %}
+
+                              {% if task.task_end_date %}
+                                  <dt class="col-sm-4">Actual End Date</dt>
+                                  {% if in_time %}
+                                      <dd class="col-sm-8"><span class="bg-success">{{ task.task_end_datetime }}</span></dd>
+                                  {% else %}
+                                      <dd class="col-sm-8"><span class="bg-danger">{{ task.task_end_datetime }}</span></dd>
+                                  {% endif %}
+                              {% endif %}
+                              
+                          </dl>
+                      </div>
+                        
+                        <div class="col-md-4">
+                            <div class="text-center">
+                                {% if task.task_start_date  %}
+                                  {% if task.client.assigned_partner.id == request.user.id %}
+                                  <!-- File Upload-->
+                                  <div class="text-center">
+                                    <form action="{% url 'approve_tasks' task_id=task.id %}" method="POST" enctype="multipart/form-data">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="taskId" value="{{ task.id }}">
+                                        {% if  task.is_start is True %}
+                                        {%if task.status is True and task.is_approved_partner is False %}
+                                        <div class="row">
+                                          <div class="form-group">
+                                                <label for="exampleInputFile">Partner File Submission</label>
+                                                  <div class="custom-file">
+                                                      <input type="file" name="attachment" id="taskSubmission">
+                                                  </div>
+                                              <select name="feedback" id="" class="custom-select" style="width:440px">
+                                                <option value="">Select Comments</option>
+                                                <option value="closed">Closed</option>
+                                                <option value="review">Needs review see comments</option>
+                                                <option value="obervation">Observation area</option>
+                                                <option value="qualification">Qualification area</option>
+                                                <option value="other">Other Matters to be reported Management Attention</option>
+                                                <option value="include">Include in Audit Committee presentation</option>
+                                                <option value="suggestion">Suggestions on controls</option>
+                                                <option value="value">Value Addition</option>
+                                              </select>
+                                           </div>
+                                              <button role=" button" class="btn btn-block btn-success taskSubmit swalDefaultSuccess">Approve</button>
+                                            {% endif %}
+                                            <div class="form-group col-12">
+                                                
+                                                <hr>
+                                                {% comment %} <input type="submit" class="btn btn-block btn-success  col-5 float-right" value="Send for Approval"> {% endcomment %}
+                                                {% if task.attachment_file %}
+                                                  <a role="btn" class="btn btn-primary col-12" href="{{ task.attachment_file.url }}" download="{{ task.attachment_file.url }}">
+                                                    <i class="fa fa-download" aria-hidden="true"></i>
+                                                      Download Submission
+                                                  </a>
+                                                {% endif %}
+                                                <br>
+                                            </div>
+                                            <div class="form-group col-12">
+                                                {% if task.manager_attachment_file %}
+                                                  <a role="btn" class="btn btn-primary col-12" href="http://127.0.0.1:8000\media{{ manager_file_location }}" download="http://127.0.0.1:8000\media{{ manager_file_location }}">
+                                                    <i class="fa fa-download" aria-hidden="true"></i>
+                                                      Download Manager Submission
+                                                  </a>
+                                                {% endif %}
+                                            </div>
+                                        {%endif%}
+                                    </form>
+                                    </div>
+                                    {% endif %}
+                     
+
+                                {% endif %}
+                                {% if  task.is_rejected is True %}
+                                  <button type="button" class="btn btn-block btn-danger " disabled>Manager Rejected</button>
+                                {% elif task.status is True and task.is_approved is True %}
+                                  <button type="button" class="btn btn-block btn-success col-12" disabled>Manager Approved</button>
+                                {% elif task.is_rejected is False and task.status is True and task.partner_feedback is False%}
+                                  <button role="button" class="btn btn-block btn-danger" id="driver"> Reject </button>
+                                
+                                  <div class="form-group" id="text">
+                                    <form action="{% url 'reject_task' task_id=task.id %}" method="POST">
+                                      {% csrf_token %}
+                                    <label>Remark</label>
+                                    <textarea class="form-control"  name="remark" rows="6" placeholder="Remark required" required title="please fill the text for rejection "></textarea>
+                                    <input type="submit" class="btn btn-success TaskRejected" value="Submit">
+                                    </form>
+                                </div>
+                                  
+                                {% endif %}
+                                <hr>
+                                {% if  task.is_rejected is True %}
+                                  <button type="button" class="btn btn-block btn-danger " disabled>Partner Rejected</button>
+                                {% elif task.status is True and task.is_approved_partner is True %}
+                                  <button type="button" class="btn btn-block btn-success col-12" disabled>Partner Approved</button>
+                                {% endif %}
+                                
+                              </div>
+                        </div>
+                    </div>
+                    
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+          </div>
+        </div>
+    </section>
+    <!-- /.content -->
+  </div>
+  {% endblock content %}
+  {% block script %}
+
+<script>
+    $(() => {
+        $('body').toggleClass('sidebar-collapse');
+        
+        $('#tasks').DataTable({
+            "paging": true,
+            "lengthChange": true,
+            "searching": true,
+            "ordering": true,
+            "info": true,
+            "autoWidth": false,
+        });
+
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000
+        });
+
+        $('.swalDefaultSuccess').click(function() {
+            Toast.fire({
+                type: 'success',
+                title: 'The task has been approved'
+            })
+        });
+
+         $('.taskSubmit').click(function() {
+            Toast.fire({
+                type: 'success',
+                title: 'The submission for the task has been sent for approval!'
+            })
+        });
+
+        $('.swalDefaultError').click(function() {
+            Toast.fire({
+                type: 'error',
+                title: 'The task has been rejected!'
+            })
+        });
+    });
+    $().ready = function() {
+      $('#text').hide();
+      
+      $("#driver").click(function() {
+          $('#text').toggle();
+      });
+    }();  
+</script>
+{% endblock script %}
+

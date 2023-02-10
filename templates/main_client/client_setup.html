@@ -1,0 +1,327 @@
+{% extends 'includes/masterpage.html' %}
+{% block title %} <title>Client Setup</title> {% endblock title %}
+{% block content %} 
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0 text-dark"></h1>
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.content-header -->
+
+<section class="content">
+    <body class="">
+    <div class="wrapper ">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                      <p class="card-title">CA Firm Setup</p>
+                    </div>
+                <div class="card-body">
+                <form action="{% url 'add_client' %}" method="post" id="add_client_form">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            <label for="clientName" class="text-dark">Client Name</label>
+                            <input type="text" required name="client_name" id="client_name" class="form-control"/>
+                        </div>
+
+                        <div class="col-md-6 mb-4">
+                            <label for="gst_number" class="text-dark">GSTIN Number</label>
+                                <input type="text" name="gst_number" id="gst_number" class="form-control" />
+                        </div>
+
+                        <div class="col-md-6 mb-4">
+                          <label for="client_email" class="text-dark">Client Email</label>
+                            <input type="email" name="client_email" id="client_email" class="form-control" required/>
+                        </div>
+
+                        <div class="col-md-6 mb-4">
+                          <label for="finance_email" class="text-dark">Finance Email</label>
+                            <input type="email" name="finance_email" id="finance_email" class="form-control" />
+                        </div>
+                      
+                        <div class="col-md-6 mb-4">
+                          <div class="form-group">
+                              <label for="pan_number" class="text-dark">PAN Number</label>
+                              <input type="text" name="pan_number" id="pan_number" class="form-control" />
+                          </div>
+                        </div>
+
+                        <div class="col-md-6 mb-4">
+                          <div class="form-group">
+                              <label for="pan_number" class="text-dark">TAN Number</label>
+                              <input type="text" name="tan_number" id="tan_number" class="form-control" />
+                          </div>
+                        </div>
+                  </div>
+
+                    <div class="row">
+                      <div class="col-md-6 mb-4">
+                        <label for="clientName" class="text-dark">Assign Partner</label>
+                       
+                        <select required name="assigned_partner" id="assigned_partner" class="custom-select">
+                          <option value="">Please Select</option>
+                          {% for p in partners %}
+                              <option value="{{ p.id }}">{{ p.username }}</option>
+                          {% endfor %}
+                        </select>
+                      </div>
+                      
+                    </div>
+                    <hr>
+                    <div class="row">
+                      <div class="col-md-12 mb-4" id="industries_div">
+                        
+                        <label for="taskName" class="text-dark">Select Industries:</label>    
+                        <div class="row">
+                          <select  name="industries" multiple required id="industries" class="form-control">
+                            {% for industry in industries %}
+                            <option value="{{ industry.id }}">{{ industry.industry_name }}</option>
+                            {% endfor %}
+                          </select>
+                          
+                          <div class="form-check col-4">
+                            <label class="form-check-label mr-4">
+                                <input class="form-check-input" type="checkbox" id="industries_all">
+                                    <strong>Applicable to all Industries</strong>
+                                <span class="form-check-sign">
+                                    <span class="check"></span>
+                                </span>
+                            </label>
+                          </div>
+                        </div>
+                      </div> 
+                    </div>
+                    <hr>
+                    <div class="row">
+                       <div class="col-md-12 mb-3" id="audittypes">
+                            
+                            <label for="audit_types" class="text-dark">Select Audit Types:</label>
+                            <div class="row">
+                              <select  name="audit_types" multiple required id="audit_types" class="form-control">
+                                {% for audittype in audittypes %}
+                                <option value="{{ audittype.id }}">{{ audittype.audit_type_name }}</option>
+                                {% endfor %}
+                              </select>
+                              <!-- {% for audittype in audittypes %}
+                                <div class="col-6 form-check">
+                                  <input class="form-check-input" type="checkbox" name="audittype" value="{{ audittype.id }}">
+                                  {{ audittype.audit_type_name }}</strong>
+                                </div>    
+                              {% endfor %} -->
+                            </div>
+                        </div>
+                      </div>
+                      <hr>
+                      <div class="row">
+                        
+                        <div class="col-md-12 mb-3" id="entity">
+                            
+                            <label for="taskName" class="text-dark">Select Entities:</label>
+                            <div class="row">
+                              <select  name="entities" multiple required id="entities" class="form-control">
+                                {% for entity in entities %}
+                                <option value="{{ entity.id }}">{{ entity.entity_name }}</option>
+                                {% endfor %}
+                              </select>
+                              <!-- {% for entity in entities %}
+                                <div class="col-6 form-check">
+                                  <input class="form-check-input" type="checkbox" name="entities" value="{{ entity.id }}">
+                                  {{ entity.entity_name }}</strong>
+                                </div>  
+                              {% endfor %} -->
+                              <div class="form-check col-6">
+                                <label class="form-check-label mr-4">
+                                    <input class="form-check-input" type="checkbox" id="entities_all">
+                                        <strong>Applicable to all Entities</strong>
+                                    <span class="form-check-sign">
+                                        <span class="check"></span>
+                                    </span>
+                                </label>
+                              </div>
+                            </div>
+                          </div> 
+                    </div>
+                                              
+                    <div class="row">
+                        <div class="col-md-12">
+                            <input type="submit" class="btn btn-success float-right" value="submit">
+                        </div>
+                    </div>
+                </form>
+                </div>
+            </div>
+            </div>
+        </div>
+        <div class="modal fade" id="addClientModal" tabindex="-1">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLongTitle">Add New Client</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            
+                            
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <input type="submit" class="btn btn-success" value="Submit">
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="cloneClient" tabindex="-1">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <form action="{% url 'clone_client' %}" method="post">
+                        {% csrf_token %}
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLongTitle">Clone Client</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-row">
+                                <div class="form-group col-md-12 mb-4">
+                                    <label for="clients" class="text-dark">Select Client</label>
+                                    <select name="select_client" id="select_client" class="custom-select">
+                                        <option value="-1">Please Select</option>
+                                        {% for client in clients %}
+                                            <option value="{{ client.id }}"> {{ client.client_name }} </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+
+                                <div class="form-group col-md-12 mb-4">
+                                    <label for="clientName" class="text-dark">Client Name</label>
+                                    <input type="text" name="clone_client_name" id="clone_client_name" class="form-control" />
+                                </div>
+
+                                <div class="form-group col-md-12 mb-0">
+                                    <label for="industries" class="text-dark">Select Industry Type</label>
+                                    <select name="clone_client_industry" id="clone_client_industry" class="custom-select">
+                                        <option value="-1">Please Select</option>
+                                        {% for industry in industries %}
+                                            <option value="{{ industry.id }}"> {{ industry.industry_name }} </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+
+                                
+                                <input type="hidden" name="clone_client_id" id="clone_client_id" />
+                                
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <input type="submit" class="btn btn-success" value="Submit">
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+    {% endblock content %}
+    {% block script %}
+
+<script>
+    $(() => {
+        $('body').toggleClass('sidebar-collapse');
+        
+        $('#clients').DataTable({
+            "paging": true,
+            "lengthChange": true,
+            "searching": true,
+            "ordering": true,
+            "info": true,
+            "autoWidth": false,
+        });
+
+        $("#industries_all").click(() => {
+            let isChecked = $("#industries_all").is(':checked');
+            if (isChecked)
+              {
+                $('#industries').each(function() { $('#industries option').prop('selected', true); });
+                console.log("yup")
+              }
+            else
+              {
+                $('#industries').each(function() { $('#industries option').prop('selected', false); }); 
+                console.log("nope")
+              }
+        });
+        $("#entities_all").click(() => {
+            let isChecked = $("#entities_all").is(':checked');
+            if (isChecked)
+              {
+                $('#entities').each(function() { $('#entities option').prop('selected', true); });
+                console.log("yup")
+              }
+            else
+              {
+                $('#entities').each(function() { $('#entities option').prop('selected', false); }); 
+                console.log("nope")
+              }
+        });
+    });
+    
+
+    jQuery('#add_client_form').validate({
+      rules:{
+        client_name:{
+          required:true,
+          alpha: true,
+        },
+        client_email:{
+          required:true,
+          email:true,
+        },
+        finance_email:{
+          required:false,
+          email:true,
+        }
+      },
+      messages:{
+        client_name:{
+          required:"Please Enter Client Name",
+          alpha: "Please Enter A Valid Client Name",
+        },
+        client_email:{
+          required:"Please Enter Client Email",
+          email:"Please Enter a Valid Client Email",
+        },
+        finance_email:{
+          required:false,
+          email:"Please Enter a Valid Finance Email",
+        }
+      },
+      subitHandler:function(form){
+        form.submit();
+      }
+    });
+
+    jQuery.validator.addMethod("alphanumeric", function(value, element) {
+    return this.optional(element) || /^\w+$/i.test(value);
+    }, "Letters, numbers, and underscores only please");
+
+    $.validator.addMethod("alpha", function(value, element) {
+    return this.optional(element) || value == value.match(/^[a-zA-Z ]*$/);
+ });
+
+</script>
+{% endblock script %}

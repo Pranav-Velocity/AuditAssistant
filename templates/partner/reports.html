@@ -1,0 +1,181 @@
+{% load partner_extras %}
+{% extends 'includes/masterpage.html' %}
+{% block title %} <title>Reports</title> {% endblock title %}
+{% block content %}  
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0 text-dark"></h1>
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.content-header -->
+   <section class="content">
+        <div class="row ml-4">
+            <div class="col-md-3">
+                <div class="mb-3">
+                    <div class="custom-control custom-switch">
+                        <input type="checkbox" class="custom-control-input" id="completed_tasks">
+                        <label class="custom-control-label" for="completed_tasks">Completed Tasks</label>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="mb-3">
+                    <div class="custom-control custom-switch">
+                        <input type="checkbox" class="custom-control-input" id="pending_tasks">
+                        <label class="custom-control-label" for="pending_tasks">Pending Tasks</label>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="mb-3">
+                    <div class="custom-control custom-switch">
+                        <input type="checkbox" class="custom-control-input" id="rejected_tasks">
+                        <label class="custom-control-label" for="rejected_tasks">Rejected Tasks</label>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="mb-3">
+                    <button class="btn btn-success" onclick="GetReports('{{request.user.id}}')">Generate Reports</button>
+                </div>
+            </div>
+        </div>   
+    </section>
+    <section>
+        <table class="table" id="reports_table">
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">Client Task Name</th>
+                <th scope="col">Status</th>
+                <th scope="col">Task Start Time</th>
+                <th scope="col">Task End Time</th>
+                <th scope="col">Task Completed Time</th>
+                <th scope="col">Files Uploaded By</th>
+              </tr>
+            </thead>
+            <tbody id="reports_table_body">
+              
+            </tbody>
+          </table>
+    </section>
+    <!-- /.content -->
+  </div>
+  {% endblock content %}
+  {% block script %}
+<script>
+    $(() => {
+        $('body').toggleClass('sidebar-collapse');
+        
+        
+    });
+    function GetReports(id){
+        var completed_tasks = $('#completed_tasks').is(':checked')
+        var pending_tasks = $('#pending_tasks').is(':checked')
+        var rejected_tasks = $('#rejected_tasks').is(':checked')
+        var toggle = ""
+        if(completed_tasks == true && pending_tasks == false && rejected_tasks == false){
+            console.log("only completed tasks")
+            toggle = "completed"
+        }
+        else if(pending_tasks == true && completed_tasks == false && rejected_tasks == false){
+            console.log("only pending tasks")
+            toggle = "pending"
+        }
+        else if(rejected_tasks == true && completed_tasks == false && pending_tasks == false ){
+            console.log("only rejected tasks")
+            toggle = "rejected"
+        }
+        else{
+            console.log("throw error")
+            toggle = "error"
+        }
+        if(toggle != "error"){
+            $.ajax({ // create an AJAX call...
+                    data: {
+                    'user_id': id ,
+                    'toggle': toggle
+                    
+                    }, // get the form data
+                    type: 'POST', // GET or POST
+                    headers: { 'X-CSRFToken': '{{ csrf_token }}' },
+                    url: "{% url 'reports' %}", // the file to call
+                success: function (response) { 
+                  $('#reports_table_body').empty();
+                    // console.log(response);
+                    var data = response.data;
+                    data.forEach(myfunction);
+                    var count = 0;
+                    function myfunction(item,count){
+                        // console.log(item)
+                        count = count + 1;
+                        if(item.is_approved_partner == true){
+                            var status = "Completed";
+                            var status_color = "green";
+                        }
+                        else{
+                            var status = "Pending";
+                            var status_color = "red";
+                        }
+                        if(item.is_rejected == true){
+                          var status = "Rejected";
+                          var status_color = "red";
+                        }
+                        if(item.in_time == true){
+                            var in_time_color = "green";
+                        }
+                        else{
+                            var in_time_color = "red";
+                        }
+                        
+                        
+                        
+                        $('#reports_table_body').append(`
+                            <tr>
+                                <td>${count}</td>
+                                <td>${item.task_name}</td>
+                                <td style="color:${status_color}" >${status}</td>
+                                <td>${item.task_start_datetime}</td>
+                                <td>${item.estimated_end_date}</td>
+                                <td style="color:${in_time_color}">${item.task_end_datetime}</td>
+                                <td id="file_location${count}"></td>
+                                
+                                
+                                
+                            </tr>
+                        `);
+                        if(item.partner_file_location){
+                          $(`#file_location${count}`).append(`
+                          <a role="btn" class="btn btn-primary" href="/media/${ item.partner_file_location }" download="/media/${ item.partner_file_location }">Partner</a>
+                          `);
+                        }
+                        if(item.manager_file_location){
+                          $(`#file_location${count}`).append(`
+                          <a role="btn" class="btn btn-warning" href="/media/${ item.manager_file_location }" download="/media/${ item.manager_file_location }">Manager</a>
+                          `);
+                        }
+                        if(item.auditor_file_location){
+                          $(`#file_location${count}`).append(`
+                          <a role="btn" class="btn btn-success" href="/media/${ item.auditor_file_location }" download="/media/${ item.auditor_file_location }">Auditor</a>
+                          `);
+                        }
+                        if(item.article_file_location){
+                          $(`#file_location${count}`).append(`
+                          <a role="btn" class="btn btn-danger" href="/media/${ item.article_file_location }" download="/media/${ item.article_file_location }">Artice</a>
+                          `);
+                        }
+                    }
+                }
+            });
+        }
+    }
+        
+</script>
+{% endblock script %}
+

@@ -1,0 +1,523 @@
+{% extends 'includes/masterpage.html' %}
+{% load partner_extras %}
+{% block title %} <title>Audit Plan</title> {% endblock title %}
+{% block content %} 
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0 text-dark"></h1>
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.content-header -->
+   <section class="content">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">
+                    <i class="fas fa-list"></i>
+                    Audit Plan Details
+                    </h3>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <dl class="row">
+                                <dt class="col-sm-4">Manager</dt>
+                                <dd class="col-sm-8">{{ manager }}</dd>
+                                <dt class="col-sm-4">Audit Plan Name</dt>
+                                <dd class="col-sm-8">{{audit_plan.auditplanname}} for {{audit_plan.finance_year}}</dd>
+                            </dl>
+                        </div>
+                        <div class="col-md-4">
+                            <dl class="row">
+                                <dt class="col-sm-4">Start Date</dt>
+                                <dd class="col-sm-8">{{ audit_plan.start_date }}</dd>
+                                <dt class="col-sm-4">Internal Deadline</dt>
+                                <dd class="col-sm-8">{{audit_plan.estimated_end_date}}</dd>
+                                <dt class="col-sm-4">Final Deadline</dt>
+                                <dd class="col-sm-8">{{audit_plan.actual_end_date}}</dd>
+                            </dl>
+                        </div>
+                        <div class="col-md-4">
+                            <dl class="row">
+                                <dt class="col-sm-4">Time Available</dt>
+                                <dd class="col-sm-8">{{ time_available }} hours</dd>
+                                <dt class="col-sm-4">Buffer</dt>
+                                <dd class="col-sm-8">{{ buffer }} hours</dd>
+                                <dt class="col-sm-4">Estimated Time Available</dt>
+                                <dd class="col-sm-8"></dd>
+                                <dt class="col-sm-4">Time Spent</dt>
+                                <dd class="col-sm-8"></dd>
+                            </dl>
+                        </div>
+                    </div>
+                    
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+          </div>
+          
+        </div>
+
+        
+    </section>
+    <!-- Main content -->
+    <section class="content">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                      <h3 class="card-title">
+                      <i class="fas fa-list"></i>
+                      &nbsp;{{audit_plan.audittype}}
+                      </h3>
+                      {% if request.user.is_main_client %}
+                        {% if audit_plan.is_audit_plan_locked %}
+                          <button type="button" class="btn btn-success float-right ml-4" data-toggle="modal" data-target="#unlockAuditPlanModal">
+                          UNLOCK AUDIT PLAN
+                        </button>
+                        {% else %}
+                        <button type="button" class="btn btn-success float-right ml-4" data-toggle="modal" data-target="#lockAuditPlanModal">
+                          LOCK AUDIT PLAN
+                        </button>
+                        {% endif %}
+                      {% endif %}
+                      
+                  </div>
+                    <div class="card-body table-responsive">
+                      <!-- {% for i in client_tasks %}
+                        {{i.tasks.task_estimated_days}}
+                      {% endfor %} -->
+                    <div class="table-responsive">
+                      <table id="audit_plan" class="table table-bordered table-striped">
+                          <thead>
+                          <tr>
+                              <th>Lables</th>
+                              <th>Task Name</th>
+                              <th>Task Status</th>
+                              <th>Activity Name</th>
+                              <th>Estimated Time</th>
+                              <th>Task Type</th>
+                              <th>Task Relevance</th>
+                              <th>Task Volume</th>
+                              <th>Sample Rate</th>
+                              <th>Task Assigned To</th>
+                              <th>Article Attachments</th>
+                              <th>Auditor Attachments</th>
+                              <th>Manager Attachments</th>
+                              <th>Partner Attachments</th>
+                              <th>Manager feedback</th>
+                              <th>Partner feedback</th>
+                          </tr>
+                          </thead>
+                              <tbody>
+                                    {% for ct in client_tasks %}
+                                          <tr>
+                                            <td> {{ ct.tasks.activity.label }}</td>
+                                            <td> <a href="{% url 'pending_approval_task' task_id=ct.tasks.id %}"> {{ ct.tasks.task_name }} </a></td>
+                                            <td> 
+                                              {% if ct.tasks.is_approved_partner == True %}
+                                                <strong class="text-success">Completed  </strong>
+                                              {% else %}
+                                                <strong class="text-danger">Pending</strong>
+                                              {% endif %}
+                                              <!-- {% if ct.tasks.is_approved_partner == True %}
+                                                <strong class="text-success">Completed</strong>
+                                              {% else %}
+                                              <strong class="text-danger">Pending</strong>
+                                              {% endif %} -->
+                                            </td>
+                                            <td> {{ ct.tasks.activity }}</td>
+                                            <td> {{ ct.estimated_time }} Hours</td>
+                                            <td> {{ ct.tasks.task_type }} </td>
+                                            <td> {{ ct.tasks.task_relevance }}</td>
+                                            <td> {{ ct.tasks.task_volume }}</td>
+                                            <td> {{ ct.tasks.task_sample_rate }}</td>
+                                            <td> {{ ct.tasks.user }}</td>
+                                            {% if ct.tasks.article_attachment_file %}
+                                              <td style="text-align:center;"> 
+                                                <a role="btn" class="btn btn-primary" href="/media/{{ ct.article_upload }}" download="{{ ct.article_upload }}">
+                                                  <i class="fas fa-paperclip" aria-hidden="true"></i>
+                                                </a>
+                                              </td>
+                                              {% else %}
+                                              <td style="text-align:center;"> 
+                                                <a role="btn" class="btn">
+                                                  <i class="fas fa-paperclip" aria-hidden="true"></i>
+                                                </a>
+                                              </td>
+                                            {% endif %}
+                                            {% if ct.tasks.auditor_attachment_file %}
+                                              <td style="text-align:center;"> 
+                                                <a role="btn" class="btn btn-primary" href="/media/{{ ct.auditor_upload }}" download="{{ ct.auditor_upload }}">
+                                                  <i class="fas fa-paperclip" aria-hidden="true"></i>
+                                                </a>
+                                              </td>
+                                              {% else %}
+                                              <td style="text-align:center;"> 
+                                                <a role="btn" class="btn">
+                                                  <i class="fas fa-paperclip" aria-hidden="true"></i>
+                                                </a>
+                                              </td>
+                                            {% endif %}
+                                            {% if ct.tasks.manager_attachment_file %}
+                                              <td style="text-align:center;"> 
+                                                <a role="btn" class="btn btn-primary" href="/media/{{ ct.manager_upload }}" download="{{ ct.manager_upload }}">
+                                                  <i class="fas fa-paperclip" aria-hidden="true"></i>
+                                                </a>
+                                              </td>
+                                              {% else %}
+                                              <td style="text-align:center;"> 
+                                                <a role="btn" class="btn">
+                                                  <i class="fas fa-paperclip" aria-hidden="true"></i>
+                                                </a>
+                                              </td>
+                                            {% endif %}
+                                            {% if ct.tasks.partner_attachment_file %}
+                                              <td style="text-align:center;"> 
+                                                <a role="btn" class="btn btn-primary" href="/media/{{ ct.partner_upload }}" download="{{ ct.partner_upload }}">
+                                                  <i class="fas fa-paperclip" aria-hidden="true"></i>
+                                                </a>
+                                              </td>
+                                              {% else %}
+                                              <td style="text-align:center;"> 
+                                                <a role="btn" class="btn">
+                                                  <i class="fas fa-paperclip" aria-hidden="true"></i>
+                                                </a>
+                                              </td>
+                                            {% endif %}
+                                            {% if ct.tasks.manager_feedback == "closed" %}
+                                                <td style="text-align:center;"> 
+                                                <div class="badge badge-success">
+                                                  Closed
+                                                </div>
+                                                </td> 
+                                              {% else %}
+                                              <td style="text-align:center;"> 
+                                                {{ ct.tasks.manager_feedback }}
+                                              </td>
+                                            {% endif %}
+                                            {% if ct.tasks.partner_feedback == "closed" %}
+                                                <td style="text-align:center;"> 
+                                                <div class="badge badge-success">
+                                                  Closed
+                                                </div>
+                                                </td> 
+                                              {% else %}
+                                              <td style="text-align:center;"> 
+                                                {{ ct.tasks.partner_feedback }}
+                                              </td>
+                                              {% endif %}  
+                                          </tr>
+                                {% endfor %}
+                              </tbody>
+                      </table>
+                      </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="lockAuditPlanModal" tabindex="-1">
+            <div class="modal-dialog" role="document" style="max-width: 900px !important;">
+                <div class="modal-content">
+                    <form action="{% url 'lock_audit_plan' auditplan_id=audit_plan.id %}" method="POST" style="float:right">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLongTitle">Lock Audit Plan</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                      {% csrf_token %}
+                      
+                      <div class="modal-body">
+                            <div class="form-row">
+                              <div class="form-group col-md-12 mb-3">
+                                  <label for="tasks" class="text-dark">ARE YOU SURE YOU WANT TO LOCK THE AUDIT PLAN ?</label>
+                                  <br>
+                                  <input type="checkbox" id="lock_audit_plan" name="lock_audit_plan" value="yes">
+                                  <label for="yes">YES</label>
+                                  <br>
+                              </div>
+                            </div>
+                          
+                            <div class="form-row" id="lock">
+                              <div class="form-group col-md-12 mb-3">
+                                <label for="password"> ENTER YOUR PASSWORD:</label>
+                                <input type="password" class="form-control col-6" id="password" name="password">
+                                <hr>
+                              {% if audit_plan.is_billable == True and audit_plan.invoice_number is None%}
+                                
+                                <label for="start_billing" class="text-dark">DO YOU WANT TO START BILLING ?</label>
+                                <br>
+                                <input type="checkbox" id="start_billing" name="start_billing" value="yes">
+                                <label for="yes">YES</label>
+                                <div class="row" id="select">
+                                  <div class="col-md-12 mb-4">
+                                      <label for="invoice_number" class="text-dark">Enter Invoice Number</label>
+                                      <input type="text" name="invoice_number" id="invoice_number" class="form-control"/>
+                                  </div>
+                                  <div class="col-md-12 mb-4">
+                                      <label for="invoice_date" class="text-dark">Enter Invoice Date</label>
+                                      <input type="date" name="invoice_date" id="invoice_date" class="form-control" />
+                                  </div>
+                                  <div class="col-md-12 mb-4">
+                                      <label for="invoice_amount" class="text-dark">Enter Invoice Amount</label>
+                                      <input type="text" name="invoice_amount" id="invoice_amount" class="form-control" />
+                                  </div>
+                                  <div class="col-md-6 mb-4">
+                                    <label for="out_of_pocket" class="text-dark">Enter Out of pocket expenses</label>
+                                    <input type="text" name="out_of_pocket" id="out_of_pocket" class="form-control" />
+                                </div>
+                                
+                                <div class="col-md-6 mb-4">
+                                    <label for="total_ope" class="text-dark">Out of pocket expenses Total</label>
+                                    <input type="text" name="total_ope" id="total_ope" class="form-control" />
+                                </div>
+                                <div class="col-md-12 mb-4">
+                                  <label for="tasks" class="text-dark">ADD GST TO OUT OF POCKET EXPENSES ?</label>
+                                  <br>
+                                  <input type="checkbox" id="ope_add_gst" name="ope_add_gst" value="yes">
+                                  <label for="yes">YES</label>
+                                </div>
+                                <div class="row" id="selectope" style="width:100%;margin-left:1px">
+                                  <div class="form-group col-md-4">
+                                    <label for="ope_igst" class="text-dark">Out of pocket expenses IGST (in %)</label>
+                                    <input type="number" name="ope_igst" id="ope_igst" class="form-control" value="0"/>
+                                  </div>
+                                  <div class="form-group col-md-4">
+                                    <label for="ope_sgst" class="text-dark">Out of pocket expenses SGST (in %)</label>
+                                    <input type="number" name="ope_sgst" id="ope_sgst" class="form-control" value="0"/>
+                                  </div>
+                                  <div class="form-group col-md-4">
+                                    <label for="ope_cgst" class="text-dark">Out of pocket expenses CGST (in %)</label>
+                                    <input type="number" name="ope_cgst" id="ope_cgst" class="form-control" value="0"/>
+                                  </div>
+                                </div>
+                                  <div class="col-md-4 mb-4">
+                                      <label for="igst" class="text-dark">Enter IGST (in %)</label>
+                                      <input type="text" name="igst" id="igst" class="form-control" />
+                                  </div>
+                                  <div class="col-md-4 mb-4">
+                                      <label for="sgst" class="text-dark">Enter SGST (in %)</label>
+                                      <input type="text" name="sgst" id="sgst" class="form-control" />
+                                  </div>
+                                  <div class="col-md-4 mb-4">
+                                      <label for="cgst" class="text-dark">Enter CGST (in %)</label>
+                                      <input type="text" name="cgst" id=audit_plan"cgst" class="form-control" />
+                                  </div>
+                                  <div class="col-md-4 mb-4">
+                                      <label for="igsta" class="text-dark">IGST Amount</label>
+                                      <input type="text" name="igsta" id="igsta" class="form-control"/>
+                                  </div>
+                                  <div class="col-md-4 mb-4">
+                                      <label for="sgsta" class="text-dark">SGST Amount</label>
+                                      <input type="text" name="sgsta" id="sgsta" class="form-control"/>
+                                  </div>
+                                  <div class="col-md-4 mb-4">
+                                      <label for="cgsta" class="text-dark">CGST Amount</label>
+                                      <input type="text" name="cgsta" id="cgsta" class="form-control"/>
+                                  </div>
+                                </div>
+                              </div>
+                              {% else %}
+                                Invoice already Generated with number : {{audit_plan.invoice_number}}
+                              {% endif %}
+                            </div>
+                          
+                        </div>
+                        <div class="modal-footer">
+                            <input type="submit" onclick="alert('The audit plan is locked. Now you cannot add new tasks in this client');" class="btn btn-success" value="SUBMIT">
+                        </div>
+                    </form>
+                  </div>
+            </div>
+        </div>
+        
+    </section>
+    <!-- /.content -->
+  </div>
+  <div class="modal fade" id="unlockAuditPlanModal" tabindex="-1">
+    <div class="modal-dialog" role="document" style="max-width: 900px !important;">
+        <div class="modal-content">
+            <form action="{% url 'unlock_audit_plan' auditplan_id=audit_plan.id %}" method="POST" style="float:right">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Unlock Audit Plan</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+              {% csrf_token %}
+              
+              <div class="modal-body">
+                    <div class="form-row">
+                      <div class="form-group col-md-12 mb-3">
+                          <h6 class="float-center text-danger">AFTER UNLOCKING THE AUDIT PLAN ANY CHANGES IN THE MASTERS MAY AFFECT THE CURRENT AUDIT PLAN</h6>
+                          <hr>
+                          <label for="tasks" class="text-dark">ARE YOU SURE YOU WANT TO UNLOCK THE AUDIT PLAN ?</label>
+                          <br>
+                          <input type="checkbox" id="unlock_audit_plan" name="unlock_audit_plan" value="yes">
+                          <label for="yes">YES</label>
+                          <br>
+                      </div>
+                    </div>
+                    <div class="form-row" id="unlock">
+                      <div class="form-group col-md-12 mb-3">
+                        <label for="password"> ENTER YOUR PASSWORD:</label>
+                        <input type="password" class="form-control col-6" id="password" name="password">
+                      </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <input type="submit" onclick="alert('The audit plan is UNLOCKED. Any changes to masters may affect the audit plan!!');" class="btn btn-success" value="SUBMIT">
+                </div>
+            </form>
+          </div>
+    </div>
+</div>
+{% endblock content %}
+{% block script %}
+
+<script>
+  $("input").on("change", function() {
+    var ret = parseInt((($("#igst").val()/100) * $("#invoice_amount").val() || '0'))
+    $("#igsta").val(ret);
+  })
+</script>
+<script>
+  $("input").on("change", function() {
+    var ret = parseInt((($("#sgst").val()/100) * $("#invoice_amount").val() || '0'))
+    $("#sgsta").val(ret);
+  })
+</script>
+<script>
+  $("input").on("change", function() {
+    var ret = parseInt((($("#cgst").val()/100) * $("#invoice_amount").val() || '0'))
+    $("#cgsta").val(ret);
+  })
+</script>
+<script>
+  $("input").on("change", function() {
+    var igst = parseInt(((($("#ope_igst").val()/100) * $("#out_of_pocket").val())  || '0'))
+    var sgst = parseInt(((($("#ope_sgst").val()/100) * $("#out_of_pocket").val())  || '0'))
+    var cgst = parseInt(((($("#ope_cgst").val()/100) * $("#out_of_pocket").val())  || '0'))
+    ret = igst + cgst + sgst + parseInt($("#out_of_pocket").val());
+    // ret = ret + parseInt($("#total_ope").val());
+    $("#total_ope").val(ret);
+  })
+</script>
+<script>
+  $( document ).ready(function() {
+      console.log( "ready!" );
+      
+  });
+    $(() => {
+        $('body').toggleClass('sidebar-collapse');
+        
+        $('#audit_plan').DataTable({
+            "paging": true,
+            "lengthChange": true,
+            "searching": true,
+            "ordering": true,
+            "info": true,
+            "autoWidth": false,
+            "rowCallback":function(row,data,index){
+              // console.log(typeof(data[9]))
+              // var minutes = parseFloat(data[3])
+              // if(minutes){
+              //   const quotient = Math.floor(minutes/60);
+              //   const remainder = minutes % 60;
+              //   console.log(quotient, remainder)
+              //   $(row).find('td:eq(3)').text(quotient+":"+remainder)
+              // }
+          }
+        });
+
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000
+        });
+
+        $('.swalDefaultSuccess').click(function() {
+            Toast.fire({
+                type: 'success',
+                title: 'The task has been started'
+            })
+        });
+
+         $('.taskSubmit').click(function() {
+            Toast.fire({
+                type: 'success',
+                title: 'The submission for the task has been sent for approval!'
+            })
+        });
+
+        $('.swalDefaultError').click(function() {
+            Toast.fire({
+                type: 'error',
+                title: 'The task has been ended!'
+            })
+        });
+
+        $('.metisFolder').metisMenu({
+            toggle: false
+        });
+
+        // $("#ID")
+
+        const activities = document.querySelectorAll('li[id^="activity"]');
+        const tasks = document.querySelectorAll('li[id^="task"]');
+        // console.log(tasks);
+        var activities_seen = {};
+        $.each(activities, (index, val) => {
+          let activity = $(val).attr('id');
+          console.log(activity);
+          if (activities_seen[activity]) {
+            // $('#' + activity).remove();
+          } else {
+            activities_seen[activity] = true;
+          } 
+        });
+
+        var tasks_seen = {};
+        $.each(tasks, (index, val) => {
+          let task = $(val).attr('id');
+          console.log(task);
+          if (tasks_seen[task]) {
+            $('#' + task).remove();
+          } else {
+            tasks_seen[task] = true;
+          } 
+        });
+    });
+</script>
+<script>
+    $('[name="start_billing"]').on('change', function() {
+        $('#select').toggle(this.checked);
+    }).change();
+</script>
+<script>
+    $('[name="lock_audit_plan"]').on('change', function() {
+        $('#lock').toggle(this.checked);
+    }).change();
+</script>
+<script>
+    $('[name="unlock_audit_plan"]').on('change', function() {
+        $('#unlock').toggle(this.checked);
+    }).change();
+</script>
+<script>
+  $('[name="ope_add_gst"]').on('change', function() {
+      $('#selectope').toggle(this.checked);
+  }).change();
+</script>
+{% endblock script %}

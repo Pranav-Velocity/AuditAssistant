@@ -1,0 +1,133 @@
+{% extends 'includes/masterpage.html' %}
+{% block title %} <title>Manager Dashboard</title> {% endblock title %}
+{% block content %} 
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      {% if message %}
+        <div class="alert alert-primary alert-dismissible fade show" role="alert">
+          <strong>{{message}} <a href="{{url}}" onclick="closeModal('{{client_task_id}}')">here</a>
+          <button type="button" class="close" onclick="closeModal('{{client_task_id}}')">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        {% endif %}
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0 text-dark">Dashboard</h1>
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.content-header -->
+
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+        <!-- Small boxes (Stat box) -->
+        <div class="row">
+          <div class="col-lg-6 col-12">  
+            <!-- small box -->
+            <div class="small-box bg-info">
+              <div class="inner">
+                  <h3>{{all_clients }}<sup style="font-size: 20px"></sup></h3>
+                <p>Total Number Of Clients</p>
+              </div>
+              <div class="icon">
+                <i class="fas fa-users"></i>
+              </div>
+              <a href="{% url 'list_of_clients' %}" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+            </div>
+          </div>  
+          <!-- ./col -->
+          <div class="col-lg-6 col-12">
+            <!-- small box -->
+            <div class="small-box bg-success">
+              <div class="inner">
+                <h3> {{all_approved_tasks}}<sup style="font-size: 20px"></sup></h3>
+
+                <p>Approved Task</p>
+              </div>
+              <div class="icon">
+               <i class="far fa-thumbs-up"></i>
+              </div>
+              <a href="{% url 'manager_index' %}" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+            </div>
+          </div>
+          <!-- ./col -->
+          <div class="col-lg-6 col-12">
+            <!-- small box -->
+            <div class="small-box bg-warning">
+              <div class="inner">
+                <h3>{{approval_pending}}</h3>
+
+                <p>Waiting Approvals</p>
+              </div>
+              <div class="icon">
+                <i class="far fa-eye"></i>
+              </div>
+              <a href="{% url 'approval_pending_tasks' %}" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+            </div>
+          </div>
+          <!-- ./col -->
+          <div class="col-lg-6 col-12">
+            <!-- small box -->
+            <div class="small-box bg-danger">
+              <div class="inner">
+                <h3>{{all_rejected_tasks}}</h3>
+
+                <p>Rejected Task</p>
+              </div>
+              <div class="icon">
+                <i class="far fa-times-circle"></i>
+              </div>
+              <a href="{% url 'is_rejected_tasks' %}" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+            </div>
+          </div>
+          <!-- ./col -->
+        </div>
+        <!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+  </div>
+  <!-- /.content-wrapper -->
+  {% endblock content %}
+      {% block script %}
+<script>
+   $(() => {
+        $('body').toggleClass('sidebar-collapse');
+        
+        $('#clients').DataTable({
+            "paging": true,
+            "lengthChange": true,
+            "searching": true,
+            "ordering": true,
+            "info": true,
+            "autoWidth": false,
+        });
+      });
+    
+  function closeModal(id){
+    
+    console.log("closed alert :",id);
+    $.ajax({ 
+      data: {
+          'task_id_notification_seen': id
+      }, 
+      type: 'POST', 
+      headers: { 'X-CSRFToken': '{{ csrf_token }}' },
+      url: "{% url 'manager_dashboard' %}", 
+      success: function (response) { 
+        if(response.saved == "yes"){
+          $("div.alert").hide();
+          console.log("saved the task notification as true")
+
+        }
+      }
+    });
+  }
+</script>
+
+{% endblock script %}

@@ -1,0 +1,556 @@
+{% extends 'includes/masterpage.html' %}
+{% block title %} <title>All Clients</title> {% endblock title %}
+{% block content %} 
+        <div class="content-wrapper">
+            <!-- Content Header (Page header) -->
+            <div class="content-header">
+                <div class="container-fluid">
+                    <div class="row mb-2">
+                        <div class="col-sm-6">
+                            <h1 class="m-0 text-dark"></h1>
+                        </div><!-- /.col -->
+                    </div><!-- /.row -->
+                </div><!-- /.container-fluid -->
+            </div>
+            <!-- /.content-header -->
+
+            <section class="content">
+                <div class="wrapper ">
+                    <div class="row">
+                        <div class="col-12">
+                            <table class="table" id="main_client_table">
+                                <thead>
+                                    <tr>
+                                    <th scope="col">#</th>
+                                    <th scope="col">First Name</th>
+                                    <th scope="col">Last Name</th>
+                                    <th scope="col">User Name</th>
+                                    <th scope="col">Email</th>
+                                    <th scope="col">Users Created</th>
+                                    <th scope="col">Files Uploaded</th>
+                                    <th scope="col">Billing Start Date</th>
+                                    <th scope="col">Billing End Date</th>
+                                    <th scope="col">Days Remaining</th>
+                                    <th scope="col">Audit Clients</th>
+                                    <th scope="col">Edit Client</th>
+                                    <th scope="col">Billing Details</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for i in clients %}
+                                    <tr>
+                                        <th scope="row">{{forloop.counter}}</th>
+                                        <td>{{i.first_name}}</td>
+                                        <td>{{i.last_name}}</td>
+                                        <td>{{i.username}}</td>
+                                        <td>{{i.email}}</td>
+                                        <td>{{i.max_users.current_users}} of {{i.max_users.max_users}}</td>
+                                        <td>{{i.max_files.current_files}} of {{i.max_files.max_files}}</td>
+                                        <td>{{i.billing_details.start_date}}</td>
+                                        <td>{{i.billing_details.end_date}}</td>
+                                        <td>{{i.days_remaining}}</td>
+                                        <td>
+                                            <button class="btn btn-success" onclick="AuditClients('{{i.user_id}}')">AUDIT Clients : {{i.client_count}}</button>
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-primary" onclick="EditClient('{{i.user_id}}')">Edit Client</button>
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-warning" onclick="BillingDetails('{{i.user_id}}')">Billing Details</button>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                                </table>
+                        </div>
+                    </div>
+                    <hr style="background-color: black;height:1px;">
+                    <div class="mt-3">
+                        <h3>Link Users</h3>
+                        <div class="error" id="error">
+
+                        </div>
+                    </div>
+                    <div style="max-width: 30%;">
+                        <div class="form-group">
+                            <select class="form-control" id="main_client" required>
+                                <option value="" selected>Select Main Client</option>
+                                {% for i in main_clients %}
+                                <option value="{{i.id}}">{{i.username|upper}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <select class="form-control" id="small_user" required>
+                                <option value="" selected>Select Users</option>
+                                {% for i in small_users %}
+                                <option value="{{i.id}}">{{i.username|upper}}</option>
+                                {% endfor %}
+                              </select>
+                        </div>
+                        
+                        <button class="btn btn-success" onclick="confirm_first($('#main_client').val(),$('#small_user').val())">Link User</button>
+                    </div>
+                    
+                </div>     
+            </section>
+        </div>
+    </div>
+
+    <div class="modal fade" id="showClients" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLongTitle">Audit Clients</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" id="showClient_modal_table_body">
+                    
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success" data-dismiss="modal" aria-label="Close">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="EditMainClient" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLongTitle">Audit Clients</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-row">
+                        <div class="form-group col-md-12 mb-3">
+                            <label for="client_first_name">Client First Name</label>
+                            <input type="text" class="form-control" id="client_first_name">
+                        </div>
+                        <div class="form-group col-md-12 mb-3">
+                            <label for="client_last_name">Client Last Name</label>
+                            <input type="text" class="form-control" id="client_last_name">
+                        </div>
+                        <div class="form-group col-md-12 mb-3">
+                            <label for="client_user_name">Client UserName</label>
+                            <input type="text" class="form-control" id="client_user_name">
+                        </div>
+                        <div class="form-group col-md-12 mb-3">
+                            <label for="client_email">Client Email ID</label>
+                            <input type="text" class="form-control" id="client_email">
+                        </div>
+                        <div class="form-group col-md-12 mb-3">
+                            <label for="client_password">Client Password</label>
+                            <input type="password" class="form-control" id="client_password">
+                        </div>
+                        <div class="form-group col-md-12 mb-3">
+                            <label for="client_max_users">Client Max User Creation Allowed</label>
+                            <input type="number" class="form-control noscroll" id="client_max_users">
+                        </div>
+                        <div class="form-group col-md-12 mb-3">
+                            <label for="client_max_files">Client Max Files Upload Allowed</label>
+                            <input type="number" class="form-control noscroll" id="client_max_files">
+                        </div>
+                    </div>
+                    
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success" id="save_client_edit" onclick="SaveEditClient($(this).val())">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="BillingDetailsModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog  modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLongTitle">Add / Edit Billing Details <input type="text" id="add_main_client_id"></h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-row">
+                        <div class="form-group col-md-6 mb-3">
+                            <label for="billing_start_date">Billing Start Date <span class="compulsory">*</span> </label>
+                            <input type="date" class="form-control" id="billing_start_date">
+                        </div>
+                        <div class="form-group col-md-6 mb-3">
+                            <label for="billing_end_date">Billing End Date <span class="compulsory">*</span> </label>
+                            <input type="date" class="form-control" id="billing_end_date">
+                        </div>
+                        <div class="form-group col-md-6 mb-3">
+                            <label for="billing_account_type">Select Billing Type <span class="compulsory">*</span> </label>
+                            <select class="form-control" id="billing_account_type" required>
+                                <option value="" selected>Select</option>
+                                <option value="Trial">Trial</option>
+                                <option value="Purchased">Purchased</option>
+                            </select>
+                                
+                        </div>
+                        <div class="form-group col-md-6 mb-3">
+                            <label for="billing_amount">Amount <span class="compulsory">*</span> </label>
+                            <input type="number" class="form-control" id="billing_amount">
+                        </div>
+                        <div class="form-group col-md-6 mb-3">
+                            <label for="billing_payment_mode">Select Payment Mode <span class="compulsory">*</span> </label>
+                            <select class="form-control" id="billing_payment_mode" required>
+                                <option value="" selected>Select</option>
+                                <option value="Trial">Trial</option>
+                                <option value="Cash Deposited in the Bank">Cash Deposited in the Bank</option>
+                                <option value="Cheque">Cheque</option>
+                                <option value="CASH">CASH</option>
+                                <option value="NEFT">NEFT</option>
+                                <option value="RTGS">RTGS</option>
+                                <option value="DEBIT/CREDIT CARD">DEBIT/CREDIT CARD</option>
+                                <option value="IMPS">IMPS</option>
+                                <option value="UPI">UPI</option>
+                                <option value="GPAY">GPAY</option>
+                                <option value="EaseBuzz">EaseBuzz</option>
+                                <option value="PL/PG">PL/PG</option>
+                            </select>
+                        </div>
+                        <div class="form-group col-md-6 mb-3">
+                            <label for="billing_status">Select Payment Status <span class="compulsory">*</span> </label>
+                            <select class="form-control" id="billing_status" required>
+                                <option value="" selected>Select</option>
+                                <option value="Realised">Realised</option>
+                                <option value="Not Realised">Not Realised</option>
+                            </select>
+                        </div>
+                        <div class="form-group col-md-6 mb-3">
+                            <label for="billing_remarks">Remarks <span class="compulsory">*</span> </label>
+                            <input type="text" class="form-control" id="billing_remarks">
+                        </div>
+                    </div>
+                    
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success" id="save_billing_details" onclick="SaveBillingDetails($(this).val())">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="ShowBillingDetails" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog  modal-xl" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLongTitle">Billing Details <input type="text" id="show_main_client_id"> </h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                   <div class="billing_table">
+                        <table class="table" id="main_client_table">
+                            <thead>
+                                <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">Bill Date & Time</th>
+                                <th scope="col">Start Date</th>
+                                <th scope="col">End Date</th>
+                                <th scope="col">Remaining days</th>
+                                <th scope="col">Billing Type</th>
+                                <th scope="col">Transaction ID</th>
+                                <th scope="col">Payment Mode</th>
+                                <th scope="col">Remarks</th>
+                                </tr>
+                            </thead>
+                            <tbody id="billing_table_body">
+                                
+                            </tbody>
+                        </table>
+                   </div>
+                    
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="add_new_billing_details" onclick="BillingDetails($('#show_main_client_id').val())">Add New Billing Detail</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endblock content %}
+    {% block script %}
+
+    <script>
+        function BillingDetails(id){
+            if($('#ShowBillingDetails').is(':visible') == true){
+                $('#ShowBillingDetails').modal('hide');
+                $('#BillingDetailsModal').modal('show');
+            }
+            console.log(id);
+            if(id){
+                $('#add_main_client_id').val(id);
+                $.ajax({ 
+                    data: {
+                        'billing_main_client_id': id
+                    }, // get the form data
+                    type: 'POST', // GET or POST
+                    headers: { 'X-CSRFToken': '{{ csrf_token }}' },
+                    url: "{% url 'all_clients' %}",
+                    success: function (response) {
+                        if(response.data == "none"){
+                            $('#BillingDetailsModal').modal('show')
+                            $('#save_billing_details').val(id)
+                            $('#add_main_client_id').val(id)
+                        }
+                        else if(response.data.length > 0){
+                            console.log("yes",response.data)
+                            $('#billing_table_body').empty();
+                            var data = response.data;
+                            data.forEach(myFunction);
+                            var count = 0;
+                            function myFunction(item,count){
+                                count = count + 1;
+                                $('#billing_table_body').append(`
+                                    <tr>
+                                        <th scope="row">${count}</th>
+                                        <td>${item.bill_generation_date}</td>
+                                        <td>${item.start_date}</td>
+                                        <td>${item.end_date}</td>
+                                        <td>${item.remaining_days}</td>
+                                        <td>${item.account_type}</td>
+                                        <td>${item.transactionID}</td>
+                                        <td>${item.paymentmode}</td>
+                                        <td>${item.remarks}</td>
+                                    </tr>
+                                `);
+                            }
+                            $('#ShowBillingDetails').modal('show');
+                            $('#show_main_client_id').val(id);
+                            
+                           
+                            
+                        }
+                    }
+                });
+            }
+        }
+        function SaveBillingDetails(id){
+            var billing_main_client_id = $('#add_main_client_id').val();
+            var billing_start_date = $('#billing_start_date').val()
+            var billing_end_date = $('#billing_end_date').val()
+            var billing_account_type = $('#billing_account_type').val()
+            var billing_amount = $('#billing_amount').val()
+            var billing_payment_mode = $('#billing_payment_mode').val()
+            var billing_status = $('#billing_status').val()
+            var billing_remarks = $('#billing_remarks').val()
+            // console.log(billing_start_date, billing_end_date, billing_account_type,billing_amount, billing_payment_mode,billing_status,billing_remarks)
+            if(billing_start_date.length > 0 & billing_end_date.length > 0 & billing_account_type.length > 0 & billing_amount.length > 0 & billing_payment_mode.length > 0 &billing_status.length > 0 & billing_remarks.length >0){
+                console.log("bill sent successfully")
+                $.ajax({ // create an AJAX call...
+                    data: {
+                        'billing_main_client_id': billing_main_client_id,
+                        'billing_start_date': billing_start_date,
+                        'billing_end_date': billing_end_date,
+                        'billing_account_type': billing_account_type,
+                        'billing_amount': billing_amount,
+                        'billing_payment_mode': billing_payment_mode,
+                        'billing_status': billing_status,
+                        'billing_remarks': billing_remarks,
+                        
+                    }, // get the form data
+                    type: 'POST', // GET or POST
+                    headers: { 'X-CSRFToken': '{{ csrf_token }}' },
+                    url: "{% url 'all_billing_details' %}",
+                success: function (response) { 
+                    if(response.saved == "yes"){
+                        window.location.reload();
+                    }
+                }
+            });
+            }
+            else{
+                console.log("bill not sent")
+            }
+        }
+        
+
+        $(document).on("wheel", "input[type=number]", function (e) {
+            $(this).blur();
+        });
+
+
+        $(() => {
+            $('body').toggleClass('sidebar-collapse');
+        });
+
+
+        $(document).ready( function () {
+            $('#main_client_table').DataTable();
+            
+
+        });
+
+        function confirm_first(id1,id2){
+            if(id1.length > 0 & id2.length > 0){
+                confirm_submit = confirm("Are you sure you want to Link User to Main Client ?")
+                if(confirm_submit == true){
+                    LinkUser(id1,id2);
+                }
+            }
+            
+        }
+
+        function LinkUser(main_client,small_user){
+            $.ajax({ // create an AJAX call...
+                data: {
+                    'main_client_id': main_client,
+                    "small_user_id": small_user
+                }, // get the form data
+                type: 'POST', // GET or POST
+                headers: { 'X-CSRFToken': '{{ csrf_token }}' },
+                url: "{% url 'all_clients' %}",
+            success: function (response) { 
+                $('#error').empty();
+                if(response.can_add == "yes"){
+                    window.location.reload();
+                }
+                else{
+                    $('#error').append(`
+                    <div class="alert alert-danger" role="alert">
+                        Maximum User Creation Exceeded for "The MAIN CLIENT" !
+                    </div>
+                    `);
+                    setTimeout(() => {
+                    $('.alert').alert('close');
+                }, 2000);
+                }
+                }
+            })
+        }
+
+        function AuditClients(id){
+            console.log(" Audit Clients :",id)
+            $.ajax({ // create an AJAX call...
+                data: {
+                    'audit_clients': id
+                }, // get the form data
+                type: 'POST', // GET or POST
+                headers: { 'X-CSRFToken': '{{ csrf_token }}' },
+                url: "{% url 'all_clients' %}",
+            success: function (response) { 
+                // console.log(response);
+                $('#showClient_modal_table_body').empty()
+                var data= response.data;
+                if(data.length>0){
+                    $('#showClient_modal_table_body').append(`
+                    <table class="table table-dark" id="clients_table">
+                        <thead>
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">Client Name</th>
+                                <th scope="col">Client Email</th>
+                                <th scope="col">Pan Number</th>
+                                <th scope="col">Tax Number</th>
+                                <th scope="col">GST Number</th>
+                            </tr>
+                        </thead>
+                        <tbody id="showClient_modal_body">
+                            
+                        </tbody>
+                    </table>
+                    `);
+
+                    data.forEach(myFunction);
+                    $(document).ready( function () {
+                        $('#clients_table').DataTable();
+                    });
+                    count = 0;
+                    
+                    function myFunction(item,count){
+                        count = count + 1;
+                        console.log(item);
+                        $('#showClient_modal_body').append(`
+                            <tr>
+                                <th scope="row">${count}</th>
+                                <td>${item.client_name}</td>
+                                <td>${item.client_email}</td>
+                                <td>${item.pan_no}</td>
+                                <td>${item.tan_no}</td>
+                                <td>${item.gst_no}</td>
+                            </tr>
+
+                        `);
+
+                    }
+                    
+                }
+                
+                $('#showClients').modal('show')
+            }
+        });
+        }
+
+        function EditClient(id){
+            console.log("edited :",id)
+            $('#save_client_edit').val(id)
+            $('#EditMainClient').modal('show');
+        }
+        function SaveEditClient(id){
+            // client_email
+            var email = $('#client_email').val();
+            if(email.length > 0){
+                // var validRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+                // console.log(validRegex)
+                var regex = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+                if (regex.test(email) == true){
+                    console.log("saved :",id);
+                    $.ajax({ // create an AJAX call...
+                        data: {
+                            'edit_client_id':id,
+                            'edit_client_first_name': $('#client_first_name').val(),
+                            'edit_client_last_name': $('#client_last_name').val(),
+                            'edit_client_user_name': $('#client_user_name').val(),
+                            'edit_client_email': $('#client_email').val(),
+                            'edit_client_password': $('#client_password').val(),
+                            'edit_client_max_users': $('#client_max_users').val(),
+                            'edit_client_max_files': $('#client_max_files').val()
+                        }, // get the form data
+                        type: 'POST', // GET or POST
+                        headers: { 'X-CSRFToken': '{{ csrf_token }}' },
+                        url: "{% url 'all_clients' %}",
+                    success: function (response) { 
+                        if(response.saved == "yes"){
+                            window.location.reload();
+                        }
+                    }
+                });
+                }
+                else{
+                    $( "#client_email" ).focus();
+                }
+            }
+            else{
+                $.ajax({ // create an AJAX call...
+                        data: {
+                            'edit_client_id':id,
+                            'edit_client_first_name': $('#client_first_name').val(),
+                            'edit_client_last_name': $('#client_last_name').val(),
+                            'edit_client_user_name': $('#client_user_name').val(),
+                            'edit_client_email': $('#client_email').val(),
+                            'edit_client_password': $('#client_password').val(),
+                            'edit_client_max_users': $('#client_max_users').val(),
+                            'edit_client_max_files': $('#client_max_files').val()
+                        }, // get the form data
+                        type: 'POST', // GET or POST
+                        headers: { 'X-CSRFToken': '{{ csrf_token }}' },
+                        url: "{% url 'all_clients' %}",
+                    success: function (response) { 
+                        if(response.saved == "yes"){
+                            window.location.reload();
+                        }
+                    }
+                });
+            }
+            
+            
+            
+            
+        }
+
+    </script>
+{% endblock script %}

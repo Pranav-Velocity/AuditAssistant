@@ -1,0 +1,234 @@
+{% extends 'includes/masterpage.html' %}
+{% block title %} <title>Add Main Client</title> {% endblock title %}
+{% block content %} 
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0 text-dark"></h1>
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.content-header -->
+
+<section class="content">
+    <div class="wrapper ">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <p class="card-title">Add Main Client</p>
+                </div>
+                <div class="card-body">
+                <form action="{% url 'add_main_client' %}" method="post" id="add_main_client">
+                    {% csrf_token %}
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            <label for="client_first_name" class="text-dark">Client First Name</label>
+                            <input type="text" required name="client_first_name" id="client_first_name" class="form-control" />
+                        </div>
+
+                        <div class="col-md-6 mb-4">
+                            <label for="client_last_name" class="text-dark">Client Last Name</label>
+                            <input type="text" required name="client_last_name" id="client_last_name" class="form-control" />
+                        </div>
+
+                        <div class="col-md-6 mb-4">
+                            <label for="client_user_name" class="text-dark">Client UserName</label>
+                            <input type="text" required name="client_user_name" id="client_user_name" class="form-control" />
+                        </div>
+
+                        <div class="col-md-6 mb-4">
+                            <label for="client_email_id" class="text-dark">Client Email ID</label>
+                            <input type="email" required name="client_email_id" id="client_email_id" class="form-control" />
+                        </div>
+
+                        <div class="col-md-6 mb-4">
+                          <label for="client_mobile" class="text-dark">Client Mobile</label>
+                          <input type="number" required name="client_mobile" id="client_mobile" class="form-control" />
+                        </div>
+
+                        <div class="col-md-6 mb-4">
+                          <div class="form-group">
+                            <label for="client_password" class="text-dark">Client Password</label>
+                            <input type="password" required name="client_password" id="client_password" class="form-control" />
+                          </div>
+                        </div>
+
+                        <div class="col-md-6 mb-4">
+                          
+                        </div>
+                  </div>
+                  
+                    <div class="row">
+                      <div class="col-md-6 mb-4">
+                        <label for="client_user_creation" class="text-dark">Allowed User Creation </label>
+                            <input type="number" required name="client_user_creation" id="client_user_creation" class="form-control" />
+                      </div>
+                      <div class="col-md-6 mb-4">
+                        <label for="client_files_upload" class="text-dark">Allowed Files Upload </label>
+                        <input type="number" required name="client_files_upload" id="client_files_upload" class="form-control" />
+                      </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                      <div class="col-md-6 mb-4">
+                        <label for="client_billing_start_date" class="text-dark">Billing Start Date</label>
+                            <input type="date" required name="client_billing_start_date" id="client_billing_start_date" class="form-control" />
+                      </div>
+                      <div class="col-md-6 mb-4">
+                        <label for="client_billing_end_date" class="text-dark">Billing End Date</label>
+                        <input type="date" required name="client_billing_end_date" id="client_billing_end_date" class="form-control" />
+                      </div>
+                    </div>
+                    
+                    
+                    
+                                        
+                    <div class="row">
+                        <div class="col-md-12">
+                            <button type="submit" class="btn btn-success float-right">Submit</button>
+                        </div>
+                    </div>
+                </form>
+                </div>
+            </div>
+            </div>
+        </div>
+        
+    </div>
+   
+
+
+</section>
+<!-- /.content-wrapper -->
+  <footer class="main-footer">
+  </footer>
+  </div>
+
+  {% endblock content %}
+  {% block script %}
+<script>
+    $(() => {
+        $('body').toggleClass('sidebar-collapse');
+        
+        
+       
+    });
+    jQuery('#add_main_client').validate({
+      rules:{
+        client_first_name:{
+          required:true,
+          lettersonly: true,
+        },
+        client_last_name:{
+          required:true,
+          lettersonly: true,
+        },
+        client_user_name:{
+          required:true,
+        },
+        client_email_id:{ 
+          required:true,
+          emailcheck:true,
+        },
+        client_mobile:{
+          required:true,
+          number:true,
+          minlength:10,
+          maxlength:10,
+        },
+        client_password:{
+          required:true,
+          minlength:8,
+          maxlength:15,
+          pwcheck:true,
+        },
+        client_user_creation:{
+          required:true,
+          number:true,
+        },
+        client_files_upload:{
+          required:true,
+          number:true,
+        },
+        client_billing_start_date:{
+          required:true,
+          validDate:true,
+        },
+        client_billing_end_date:{
+          required:true,
+          validDate:true,
+        }
+      },
+      messages:{
+        client_first_name:{
+          required:"Please Enter Main Client First Name",
+          lettersonly: "(Spaces, Special Characters and Numbers not Allowed ..!))",
+        },
+        client_last_name:{
+          required:"Please Enter Main Client Last Name",
+          lettersonly: "(Spaces, Special Characters and Numbers not Allowed ..!))",
+        },
+        client_user_name:{
+          required:"Please Enter Main Client User Name",
+        },
+        client_email_id:{
+          required:"Please Enter Main Client Email Address",
+          emailcheck:"Please Enter a Valid Email Address",
+        },
+        client_mobile:{
+          required:"Please Enter Main Client Mobile",
+          number:"Please enter a valid mobile number",
+          minlength:"Please enter 10 digit Mobile Number",
+          maxlength:"Please enter 10 digit Mobile Number",
+        },
+        client_password:{
+          required:"Please Enter Main Client Password",
+          minlength:"Password must be at least 8 characters long",
+          maxlength:"Password must be at most 15 characters",
+          pwcheck:"Password Must Contains Uppercase, LowerCase and a Special Character"
+        },
+        client_user_creation:{
+          required:"Please Enter Number of User Creation Allowed",
+          number:"Only Numbers are Allowed",
+        },
+        client_files_upload:{
+          required:"Please Enter Number of File Uploads Allowed",
+          number:"Only Numbers are Allowed",
+        },
+        client_billing_start_date:{
+          required:"Please Enter Billing Start Date",
+          validDate:"Invalid Date Format",
+        },
+        client_billing_end_date:{
+          required:"Please Enter Billing End Date",
+          validDate:"Invalid Date Format",
+        }
+      },
+      subitHandler:function(form){
+        form.submit();
+      }
+    });
+    $.validator.addMethod("pwcheck", function(value) {
+   return /^[A-Za-z0-9\d=!\-@._*]*$/.test(value) // consists of only these
+       && /[a-z]/.test(value) // has a lowercase letter
+       && /\d/.test(value) // has a digit
+});
+jQuery.validator.addMethod("validDate", function(value, element) {
+        return this.optional(element) || moment(value,"dd/mm/yyyy").isValid();
+    }, "Please enter a valid date in the format dd/mm/yyyy");
+document.addEventListener("wheel", function(event){
+    if(document.activeElement.type === "number"){
+        document.activeElement.blur();
+    }
+});
+$.validator.addMethod("emailcheck", function(value) {
+   return /^\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}\b$/i.test(value) // consists of only these
+},"Please enter a valid email address");
+</script>
+{% endblock script %}

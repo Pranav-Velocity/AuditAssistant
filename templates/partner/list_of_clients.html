@@ -1,0 +1,83 @@
+{% extends 'includes/masterpage.html' %}
+{% block title %} <title>List of Clients</title> {% endblock title %}
+{% block content %}  
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0 text-dark"></h1>
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.content-header -->
+
+    <!-- Main content -->
+    <section class="content">
+        {% if clients %}
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                    <div class="card-header">
+                      <p class="card-title">Clients</p>
+                      <a  href="{% url 'client_setup' %}">
+                        <button type="submit" class="btn btn-success float-right">
+                              Add New Client
+                        </button>
+                      </a>
+                    </div>
+                    <!-- /.card-header -->
+                    <div class="card-body">
+                    <table id="clients" class="table table-bordered table-striped">
+                        <thead>
+                        <tr>
+                            <th>Client ID</th>
+                            <th>Client Name</th>
+                            <th>GST Number</th>
+                            <th>PAN Number</th>
+                            <th>Audit Plans</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                            {% for client in clients %}
+                                <tr>
+                                    <td>{{ client.id }}</td>    
+                                    <td>{{ client.client_name }}</td>
+                                    <td>{{ client.gst_no }}</td>
+                                    <td>{{ client.pan_no }}</td>
+                                    <td><a href="{% url 'partner_client_tasks' client_id=client.id %}">View</a></td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    </div>
+                    <!-- /.card-body -->
+                </div>
+                </div>
+            </div>
+        {% endif %}
+    </section>
+    <!-- /.content -->
+  </div>
+  {% endblock content %}
+  <!-- /.content-wrapper -->
+  {% block script %}
+
+<script>
+    $(() => {
+        $('body').toggleClass('sidebar-collapse');
+        
+        $('#clients').DataTable({
+            "paging": true,
+            "lengthChange": true,
+            "searching": true,
+            "ordering": true,
+            "info": true,
+            "autoWidth": false,
+        });
+    });
+    
+</script>
+{% endblock script %}

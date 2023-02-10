@@ -1,0 +1,86 @@
+{% extends 'includes/masterpage.html' %}
+{% block title %} <title>Super Admin Dashboard</title> {% endblock title %}
+{% block content %} 
+    <div class="content-wrapper">
+      <div class="content-header">
+        
+          <div class="card">
+            <div class="card-header bg-blue-disabled">
+              <h1 class="card-title">Revenue</h1>
+              <div class="card-tools">
+                <!-- Collapse Button -->
+                <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                  <i class="fas fa-minus"></i>
+                </button>
+              </div>
+            </div>
+            <div class="card-body">
+              <!-- Small boxes (Stat box) -->
+              <div class="row">
+                <!-- ./col -->
+                <div class="col-lg-3 col-12">
+                  <!-- small box -->
+                  <div class="small-box bg-info">
+                    <div class="inner">
+                      <h3>{{ no_of_clients }}</h3>
+                      <h5>Number of Clients</h5>
+                    </div>
+                    <div class="icon">
+                      <i class="fas fa-file-invoice"></i>
+                    </div>
+                    <a href="{% url 'all_clients' %}" class="small-box-footer">More info <i
+                        class="fas fa-arrow-circle-right"></i></a>
+                  </div>
+                </div>
+                <div class="col-lg-3 col-12">
+                  <!-- small box -->
+                  <div class="small-box bg-success">
+                    <div class="inner">
+                      <h3>{{ total_no_of_files }}</h3>
+                      <h5>No of Files Generated</h5>
+                    </div>
+                    <div class="icon">
+                      <i class="fas fa-file-invoice"></i>
+                    </div>
+                    <a href="{% url 'files_created' %}" class="small-box-footer">More info <i
+                        class="fas fa-arrow-circle-right"></i></a>
+                  </div>
+                </div>
+                <div class="col-lg-3 col-12">
+                  <!-- small box -->
+                  <div class="small-box bg-danger">
+                    <div class="inner">
+                      <h3>{{ total_no_of_users }}</h3>
+                      <h5>No of Users</h5>
+                    </div>
+
+                    <div class="icon">
+                      <i class="fas fa-file-invoice"></i>
+                    </div>
+                    <a href="{% url 'show_users' %}" class="small-box-footer">More info <i
+                        class="fas fa-arrow-circle-right"></i></a>
+                  </div>
+                </div>
+                <div class="col-lg-3 col-12">
+                  <!-- small box -->
+                  <div class="small-box bg-primary">
+                    <div class="inner">
+                      <h3>{{ invoices_total }}</h3>
+                      <h5>Invoicing Total</h5>
+                    </div>
+                    <div class="icon">
+                      <i class="fas fa-file-invoice"></i>
+                    </div>
+                    <a href="/" class="small-box-footer">More info <i
+                        class="fas fa-arrow-circle-right"></i></a>
+                  </div>
+                </div>
+              </div>
+              
+            </div>
+          </div>
+      </div>
+    </div>
+{% endblock content %}
+{% block script %}
+{% endblock script %}

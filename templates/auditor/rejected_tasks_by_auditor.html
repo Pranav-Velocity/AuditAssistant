@@ -1,0 +1,95 @@
+{% include 'includes/masterpage.html' %}
+{% block title %} <title>Rejected Tasks</title> {% endblock title %}
+{% block content %} 
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0 text-dark"></h1>
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.content-header -->
+
+    <!-- Main content -->
+    <section class="content">
+       
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                    <div class="card-header">
+                    <h3 class="card-title">Rejected  Tasks</h3>
+                    </div>
+                    <!-- /.card-header -->
+                    <div class="card-body">
+                    <table id="tasks" class="table table-bordered table-striped">
+                        <thead>
+                        <tr>
+                        <th>Task ID</th>
+                        <th>Task</th>
+                        <th>Client ID</th>
+                        <th>Estimated Days</th>
+                        <th>Auditing Standard</th>
+                        <th>Intl. Auditing Standard</th>
+                        <th>Remark</th>
+                        <th>Status</th>
+                        </tr>       
+                        </thead>
+                        <tbody>
+                         
+                            {% for task in auditor_rejected_tasks %} 
+                            
+                                <tr>
+                                    <td>{{ task.id }}</td>
+                                    <td>{{ task.task_name }}</td>
+                                    <td>{{ task.client_id }}</td>
+                                    {% if task.task_estimated_days %}
+
+                                        <td>{{ task.task_estimated_days  }}</td>
+                                    {% else %}
+                                        <td>Not set</td>
+                                    {% endif %}
+                                    <td>{{ task.task_auditing_standard }}</td>
+                                    <td>{{ task.task_international_auditing_standard }}</td>
+                                    <td class="text-danger">{{ task.reject_task_remark}}</td>
+                                   
+                                    
+                                    <td><a href="{% url 'auditor_individual_task' task_id=task.id %}" class="btn btn-danger" >Rejected</button></td>
+                                    
+                                </tr>
+                            
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    </div>
+                    <!-- /.card-body -->
+                </div>
+                </div>
+            </div>
+      
+    </section>
+    <!-- /.content -->
+  </div>
+
+  {% endblock content %}
+  {% block script %}
+
+<script>
+    $(() => {
+        $('body').toggleClass('sidebar-collapse');
+        
+        $('#tasks').DataTable({
+            "paging": true,
+            "lengthChange": true,
+            "searching": true,
+            "ordering": true,
+            "info": true,
+            "autoWidth": false,
+        });
+    });
+    
+</script>
+{% endblock script %}

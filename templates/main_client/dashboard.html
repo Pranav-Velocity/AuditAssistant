@@ -1,0 +1,262 @@
+{% extends 'includes/masterpage.html' %}
+{% block title %} <title>Dashboard</title> {% endblock title %}
+{% block content %} 
+    <div class="content-wrapper">
+      <div class="content-header">
+        {% if message %}
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+          <strong>{{message}}
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        {% endif %}
+        {% if message2 %}
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+          <strong>{{message2}}
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        {% endif %}
+        {% if bill_expire_remaining_days %}
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+          <strong>{{bill_expire_remaining_days}} days remaining. Please Pay <a href="#" onclick="paymentGateway()">here</a>
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        {% endif %}
+        
+        
+          <div class="card">
+            <div class="card-header bg-blue-disabled">
+              <h1 class="card-title">Revenue</h1>
+              <div class="card-tools">
+                <!-- Collapse Button -->
+                <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                  <i class="fas fa-minus"></i>
+                </button>
+              </div>
+            </div>
+            <div class="card-body">
+              <!-- Small boxes (Stat box) -->
+              <div class="row">
+                <!-- ./col -->
+                <div class="col-lg-3 col-12">
+                  <!-- small box -->
+                  <div class="small-box bg-info">
+                    <div class="inner">
+                      <h3>{{ total_users }}</h3>
+                      <h5>Users</h5>
+                    </div>
+                    <div class="icon">
+                      <i class="fas fa-file-invoice"></i>
+                    </div>
+                    <a href="{% url 'adduser' %}" class="small-box-footer">More info <i
+                        class="fas fa-arrow-circle-right"></i></a>
+                  </div>
+                </div>
+                <div class="col-lg-3 col-12">
+                  <!-- small box -->
+                  <div class="small-box bg-success">
+                    <div class="inner">
+                      <h3>{{ total_files.current_files }} {% if max_files %}  of {{max_files.max_files}} {% endif %}</h3>
+                      <h5>Total Files Uploaded</h5>
+                    </div>
+                    <div class="icon">
+                      <i class="fas fa-file-invoice"></i>
+                    </div>
+                    <a href="{% url 'showfiles' %}" class="small-box-footer">More info <i
+                        class="fas fa-arrow-circle-right"></i></a>
+                  </div>
+                </div>
+                <div class="col-lg-3 col-12">
+                  <!-- small box -->
+                  <div class="small-box bg-danger">
+                    <div class="inner">
+                      <h3>{{ invoices_notgenerated }}</h3>
+                      <h5>Invocies Not Generated</h5>
+                    </div>
+
+                    <div class="icon">
+                      <i class="fas fa-file-invoice"></i>
+                    </div>
+                    <a href="{% url 'client_master' %}" class="small-box-footer">More info <i
+                        class="fas fa-arrow-circle-right"></i></a>
+                  </div>
+                </div>
+                <div class="col-lg-3 col-12">
+                  <!-- small box -->
+                  <div class="small-box bg-primary">
+                    <div class="inner">
+                      <h3>{{ invoices_total }}</h3>
+                      <h5>Invoicing Total</h5>
+                    </div>
+                    <div class="icon">
+                      <i class="fas fa-file-invoice"></i>
+                    </div>
+                    <a href="{% url 'client_master' %}" class="small-box-footer">More info <i
+                        class="fas fa-arrow-circle-right"></i></a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+      </div>
+    </div>
+    
+  <div class="modal fade" id="PaymentGatewayModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <!-- Add Regulation Form -->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLongTitle">Payment Gateway</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                      <div class="col-md-12" id="">
+                        <div class="container" id="PaymentGatewayModaldata">
+                          <h3 style="color:green;">1 Year Subscription till <span id="date_today" style="font-weight: 400;"></span></h3>
+                          <div class="form">
+                              <form action='https://test.payu.in/_payment' method='post'>
+                                  <input type="hidden" name="key" id="key" value="" />
+                                  <input type="hidden" name="txnid" id="txnid" value="" />
+                                  <input type="hidden" name="productinfo" id="productinfo" value="" />
+                                  <input type="hidden" name="amount" id="amount" value="" />
+                                  <input type="hidden" name="email" id="email" value="" />
+                                  <input type="hidden" name="firstname" id="firstname" value="" />
+                                  <input type="hidden" name="lastname" id="lastname" value="" />
+                                  <input type="hidden" name="surl" id="surl" value="" />
+                                  <input type="hidden" name="furl" id="furl" value="" />
+                                  <input type="hidden" name="phone" id="phone" value="">
+      
+                                  <input type="hidden" name="hash" id="hash" value="" />
+                                  <input type="submit" class="btn btn-success" value="Pay">
+                              </form>
+                          </div>
+      
+                      </div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+    </div>
+</div>
+{% endblock content %}
+{% block script %}
+  <script>
+    function paymentGateway(){
+      console.log("Payment Gateway");
+      $.ajax({ // create an AJAX call...
+            data: {
+                "payment_gateway_button":"yes"
+            }, // get the form data
+            type: 'POST', // GET or POST
+            headers: { 'X-CSRFToken': '{{ csrf_token }}' },
+            url: "{% url 'client_dashboard' %}", // the file to call
+            success: function (response) {
+              // console.log(response)
+             var start_date = response.start_date;
+             var end_date = response.end_date;
+              
+              var date1 = new Date(start_date);
+              var date2 = new Date(end_date);
+              var result = new Date(date2.setDate(date2.getDate() + 365));
+              console.log(result)
+              let day1 = result.getDate();
+              let month1 = result.getMonth() + 1 ;
+              let year1 = (result.getFullYear() );
+              let currentdate1 = `${day1}-${month1}-${year1}`;
+              console.log(currentdate1)
+
+              $('#date_today').html(currentdate1)
+              $('#hiddenform').css('visibility','visible');
+              $('#key').val(response.transactionData.key);
+                $('#txnid').val(response.transactionData.txnid);
+                $('#productinfo').val(response.transactionData.productinfo);
+                $('#amount').val(response.transactionData.amount);
+                $('#email').val(response.transactionData.email);
+                $('#firstname').val(response.transactionData.firstname);
+                $('#lastname').val(response.transactionData.lastname);
+                $('#surl').val(response.transactionData.surl);
+                $('#furl').val(response.transactionData.furl);
+                $('#phone').val(response.transactionData.phone);
+                $('#hash').val(response.transactionData.hashh);
+                $('#PaymentGatewayModal').modal('show');
+            }
+          });
+      
+    }
+    var options = {
+      series: [
+        {
+          name: "In-Progress Tasks",
+          data: [44, 55, 57, 56, 61, 58, 63, 60, 66],
+        },
+        {
+          name: "Completed Tasks",
+          data: [76, 85, 101, 98, 87, 105, 91, 114, 94],
+        },
+        {
+          name: "Pending Tasks",
+          data: [35, 41, 36, 26, 45, 48, 52, 53, 41],
+        },
+      ],
+      chart: {
+        type: "area",
+        height: 315,
+        toolbar: {
+          show: false,
+        },
+        zoom: {
+          enabled: false,
+        },
+      },
+      dataLabels: {
+        enabled: false,
+      },
+      stroke: {
+        curve: "smooth",
+      },
+      xaxis: {
+        categories: [
+          "Feb",
+          "Mar",
+          "Apr",
+          "May",
+          "Jun",
+          "Jul",
+          "Aug",
+          "Sep",
+          "Oct",
+        ],
+      },
+      yaxis: {
+        title: {
+          text: "No. of Tasks",
+        },
+      },
+      fill: {
+        opacity: 1,
+      },
+      tooltip: {
+        y: {
+          formatter: function (val) {
+            return +val + " Tasks";
+          },
+        },
+      },
+    };
+
+    var chart = new ApexCharts(
+      document.querySelector("#responsive-chart"),
+      options
+    );
+
+    chart.render();
+  </script>
+{% endblock script %}

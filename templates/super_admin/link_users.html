@@ -1,0 +1,54 @@
+{% extends 'includes/masterpage.html' %}
+{% block title %} <title>Link Users</title> {% endblock title %}
+{% block content %} 
+        <div class="content-wrapper">
+            <!-- Content Header (Page header) -->
+            <div class="content-header">
+                <div class="container-fluid">
+                    <div class="row mb-2">
+                        <div class="col-sm-6">
+                            <h1 class="m-0 text-dark"></h1>
+                        </div><!-- /.col -->
+                    </div><!-- /.row -->
+                </div><!-- /.container-fluid -->
+            </div>
+            <!-- /.content-header -->
+
+            <section class="content">
+                <div class="wrapper">
+                    
+                    <div class="row">
+                        <div class="col-3">
+                            <select class="form-control">
+                                <option value="" selected>Select Main Client</option>
+                                {% for i in main_clients %}
+                                <option value="{{i.username|upper}}">{{i.username|upper}}</option>
+                                {% endfor %}
+                              </select>
+                        </div>
+                        <div class="col-3">
+                            <select class="form-control">
+                                <option value="" selected>Select Users</option>
+                                {% for i in small_users %}
+                                <option value="{{i.id}}">{{i.username|upper}}</option>
+                                {% endfor %}
+                              </select>
+                        </div>
+                        
+                    </div>
+                </div>     
+            </section>
+        </div>
+        {% endblock content %}
+        {% block script %}
+
+    <script>
+        $(() => {
+            $('body').toggleClass('sidebar-collapse');
+
+
+
+        });
+
+    </script>
+    {% endblock script %}

@@ -1,0 +1,88 @@
+{% extends 'includes/masterpage.html' %}
+{% block title %} <title>Partner Tasks</title> {% endblock title %}
+{% block content %} 
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0 text-dark"></h1>
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.content-header -->
+
+    <!-- Main content -->
+    <section class="content">
+        {% if tasks %}
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                    <div class="card-header">
+                    <h3 class="card-title">Assigned Tasks</h3>
+                    </div>
+                    <!-- /.card-header -->
+                    <div class="card-body">
+                    <table id="tasks" class="table table-bordered table-striped">
+                        <thead>
+                        <tr>
+                        <th>Task ID</th>
+                        <th>Task</th>
+                        <th>Client</th>
+                        <th>Estimated Days</th>
+                        <th>Auditing Standard</th>
+                        <th>Intl. Auditing Standard</th>
+                        <th></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                            {% for task in tasks %}  
+                            
+                                <tr>
+                                    <td>{{ task.id }}</td>
+                                    <td>{{ task }}</td>
+                                    <td>{{ task.client.client_name }}</td>
+                                    {% if task.task_estimated_days %}
+                                        <td>{{ task.task_estimated_days }}</td>
+                                    {% else %}
+                                        <td>Not set</td>
+                                    {% endif %}
+                                    <td>{{ task.task_auditing_standard }}</td>
+                                    <td>{{ task.task_international_auditing_standard }}</td>
+                                    <td><a href="{% url 'show_individual_partner_task' task_id=task.id %}">View</a></td>
+                                </tr>
+                             
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    </div>
+                    <!-- /.card-body -->
+                </div>
+                </div>
+            </div>
+        {% endif %}
+    </section>
+    <!-- /.content -->
+  </div>
+  {% endblock content %}
+  {% block script %}
+
+<script>
+    $(() => {
+        $('body').toggleClass('sidebar-collapse');
+        
+        $('#tasks').DataTable({
+            "paging": true,
+            "lengthChange": true,
+            "searching": true,
+            "ordering": true,
+            "info": true,
+            "autoWidth": false,
+        });
+    });
+    
+</script>
+{% endblock script %}
+

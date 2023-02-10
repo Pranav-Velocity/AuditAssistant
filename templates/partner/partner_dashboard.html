@@ -1,0 +1,187 @@
+{% extends 'includes/masterpage.html' %}
+{% block title %} <title>Partner Task</title> {% endblock title %}
+{% block content %} 
+      <!-- Content Wrapper. Contains page content -->
+      <div class="content-wrapper">
+        <!-- Main content -->
+        <section class="content">
+          <div class="container-fluid">
+            <div class="content-header">
+              <div class="card container-fluid">
+                    <div class="row pt-3 p-2">
+                      <div class="col-sm-4">
+                        <div class="card card-primary" style="height:430px">
+                          <div class="card-header">
+                            <h3 class="card-title">Task Status </h3>
+                          </div>
+                          <div class="card-body">
+                            <div class="chartjs-size-monitor">
+                              <div class="chartjs-size-monitor-expand">
+                                <div class=""></div>
+                              </div>
+                              <div class="chartjs-size-monitor-shrink">
+                                <div class=""></div>
+                              </div>
+                            </div>
+                            <div id="chart">
+                              <div id="responsive-chart1"></div>
+                            </div>
+                          </div>
+                          <!-- /.card-body -->
+                        </div>
+                      </div>
+                      <div class="col-sm-4">
+                        <div class="card card-primary" style="height:430px">
+                          <div class="card-header">
+                            <h3 class="card-title">Invoicing Status </h3>
+                          </div>
+                          <div class="card-body">
+                            <div class="chartjs-size-monitor">
+                              <div class="chartjs-size-monitor-expand">
+                                <div class=""></div>
+                              </div>
+                              <div class="chartjs-size-monitor-shrink">
+                                <div class=""></div>
+                              </div>
+                            </div>
+                            <div id="chart2">
+                              <div id="responsive-chart2"></div>
+                            </div>
+                          </div>
+                          <!-- /.card-body -->
+                        </div>
+                      </div>
+                    </div>
+                    <!-- /.row -->
+                  </div>
+                  <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">...</div>
+                </div>
+                
+              </div>
+              <!-- /.container-fluid -->
+            </div>
+            {% endblock content %}
+            {% block script %} 
+  
+
+    <script>
+      var options = {
+        chart: {
+          height: 335,
+          type: "bar"
+        },
+        plotOptions: {
+          bar: {
+            horizontal: false,
+            borderRadius: 4
+          }
+        },
+        dataLabels: {
+          enabled: false
+        },
+        stroke: {
+          width: 1,
+          colors: ["#fff"]
+        },
+        series: [{
+            name: 'Rejected Tasks',
+            data: [{{rejected_tasks}}]
+          }, {
+            name: 'Completed Tasks',
+            data: [{{completed_tasks}}]
+          }, {
+            name: 'Pending Tasks',
+            data: [{{pending_tasks}}]
+          }],
+        labels: ['Rejected Tasks', 'Completed Tasks', 'Pending Tasks'],
+        colors: ['#f53b00','#048528','#fed403'],
+        legend: {
+          position: "bottom",
+          containerMargin: {
+            left: 35,
+            right: 60
+          }
+        },
+        responsive: [
+          {
+            breakpoint: 1000,
+            options: {
+              plotOptions: {
+                bar: {
+                  horizontal: false
+                }
+              },
+              legend: {
+                position: "bottom"
+              }
+            }
+          }
+        ]
+      };
+
+      var chart = new ApexCharts(
+        document.querySelector("#responsive-chart1"),
+        options
+      );
+      chart.render();
+    </script>
+    <script>
+      var options2 = {
+        series: [{{invoices_generated}}, {{invoices_notgenerated}}],
+          chart: {
+          width: '100%',
+          height: 350,
+          type: 'donut',
+        },
+        
+        plotOptions: {
+          pie: {
+            donut: {
+              labels: {
+                show: true,
+                style: {
+                  colors: '#000000',
+                  fontSize: '12px'
+                },
+                total: {
+                  show: true,
+                  label: 'Billable Invoices',
+                  formatter: () => {{billable_invoices}}
+                },
+                style: {
+                  color: 'black'
+                }
+              }
+            }
+          }
+        },
+        labels: ['Invoices Generated', 'Invoices Not Generated'],
+        colors: ['#048528', '#f53b00'],
+        dataLabels: {
+          enabled: false
+        },
+        legend: {
+          position: "bottom",
+          containerMargin: {
+            left: 35,
+            right: 60
+          }
+        },
+        responsive: [{
+          breakpoint: 480,
+          options: {
+            chart: {
+              width: '100%'
+            },
+            legend: {
+              position: 'bottom'
+            }
+          }
+        }]
+        };
+
+      var chart2 = new ApexCharts(document.querySelector("#responsive-chart2"), options2);
+      chart2.render();
+    </script>
+    {% endblock script %}
+

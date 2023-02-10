@@ -1,0 +1,567 @@
+{% extends 'includes/masterpage.html' %}
+{% load partner_extras %}
+{% block title %} <title>Client Master</title> {% endblock title %}
+{% block content %} 
+    <div class="content-wrapper">
+      <!-- Content Header (Page header) -->
+      <div class="content-header">
+        <div class="container-fluid">
+          
+        </div><!-- /.container-fluid -->
+      </div>
+      <!-- /.content-header -->
+
+      <!-- Main content -->
+      <section class="content">
+        <div class="row"> 
+          <div class="col-12">
+            <div class="card" name="my-card" id="my-card">
+              <div class="content-header">
+                <div class="container-fluid">
+                  <div class="card-header">
+                    <p class="card-title">Invoice Details</p>
+                    <div class="card-tools">
+                    <!-- Collapse Button -->
+                    <button type="button" class="btn btn-tool" data-card-widget="collapse"><i class="fas fa-minus"></i></button>
+                  </div>
+                  </div>
+                  
+                </div><!-- /.container-fluid -->
+              </div>
+              <div class="card-body">
+                <div class="row">
+                  <div class="col-xl-4 col-lg-4 col-md-4 col-sm-6">
+                    <!-- small box -->
+                    <div class="info-box" style="height:110px">
+                    <span class="info-box-icon bg-info"><i class="fas fa-receipt"></i></span>
+                      <div class="info-box-content">
+                        <span class="info-box-text">Invoice Billing Status</span>
+                        <span class="info-box-number">{{invoices_generated}} of {{ invoices_generated | add:billable_invoices }}</span>
+                        <div class="progress" style="height:3px">
+                          <div class="progress-bar bg-info" style="width: {{ invoices_generated | prog:billable_invoices }}%"></div>
+                          <div class="progress-bar bg-danger" style="width: {{ invoices_generated | prog2:billable_invoices }}%"></div>
+                        </div>
+                        <span class="progress-description">
+                          {{ invoices_generated | prog:billable_invoices}}%
+                        </span> 
+                      </div>
+                      <div class="progress" style="height:3px">
+                        <div class="progress-bar bg-info" style="width: {{ invoices_paid | prog:invoices_not_paid }}%"></div>
+                      </div>
+                      <span class="progress-description">
+                      </span>
+                      {% comment %} <a href="{% url 'client_master' %}" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a> {% endcomment %}
+                    </div>
+                  </div>
+                  <div class="col-xl-4 col-lg-4 col-md-4 col-sm-6">
+                    <div class="info-box">
+                      <span class="info-box-icon bg-info"><i class="fas fa-file-invoice-dollar"></i></span>
+                      <div class="info-box-content">
+                        <span class="info-box-text">Invoice Billing</span>
+                        <span class="info-box-number">{{invoices_paid}} of {{ invoices_paid | add:invoices_not_paid }}</span>
+                        <div class="progress" style="height:3px">
+                          <div class="progress-bar bg-info" style="width: {{ invoices_paid | prog:invoices_not_paid }}%"></div>
+                          <div class="progress-bar bg-danger" style="width: {{ invoices_paid | prog2:invoices_not_paid }}%"></div>
+                        </div>
+                        <span class="progress-description">
+                          {{ invoices_paid | prog:invoices_not_paid }}%
+                        </span>
+                    </div>
+                  </div>
+                  </div>
+                  <div class="col-xl-4 col-lg-4 col-md-4 col-sm-6">
+                    <div class="info-box">
+                    <span class="info-box-icon bg-info"><i class="fas fa-rupee-sign"></i></span>
+                    <div class="info-box-content">
+                      <span class="info-box-text">Invoice Receipt Status</span>
+                      <span class="info-box-number">{{iap | currency}} &nbsp;&nbsp;of   &nbsp;&nbsp;{{ iap | add:iaup | currency }}</span>
+                      <div class="progress" style="height:3px">
+                        <div class="progress-bar bg-info" style="width: {{ iap | prog:iaup }}%"></div>
+                        <div class="progress-bar bg-danger" style="width: {{ iap | prog2:iaup }}%"></div>
+                      </div>
+                      <span class="progress-description">
+                        {{ iap | prog:iaup }}%
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-12">
+            <div class="card">
+              <div class="card-header">
+                <p class="card-title">Clients</p>
+                {% if request.user.is_main_client %}
+                <a href="{% url 'client_setup' %}">
+                  <button type="submit" class="btn btn-success float-right">
+                    Add New Client
+                  </button>
+                </a>
+                {% endif %}
+              </div>
+              <!-- /.card-header -->
+              <div class="card-body">
+                <div class="table-responsive">
+                  <table id="clients" class="table table-bordered table-striped" >
+                    <thead style="position: sticky;top: 0">
+                      <tr>
+                        <th>Client ID</th>
+                        <th>Client Name</th>
+                        {% comment %} <th>Employees</th> {% endcomment %}
+                        <th>GST Number</th>
+                        <th>PAN Number</th>
+                        <th>Invoice Totals</th>
+                        <th>Invoice Totals Received</th>
+                        {% comment %} <th>Invoices To Be Billed</th> {% endcomment %}
+                        <th>Audit Plans</th>
+                        <th>Invocies</th>
+                        {% if request.user.is_main_client %}
+                        <th>Assign User</th>
+                        {% endif %}
+                        {% if request.user.is_main_client %}
+                        <th>Edit</th>
+                        {% endif %}
+                        {% if request.user.is_partner %}
+                          <th>Assign Manager</th>
+                        {% endif %}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for client in clients %}
+                      
+                      <tr>
+                        <td>{{ client.id }}</td>
+                        <td>{{ client.client_name }}</td>
+                        {% comment %} <td>
+                          <ul>
+                          <div class="avatar-circle">
+                            <span class="initials text-white" tooltip="tooltip" title="{{client.assigned_user}}">{{client.assigned_user | truncatechars:2 | upper}}</span>
+                          </div>                          
+                          <div class="avatar-circle">
+                            <span class="initials text-white" tooltip="tooltip" title="{{client.assigned_partner}}">{{client.assigned_partner | truncatechars:2 | upper}}</span>
+                          </div>                          
+                        </ul> {% endcomment %}
+                        </td>
+                        <td>{{ client.gst_no }}</td>
+                        <td>{{ client.pan_no }}</td>
+                        
+                        {% for c in client_invoicing %}
+  
+                          {% if c.client_id == client.id %}
+                          <td> 
+                            {% if c.total_price != None and c.total_price %}
+                            
+                              {% comment %} {{ c.total_price | add:c.ofp | add:c.igst | add:c.cgst | add:c.sgst }} {% endcomment %}
+                              {{ c.total_price | add:c.ofp | add:c.cgst | add:c.sgst | add:c.igst | currency   }}
+                            {% elif c.total_price == 0.0%}
+                              0
+                            {% else %}  
+                              0
+                            {% endif %}
+                          
+                          </td>
+                          <td>  
+                            {% if c.total_price_paid != None and c.total_price_paid %}
+                              {{ c.total_price_paid | currency }}
+                            {% else %}
+                              {{ 0 | currency }}
+                            {% endif %}
+                          </td>
+                          {% comment %} <td>  
+                            {% if c.non_billable and c.non_billable != True %}
+                              {{ c.invoices|subtract:c.non_billable }}
+                            {% else %}
+                              0
+                            {% endif %}
+                          </td> {% endcomment %}
+  
+                          {% else %}
+                            {% comment %} <td>0</td> {% endcomment %}
+  
+                          {% endif %}
+  
+                        {% endfor %}
+                        
+                        <td><a href="{% url 'client_profile' client_id=client.id %}">View</a></td>
+                        <td><a href="{% url 'view_client_invoicing' client_id=client.id %}">View</a></td>
+                        {% if request.user.is_main_client %}
+                          <td><a href="{% url 'main_client_tasks' client_id=client.id %}">View</a></td>
+                        {% endif %}
+                        {% if request.user.is_main_client %}
+                        <td>
+                          <a role="btn" class="btn btn-primary" onclick="edit_client_function('{{client.id}}')">
+                              Edit
+                          </a>
+                        </td>
+                        {% endif %}
+                        {% if request.user.is_partner %}
+                          {% if request.user.id == client.assigned_partner.id %}
+                            {% if not client.assigned_user %}
+                            <td>
+                              <a role="btn" class="btn btn-success" onclick="assign_manager('{{client.id}}','{{client.client_name}}')">
+                                  Edit
+                              </a>
+                            </td>
+                            {% else %}
+                            <td>
+                              <i class="fas fa-check"></i>
+                            </td>
+                            {% endif %}
+                          {% endif %}
+                        {% endif %}
+                      </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              <!-- /.card-body -->
+            </div>
+          </div>
+        </div>
+        <div class="modal fade" id="editClient" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+          aria-hidden="true">
+          <div class="modal-dialog" role="document" style="max-width: 900px !important;">
+            <!-- Edit Activity Form -->
+            <form method="POST" action="{% url 'edit_client' %}" id="client_edit_form">
+              {% csrf_token %}
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="exampleModalLongTitle">Edit Client</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <div class="form-row">
+                    <div class="form-group col-md-12 mb-3">
+                      <label for="acts" class="text-dark">Select Client</label>
+                      <select name="client_id" id="client_id" class="custom-select">
+                        <option value="">Please Select</option>
+                        {% for client in clients %}
+                        <option value="{{ client.id }}">{{ client.client_name }}</option>
+                        {% endfor %}
+                      </select>
+                    </div>
+                    <div class="col-md-6 mb-4">
+                      <label for="clientName" class="text-dark">Client Name</label>
+                      <input type="text" name="client_name" id="client_name" class="form-control" />
+                    </div>
+                    <div class="col-md-6 mb-4">
+                      <label for="clientEmail" class="text-dark">Client Email</label>
+                      <input type="email" name="clientEmail" id="clientEmail" class="form-control" />
+                    </div>
+                    <div class="col-md-6 mb-4">
+                      <label for="financeEmail" class="text-dark">Finance Email</label>
+                      <input type="email" name="financeEmail" id="financeEmail" class="form-control" />
+                    </div>
+
+                    <div class="col-md-6 mb-4">
+                      <label for="gst_number" class="text-dark">GSTIN Number</label>
+                      <input type="text" name="gst_number" id="gst_number" class="form-control" />
+                    </div>
+                    <div class="col-md-6 mb-4">
+                      <label for="pan_number" class="text-dark">PAN Number</label>
+                      <input type="text" name="pan_number" id="pan_number" class="form-control" />
+                    </div>
+                    <div class="col-md-6 mb-4">
+                      <label for="pan_number" class="text-dark">TAN Number</label>
+                      <input type="text" name="tan_number" id="tan_number" class="form-control" />
+                    </div>
+                    <div class="col-md-6 mb-4">
+                      <label for="clientManager" class="text-dark">Assign Manager</label>
+                      <select name="assigned_user" id="manager" class="custom-select">
+                        <option value="-1">Please Select</option>
+                        {% for user in users %}
+                        <option value="{{ user.id }}">{{ user.username }}</option>
+                        {% endfor %}
+                      </select>
+                    </div>
+
+
+
+                    <div class="col-md-12 mb-4" id="industries">
+                        
+                      <label for="taskName" class="text-dark">Select Industries:</label>    
+                      <div class="row">
+                        <select  name="industries" multiple required id="industries" class="form-control">
+                          {% for industry in industries %}
+                          <option value="{{ industry.id }}">{{ industry.industry_name }}</option>
+                          {% endfor %}
+                        </select>
+                        
+                        <div class="form-check col-4">
+                          <label class="form-check-label mr-4">
+                              <input class="form-check-input" type="checkbox" id="industries_all">
+                                  <strong>Applicable to all Industries</strong>
+                              <span class="form-check-sign">
+                                  <span class="check"></span>
+                              </span>
+                          </label>
+                        </div>
+                      </div>
+                    </div> 
+
+                    <div class="col-md-12 mb-3">
+                            
+                      <label for="audit_types" class="text-dark">Select Audit Types:</label>
+                      <div class="row">
+                        <select  name="audit_types" id="audit_types" multiple required  class="form-control">
+                          {% for audittype in audittypes %}
+                          <option value="{{ audittype.id }}">{{ audittype.audit_type_name }}</option>
+                          {% endfor %}
+                        </select>
+                        <!-- {% for audittype in audittypes %}
+                          <div class="col-6 form-check">
+                            <input class="form-check-input" type="checkbox" name="audittype" value="{{ audittype.id }}">
+                            {{ audittype.audit_type_name }}</strong>
+                          </div>    
+                        {% endfor %} -->
+                      </div>
+                  </div>
+
+                  <div class="col-md-12 mb-3" id="entity">
+                            
+                    <label for="taskName" class="text-dark">Select Entities:</label>
+                    <div class="row">
+                      <select  name="entities" multiple required id="entities" class="form-control">
+                        {% for entity in entities %}
+                        <option value="{{ entity.id }}">{{ entity.entity_name }}</option>
+                        {% endfor %}
+                      </select>
+                      <!-- {% for entity in entities %}
+                        <div class="col-6 form-check">
+                          <input class="form-check-input" type="checkbox" name="entities" value="{{ entity.id }}">
+                          {{ entity.entity_name }}</strong>
+                        </div>  
+                      {% endfor %} -->
+                      <div class="form-check col-6">
+                        <label class="form-check-label mr-4">
+                            <input class="form-check-input" type="checkbox" id="entities_all">
+                                <strong>Applicable to all Entities</strong>
+                            <span class="form-check-sign">
+                                <span class="check"></span>
+                            </span>
+                        </label>
+                      </div>
+                    </div>
+                  </div> 
+                  </div>
+                  <div class="modal-footer">
+                    <input type="submit" class="btn btn-success" value="Submit">
+                  </div>
+                </div>
+            </form>
+          </div>
+        </div>
+
+        
+      </section>
+      <!-- /.content -->
+    </div>
+    
+  <div class="modal fade" id="AssignManager" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog" role="document" style="max-width: 500px !important;">
+    <!-- Edit Activity Form -->
+    <form method="POST" action="{% url 'assign_manager' %}" id="assign_manager_form">
+      {% csrf_token %}
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLongTitle">Assign Manager</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="form-row">
+            <div class="form-group col-md-12 mb-3">
+              <label for="assign_manager_client_id" class="text-dark">Select Client</label>
+              <select name="assign_manager_client_id" id="assign_manager_client_id" class="custom-select">
+                
+              </select>
+            </div>
+            
+            <div class="col-md-12 mb-3">
+              <label for="assign_manager_manager" class="text-dark">Assign Manager</label>
+              <select name="assign_manager_manager" id="assign_manager_manager" class="custom-select">
+                <option value="">Please Select</option>
+                {% for user in users %}
+                <option value="{{ user.id }}">{{ user.username }}</option>
+                {% endfor %}
+              </select>
+            </div>
+
+
+
+          </div>
+          <div class="modal-footer">
+            <input type="submit" class="btn btn-success" value="Submit">
+          </div>
+        </div>
+    </form>
+  </div>
+</div>
+{% endblock content %}
+{% block script %}
+  <script>
+    jQuery('#client_edit_form').validate({
+      rules:{
+        client_name:{
+          required:true,
+          lettersonly: true,
+        },
+        clientEmail:{
+          required:true,
+          email:true,
+        },
+        financeEmail:{
+          required:false,
+          email:true,
+        }
+      },
+      messages:{
+        client_name:{
+          required:"Please Enter Client Name",
+          lettersonly: "Please Enter A Valid Client Name",
+        },
+        clientEmail:{
+          required:"Please Enter Client Email",
+          email:"Please Enter a Valid Client Email",
+        },
+        financeEmail:{
+          required:false,
+          email:"Please Enter a Valid Finance Email",
+        }
+      }
+    });
+    jQuery('#assign_manager_form').validate({
+      rules:{
+        assign_manager_client_id:{
+          required:true,
+        },
+        assign_manager_manager:{
+          required:true,
+        },
+      },
+      messages:{
+        assign_manager_client_id:{
+          required:"Please Select Client",
+        },
+        assign_manager_manager:{
+          required:"Please Select Manager",
+        },
+      },
+    });
+    $("#industries_all").click(() => {
+    let isChecked = $("#industries_all").is(':checked');
+    if (isChecked)
+      {
+        $('#industries').each(function() { $('#industries option').prop('selected', true); });
+        console.log("yup")
+      }
+    else
+      {
+        $('#industries').each(function() { $('#industries option').prop('selected', false); }); 
+        console.log("nope")
+      }
+});
+$("#entities_all").click(() => {
+    let isChecked = $("#entities_all").is(':checked');
+    if (isChecked)
+      {
+        $('#entities').each(function() { $('#entities option').prop('selected', true); });
+        console.log("yup")
+      }
+    else
+      {
+        $('#entities').each(function() { $('#entities option').prop('selected', false); }); 
+        console.log("nope")
+      }
+});
+    function edit_client_function(id){
+      $('#industries').each(function() { $('#industries option').prop('selected', false); });
+      $('#entities').each(function() { $('#entities option').prop('selected', false); });
+      $('#audit_types').each(function() { $('#audit_types option').prop('selected', false); });
+      console.log(id);
+      $.ajax({
+      type: "POST",
+      url: "{% url 'get_clientdetails' %}",
+      headers: {'X-CSRFToken': '{{ csrf_token }}'},
+      data: {
+        'client_id': id
+      },
+      success: function(data){
+        console.log("data",data)
+        $('#editClient').modal('show')
+        $('#client_id').val(data.client)
+        $(".entities").prop('checked', false);
+        $(".audittypes").prop('checked', false);
+        $(".industries").prop('checked', false);
+        const entities = data.entities
+        const audittypes = data.audittype
+        const industries = data.industries
+        function removeDuplicates(arr) {
+        var unique = [];
+            arr.forEach(element => {
+                if (!unique.includes(element)) {
+                    unique.push(element);
+                }
+            });
+            return unique;
+        }
+ 
+        
+        
+        $.each(entities, (index, value) => {
+          // console.log("ENTITIES : ",$('#entities option[value='+value+']').text())
+          $('#entities option[value='+value+']').attr('selected',true);
+        })
+        $.each(industries, (index, value) => {
+          // console.log("INDUSTRIES : ",$('#industries option[value='+value+']').text())
+          $('#industries option[value='+value+']').attr('selected',true);
+        })
+        $.each(audittypes, (index, value) => {
+          // console.log("AUDIT TYPE : ",$('#audit_types option[value='+value+']').text())
+          $('#audit_types option[value='+value+']').attr('selected',true);
+        })
+
+        $('#client_name').val(data.name)
+        $('#gst_number').val(data.gst)
+        $('#pan_number').val(data.pan)
+        $('#tan_number').val(data.tan)
+        $('#manager').val(data.manager)
+        $('#clientEmail').val(data.client_email)
+        $('#financeEmail').val(data.finance_email)
+        
+      }
+    });
+    }
+    $(() => {
+      $('body').toggleClass('sidebar-collapse');
+      $('[data-toggle="tooltip"]').tooltip();
+      $('#my-card').CardWidget(options);
+      $('#clients').DataTable({
+        "paging": true,
+        "lengthChange": true,
+        "searching": true,
+        "ordering": true,
+        "info": true,
+        "autoWidth": false,
+      });
+      
+      
+    });
+    function assign_manager(client_id,client_name){
+      if(client_id.length > 0 && client_name.length > 0){
+        $('#assign_manager_client_id').empty();
+        $('#assign_manager_client_id').append(`
+        <option value="${client_id}" selected="selected">${client_name}</option>
+        `);
+      }
+      $('#AssignManager').modal('show')
+    }
+
+  </script>
+{% endblock script %}

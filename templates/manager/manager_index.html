@@ -1,0 +1,82 @@
+{% extends 'includes/masterpage.html' %}
+{% block title %} <title>Approved Tasks</title> {% endblock title %}
+{% block content %} 
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0 text-dark"></h1>
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.content-header -->
+
+    <!-- Main content -->
+    <section class="content">
+       
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                    <div class="card-header">
+                    <h3 class="card-title">Approved Tasks</h3>
+                    </div>
+                    <!-- /.card-header -->
+                    <div class="card-body">
+                    <table id="tasks" class="table table-bordered table-striped">
+                        <thead>
+                        <tr>
+                        <th>Task ID</th>
+                        <th>Task Name</th>
+                        <th>Client Name</th>
+                         <th>Employee Name</th>
+                         <th>Status</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                            {% for task in tasks %}
+                            
+                                <tr>
+                                    <td>{{ task.id}}</td>
+                                    <td>{{ task }}</td>
+                                    <td>{{ task.client }}</td>
+                                    <td>{{ task.user}}</td>
+                                    <td>
+                                        <a href="{% url 'approval' task_id=task.id %}" role="button" class="btn btn-block btn-success swalDefaultSuccess">Approved</a> 
+                                    </td>
+                           
+                         
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    </div>
+                    <!-- /.card-body   -->
+                </div>
+                </div>
+            </div>
+       
+    </section>
+    <!-- /.content -->
+  </div>
+  {% endblock content %}
+      {% block script %}
+
+<script>
+    $(() => {
+        $('body').toggleClass('sidebar-collapse');
+        
+        $('#tasks').DataTable({
+            "paging": true,
+            "lengthChange": true,
+            "searching": true,
+            "ordering": true,
+            "info": true,
+            "autoWidth": false,
+        });
+    });
+    
+</script>
+{% endblock script %}

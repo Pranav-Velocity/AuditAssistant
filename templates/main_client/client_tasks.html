@@ -1,0 +1,690 @@
+{% extends 'includes/masterpage.html' %}
+{% load partner_extras %}
+{% block title %} <title>Assign Task</title> {% endblock title %}
+{% block content %}  
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0 text-dark"></h1>
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.content-header -->
+
+    <!-- Main content -->
+    <section class="content">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">
+                    <i class="fas fa-list"></i>
+                    Client Details
+                    </h3>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <dl class="row">
+                                <dt class="col-sm-4">Client ID</dt>
+                                <dd class="col-sm-8">{{ client.id }}</dd>
+                                <dt class="col-sm-4">Client Name</dt>
+                                <dd class="col-sm-8">{{ client.client_name }}</dd>
+                                <dt class="col-sm-4">GST Number</dt>
+                                <dd class="col-sm-8">{{ client.gst_no }}</dd>
+                                <dt class="col-sm-4">PAN Number</dt>
+                                <dd class="col-sm-8">{{ client.pan_no }}</dd>
+                                <dt class="col-sm-4">Industries</dt>
+                                <dd class="col-sm-8">
+                                  {% for i in industry%}
+                                    <div class="badge badge-warning">
+                                      {{ i }}
+                                    </div>
+                                  {% endfor %}
+                                </dd>
+                                <dt class="col-sm-4">Types of Audits</dt>
+                                <dd class="col-sm-8">
+                                  {% for type in audittype %}
+                                    <div class="badge badge-info">
+                                      {{ type }}
+                                    </div>
+                                  {% endfor %}
+                                </dd>
+                                <dt class="col-sm-4">Entities</dt>
+                                <dd class="col-sm-8">
+                                  {% for e in entity %}
+                                    <div class="badge badge-success">
+                                      {{ e }}
+                                    </div>
+                                  {% endfor %}
+                                </dd>
+                            </dl>
+                        </div>
+                        
+                        
+                    </div>
+                    
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+          </div>
+        </div>
+       
+    <!-- Content Header (Page header)  -->
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-sm-6">
+            <h3 class="m-0 text-dark">Choose type of assignment: </h3>
+              <label class="pr-3"><input type="radio" class="mr-2"  name="assignment" value="individual" checked="checked">Individual</label>
+              <label class="pr-3"><input type="radio" class="mr-2" name="assignment" value="multiple">Multiple</label>
+            <h3 class="m-0 text-dark">Task Status: </h3>
+              <label class="pr-3"><input type="radio" class="mr-2" name="assignment" value="assigned_task">Assigned Task</label>
+              <label class="pr-3"><input type="radio" class="mr-2" name="assignment" value="approved_task">Approved Task</label>
+              <label class="pr-3"><input type="radio" class="mr-2" name="assignment" value="rejected_task">Rejected Task</label>
+              <label class="pr-3"><input type="radio" class="mr-2" name="assignment" value="reassign">Reassign</label>
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+      </div><!-- /.container-fluid -->
+   
+
+ 
+        <section class="content">
+          <div class="row assignment" id="individual">
+              <div class="col-12">
+                  <div class="card">
+                  <div class="card-header">
+                  <h3 class="card-title">Individual Assignment of Tasks</h3>     
+                  </div>
+                  <!-- /.card-header -->
+                  <div class="card-body">
+                  <table id="tasks" class="table table-bordered table-striped table-responsive">
+                      <thead>
+                      <tr>
+                          <th>Task ID</th>
+                          <th>Task</th>
+                          <th>Sub Area</th>
+                          <th>Activity</th>
+                          <th>Estimated Days</th>
+                          <th>Auditing Standard</th>
+                          <th>International Auditing Standard</th>
+                          <th>Task Type</th>
+                          <th>Task Relevance</th>
+                          <th>Volume of Task</th>
+                          <th>Sample Rate(%)</th>
+                          <th>Partner</th>
+                          <th>Manager</th>
+                          <th>Assign Task</th>
+                          <th>Action</th>
+                      </tr> 
+                      </thead>
+                      <tbody>
+                        
+                          {% for task in tasks %}
+                          {% if task.user is None %}
+                              <tr>
+                                  <form action="{% url 'main_client_assign_task_to_employee' client_id=client.id %}" method="POST">
+                                    {% csrf_token %}
+                                    <td>{{ task.id }}</td>
+                                    <td>{{ task.task_name }}</td>
+                                    <td>{{ task.act.act_name }}</td>
+                                    <td>{{ task.activity.activity_name }}</td>
+                                    <td>{{ task.task_estimated_days }}</td>
+                                    <td>{{ task.task_auditing_standard }}</td>
+                                    <td>{{ task.task_international_auditing_standard }}</td>
+                                    <td>
+                                      <select name="task_type" id="tr" class="custom-select" style="width:100px">
+                                        <option value="">Please Select</option>
+                                        <option value="automated">Automated</option>
+                                        <option value="semi-automated">Semi Automated</option>
+                                        <option value="manual">Manual</option>
+                                      </select>
+                                    </td>
+                                    <td>
+                                      <select name="task_relevance" id="tr" class="custom-select" >
+                                        <option value="">Please Select</option>
+                                        <option value="Low">Low</option>
+                                        <option value="Medium">Medium</option>
+                                        <option value="High">High</option>
+                                        <option value="Very High">Very High</option>
+                                        <option value="Critical">Critical</option>
+                                      </select>
+                                    </td>
+                                    <td>
+                                      <input type="text" class="form-control" name="volume" size="7px">
+                                    </td>
+                                    <td>
+                                      <input type="text" class="form-control" name="samplerate" size="7px">
+                                    </td>
+                                    <td>
+                                      <select name="partner_{{forloop.counter}}" id="partner_{{forloop.counter}}" class="custom-select partner_assign">
+                                        <option value="">Please Select</option>
+                                        {% for partner in partners %}
+                                            <option value="{{ partner.id }}">{{ partner.username}}</option>
+                                        {% endfor %}
+                                      </select>
+                                    </td>
+                                    <td>
+                                        <select name="manager_{{forloop.counter}}" id="manager_{{forloop.counter}}" class="custom-select manager_assign" >
+                                          
+                                          
+                                        </select>
+                                      </td>
+                                      <td>
+                                        <select name="users_{{forloop.counter}}" id="users_{{forloop.counter}}" class="custom-select users_assign" >
+                                          
+                                        </select>
+                                      </td>
+                                    <td> 
+                                      <input type="submit" class="btn btn-success" value="Assign" id="btnaccept">
+                                    </td>
+                                    <input type="hidden" name="partner_id" value="{{forloop.counter}}" />
+                                    <input type="hidden" name="task_id" value="{{ task.id }}" />
+                                </form>
+                              </tr>
+                              {% endif %}
+                          {% endfor %}
+                      </tbody>
+                    </table>
+                  </div>
+                  <!-- /.card-body   -->
+                </div>
+              </div>
+          </div>
+    
+          <div class="row assignment" id="multiple">
+              <div class="col-12">
+                  <div class="card">
+                  <div class="card-header">
+                  <h3 class="card-title">Multiple Assignment of Tasks</h3>     
+                  </div>
+                  <!-- /.card-header -->
+                  <div class="card-body">
+                  <form id="multipleTasksForm" action="{% url 'assign_multiple_tasks' client_id=client.id %}" method="POST">
+                    {% csrf_token %}    
+                    <table id="multipleTasks" class="table table-bordered table-striped">
+                      <thead>
+                      <tr>
+                          <th></th>
+                          <th>Task Name</th>
+                          <th>Sub Area</th>
+                          <th>Activity</th>
+                          <th>Audit Type</th>
+                          <th>Estimated Days</th>
+                          <th>Auditing Standard</th>
+                          <th>International Auditing Standard</th>
+                      </tr> 
+                      </thead>
+                      <tbody>
+                        
+                          {% for task in tasks %}
+                          {% if task.user_id is  None %}
+                              <tr>
+                                <td>{{ task.id }}</td> 
+                                <td>{{ task.task_name }}</td>
+                                <td>{{ task.act.act_name }}</td>
+                                <td>{{ task.activity.activity_name }}</td>
+                                <td>{{ task.audit_type.audit_type_name }}</td>
+                                <td>{{ task.task_estimated_days }}</td>
+                                <td>{{ task.task_auditing_standard }}</td>
+                                <td>{{ task.task_international_auditing_standard }}</td>
+                              </tr>
+                              {%endif%}
+                          {% endfor %}
+                      </tbody>
+                    </table>
+                    <hr>
+                    <div class="col-5">
+                      <h6>Select Employee</h6>
+                      <select name="user" id="act" class="custom-select" >
+                        <option value="-1">Please Select</option>
+                        {% for user in users %}
+                            <option value="{{ user.id }}">{{ user.username}}</option>
+                        {% endfor %}
+                      </select>
+                    </div>
+                    <div class="col-5 mt-3">
+                      <input class="btn btn-success" type="submit" value="Assign Tasks" />
+                    </div>
+                  </form>
+                  </div>
+                  <!-- /.card-body   -->
+                </div>
+              </div>
+          </div>
+        </section>
+        <!-- /.content -->
+        <!--assigned task-->
+        <div class="row assignment"   id="assigned_task">
+          <div class="col-12">
+              <div class="card">
+              <div class="card-header">
+              <h3 class="card-title">Assigned Tasks Status</h3>
+              </div>
+              <!-- /.card-header -->
+              <div class="card-body">
+              <table id="tasks" class="table table-bordered table-striped">
+                  <thead>
+                  <tr>
+                  <th>Task ID</th>
+                  <th>Task Name</th>
+                  <th>Client ID</th>
+                   <th>Employee Name</th>
+                   <th>Approvals</th>
+                  </tr>
+                  </thead>
+                  <tbody> 
+                      {% for task in tasks %}
+                      {% if task.is_approved is False and task.is_rejected is False and task.user is not None%}
+                          <tr>
+                              <td>{{ task.id}}</td>
+                              <td>{{ task }}</td>
+                              <td>{{ task.client_id }}</td>
+                              <td>{{ task.user}}</td>
+                               
+                         
+                              <td class="">
+                               {% if task.is_start is True and task.status is False %}
+                               <a href="{% url 'approval' task_id=task.id %}" role="button" class="btn btn-block btn-warning ">Start Working</a>
+                               {% elif task.is_start is True and task.status is True %}
+                               <a href="{% url 'approval' task_id=task.id %}" role="button" class="btn btn-block btn-success ">Waiting For Approval</a>
+                               
+                               {%else%}
+                                <a href="{% url 'approval' task_id=task.id %}" role="button" class="btn btn-block btn-warning ">Not Started</a>
+                               
+                              </td>
+                       {% endif %}
+                       {% endif %}
+                          </tr>
+                      {% endfor %}
+                  </tbody>
+              </table>
+              </div>
+              <!-- /.card-body   -->
+          </div>
+          </div>
+      </div>
+ 
+        <!--/-->
+        <!--Rejected task -->
+        <div class="row assignment"  id="approved_task">
+          <div class="col-12">
+              <div class="card">
+              <div class="card-header">
+              <h3 class="card-title">Approved Tasks</h3>
+              </div>
+              <!-- /.card-header -->
+              <div class="card-body">
+              <table id="tasks" class="table table-bordered table-striped">
+                  <thead>
+                  <tr>
+                  <th>Task ID</th>
+                  <th>Task Name</th>
+                  <th>Client ID</th>
+                   <th>Employee Name</th>
+                   <th>Approvals</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                            {% for task in tasks %}
+                            {% if task.is_approved is True  %}
+                                <tr>
+                                    <td>{{ task.id }}</td>
+                                    <td>{{ task }}</td>
+                                    <td>{{ task.client_id }}</td>
+                                    <td>{{ task.user}}</td>
+                                    <td>
+                                    {% if task.status is True  %}
+                                   
+                                     <a href="{% url 'approval' task_id=task.id %}" role="button" class="btn btn-block btn-success ">Approved</a>
+                            
+                            
+                                     {% endif %}
+                                    </td>
+                             
+                             
+                             {% endif %}
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+              </table>
+              </div>
+              <!-- /.card-body   -->
+          </div>
+          </div>
+      </div>
+ 
+        <!--/-->
+         <!--Rejected task -->
+         <div class="row assignment"   id="rejected_task">
+          <div class="col-12">
+              <div class="card">
+              <div class="card-header">
+              <h3 class="card-title">Rejected Tasks</h3>
+              </div>
+              <!-- /.card-header -->
+              <div class="card-body">
+              <table id="tasks" class="table table-bordered table-striped">
+                  <thead>
+                  <tr>
+                  <th>Task ID</th>
+                  <th>Task Name</th>
+                  <th>Client ID</th>
+                   <th>Employee Name</th>
+                   <th>Approvals</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                            {% for task in tasks %}
+                            {% if task.is_rejected is True %}
+                                <tr>
+                                    <td>{{ task.id }}</td>
+                                    <td>{{ task }}</td>
+                                    <td>{{ task.client_id }}</td>
+                                    <td>{{ task.user}}</td>
+                                    <td>
+                                     <a href="{% url 'approval' task_id=task.id %}" role="button" class="btn btn-block btn-danger ">Rejected</a> 
+                                    </td>
+                             
+                             
+                             {% endif %}
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+              </table>
+              </div>
+              <!-- /.card-body   -->
+          </div>
+          </div>
+      </div>
+ 
+        <!--/-->
+        <!--reassign-->
+        <div class="row assignment"  id="reassign">
+          <div class="col-12">
+              <div class="card">
+              <div class="card-header">
+              <h3 class="card-title">Reassign</h3>
+              </div>
+              <!-- /.card-header -->
+              <div class="card-body">
+              <table id="tasks" class="table table-bordered table-striped">
+                  <thead>
+                  <tr>
+                    <th>Task ID</th>
+                    <th>Task Name</th>
+                    <th>Sub Area</th>
+                    <th>Activity</th>
+                    <th>Client</th>
+                    <th>Estimated Days</th>
+                    <th>Auditing Standard</th>
+                    <th>International Auditing Standard</th>
+                    <th class="text-danger">Remark</th>
+                    <th>Assign Task</th>  
+                    <th>Action</th>
+                 
+                  </tr>
+                  </thead>
+                  <tbody>
+                    {% for task in reassign_tasks %}  
+                      
+                    <tr>
+                        <form action="{% url 'reassign_task' client_id=client.id  %}" method="POST">
+                          {% csrf_token %}
+                          <td>{{ task.id }}</td>
+                          <td>{{ task}}</td>
+                          <td>{{ task.act}}</td>
+                          <td>{{ task.activity}}</td>
+                          <td>{{ task.client.client_name }}</td>
+                          <td>{{ task.task_estimated_days }}</td>
+                          <td>{{ task.task_auditing_standard }}</td>
+                          <td>{{ task.task_international_auditing_standard }}</td>
+                          <td class="text-danger">{{ task.rejection_remark }}</td>
+                          <td>
+                            <select name="user" id="user" class="custom-select">
+                              <option value="-1">Please Select</option>
+                              {% for user in users %}
+                                  <option value="{{ user.id }}">{{ user.username}}</option>
+                              {% endfor %}
+                            </select>
+                          </td>
+                          <td> 
+                            <input type="submit" class="btn btn-success" value="Assign"id="btnaccept">
+                          </td>
+
+                          <input type="hidden" name="task_id" value="{{ task.id }}" />
+                        </form>
+                      </tr>
+                                
+                  {% endfor %}
+                        </tbody>
+              </table>
+              </div>
+              <!-- /.card-body   -->
+          </div>
+          </div>
+      </div>
+ 
+        <!---->
+      </div>
+    </section>
+    <!-- /.content --> 
+  </div>
+  {% endblock content %}
+
+ 
+  {% block script %}
+<script>
+
+$("select.partner_assign").change(function(){
+  var id = this.id.replace('partner_','');
+  $(`#manager_${id}`).empty();
+  $(`#users_${id}`).empty();
+    $.ajax({
+      type: "POST",
+      url: "{% url 'get_all_managers' %}",
+      headers: {'X-CSRFToken': '{{ csrf_token }}'},
+      data: {
+        'partner_id': this.value
+      },
+      success: function(response){
+        if(response.data.length > 0){
+            $(`#manager_${id}`).empty();
+            $(`#manager_${id}`).append(`
+                <option value="">Select Manager</option>
+                `);
+            var data = response.data;
+            data.forEach(myfunction);
+
+            function myfunction(item){
+                $(`#manager_${id}`).append(`
+                <option value="${item.id}">${item.username}</option>
+                `);
+            }
+        }
+      }
+    });
+});
+
+$("select.manager_assign").change(function(){
+  var id = this.id.replace('manager_','');
+  console.log(id , this.value)
+    $.ajax({
+      type: "POST",
+      url: "{% url 'get_all_users' %}",
+      headers: {'X-CSRFToken': '{{ csrf_token }}'},
+      data: {
+        'manager_id': this.value
+      },
+      success: function(response){
+        console.log(response)
+        if(response.data.length > 0){
+          $(`#users_${id}`).empty();
+            $(`#users_${id}`).append(`
+                <option value="">Select Manager</option>
+                `);
+            var data = response.data;
+            data.forEach(myfunction);
+
+            function myfunction(item){
+                $(`#users_${id}`).append(`
+                <option value="${item.id}">${item.username}</option>
+                `);
+            }
+        }
+      }
+    });
+});
+
+    $(() => {
+        $('body').toggleClass('sidebar-collapse');
+
+          $("#individual").show(); 
+          $("#multiple").hide(); 
+          $("#assigned_task").hide();
+          $("#rejected_task").hide();
+          $("#approved_task").hide();
+          $("#reassign").hide();
+          $('input[type="radio"]').click(function(){
+              let inputValue = $(this).attr("value");
+              if (inputValue === 'individual') {
+                $("#individual").show(); 
+                $("#multiple").hide(); 
+                $("#assigned_task").hide(); 
+                $("#rejected_task").hide();
+                $("#approved_task").hide();
+                $("#reassign").hide();
+              } 
+             
+              else if (inputValue === 'assigned_task') {
+              $("#assigned_task").show(); 
+              $("#individual").hide(); 
+              $("#multiple").hide();
+              $("#rejected_task").hide();
+              $("#approved_task").hide();
+              $("#reassign").hide();
+            }
+            
+            else if (inputValue === 'rejected_task') {
+              $("#rejected_task").show(); 
+              $("#individual").hide(); 
+              $("#multiple").hide(); 
+              $("#assigned_task").hide(); 
+              $("#approved_task").hide();
+              $("#reassign").hide();
+            }
+            else if (inputValue === 'approved_task') {
+              $("#approved_task").show(); 
+              $("#individual").hide(); 
+              $("#multiple").hide(); 
+              $("#rejected_task").hide();
+              $("#assigned_task").hide();
+              $("#reassign").hide();
+              
+            }
+            else if (inputValue === 'reassign') {
+              $("#approved_task").hide(); 
+              $("#individual").hide(); 
+              $("#multiple").hide(); 
+              $("#rejected_task").hide();
+              $("#assigned_task").hide();
+              $("#reassign").show();
+              
+            }
+              else {
+                $("#multiple").show(); 
+                $("#individual").hide(); 
+                $("#assigned_task").hide();
+                $("#rejected_task").hide();
+                $("#approved_task").hide();
+                $("#reassign").hide();
+              }
+          });
+           
+          $('#tasks').DataTable({
+              "paging": true,
+              "lengthChange": true,
+              "searching": true,
+              "ordering": true,
+              "info": true,
+              "autoWidth": false,
+          });
+    
+          const table = $('#multipleTasks').DataTable({
+            "columnDefs": [{
+              "orderable": true,
+              'checkboxes': {
+                 'selectRow': true
+              },
+              "className": 'select-checkbox',
+              "targets": 0
+            }],
+            'select': {
+              'style':    'multi',
+              'selector': 'td:first-child'
+            },
+            'order': [[ 1, 'asc' ]]
+          });
+    
+         $('#multipleTasksForm').on('submit', function(e) {
+            const form = this;
+            const rows_selected = table.column(0).checkboxes.selected();
+            // console.log($(rows_selected));
+            
+            //Iterate over all selected checkboxes
+            $.each(rows_selected, function(index, rowId) {
+               $(form).append(
+                   $('<input>')
+                      .attr('type', 'hidden')
+                      .attr('name', 'task_id')
+                      .val(rowId)
+               );
+            });
+          });
+    
+        
+    
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000
+        });
+
+        $('.swalDefaultSuccess').click(function() {
+            Toast.fire({
+                type: 'success',
+                title: 'The task has been started'
+            })
+        });
+
+         $('.taskSubmit').click(function() {
+            Toast.fire({
+                type: 'success',
+                title: 'The submission for the task has been sent for approval!'
+            })
+        });
+
+        $('.swalDefaultError').click(function() {
+            Toast.fire({
+                type: 'error',
+                title: 'The task has been ended!'
+            })
+        });
+
+        $('.metisFolder').metisMenu({
+            toggle: false
+        });
+
+    });
+
+    
+</script>
+{% endblock script %}
+
