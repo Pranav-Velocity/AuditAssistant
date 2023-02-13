@@ -408,17 +408,17 @@ def list_of_clients(request):
 
 def client_tasks(request,client_id):
     if request.user.is_manager:
-        print(request.user)
+        # print(request.user)
         client = Client.objects.get(id=client_id)
         # users = User.objects.exclude(is_partner=True).exclude(is_admin=True).exclude(is_manager=True)
         # users |= User.objects.filter(username = request.user)
-        logged_in_partner = request.user.id
+        logged_in_manager = request.user.id
         users = []
-        user = User.objects.filter(id = request.user.linked_employee)
+        users.append(request.user)
+        user = User.objects.filter(linked_employee = request.user.id)
         for i in user:
-            sub_user = User.objects.filter(linked_employee = i.id)
-            for j in sub_user:
-                users.append(j)
+            users.append(i)
+
         tasks_of_client = ClientTask.objects.filter(client_id=client_id,client__assigned_user=request.user)
         reassign_tasks = ClientTask.objects.filter(client_id=client_id,is_reject=True,client__assigned_user=request.user)
         
