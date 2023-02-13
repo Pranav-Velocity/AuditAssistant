@@ -124,23 +124,28 @@
         client_first_name:{
           required:true,
           lettersonly: true,
+          maxlength:255,
         },
         client_last_name:{
           required:true,
           lettersonly: true,
+          maxlength:255,
         },
         client_user_name:{
           required:true,
+          maxlength:255,
         },
         client_email_id:{ 
           required:true,
           emailcheck:true,
+          maxlength:255,
         },
         client_mobile:{
           required:true,
           number:true,
           minlength:10,
           maxlength:10,
+
         },
         client_password:{
           required:true,
@@ -151,10 +156,12 @@
         client_user_creation:{
           required:true,
           number:true,
+          maxlength:255,
         },
         client_files_upload:{
           required:true,
           number:true,
+          maxlength:255,
         },
         client_billing_start_date:{
           required:true,
@@ -169,17 +176,21 @@
         client_first_name:{
           required:"Please Enter Main Client First Name",
           lettersonly: "(Spaces, Special Characters and Numbers not Allowed ..!))",
+          maxlength:"Max Character allowed is 255",
         },
         client_last_name:{
           required:"Please Enter Main Client Last Name",
           lettersonly: "(Spaces, Special Characters and Numbers not Allowed ..!))",
+          maxlength:"Max Character allowed is 255",
         },
         client_user_name:{
           required:"Please Enter Main Client User Name",
+          maxlength:"Max Character allowed is 255",
         },
         client_email_id:{
           required:"Please Enter Main Client Email Address",
           emailcheck:"Please Enter a Valid Email Address",
+          maxlength:"Max Character allowed is 255",
         },
         client_mobile:{
           required:"Please Enter Main Client Mobile",
@@ -196,10 +207,12 @@
         client_user_creation:{
           required:"Please Enter Number of User Creation Allowed",
           number:"Only Numbers are Allowed",
+          maxlength:"Max Character allowed is 255",
         },
         client_files_upload:{
           required:"Please Enter Number of File Uploads Allowed",
           number:"Only Numbers are Allowed",
+          maxlength:"Max Character allowed is 255",
         },
         client_billing_start_date:{
           required:"Please Enter Billing Start Date",
@@ -214,21 +227,6 @@
         form.submit();
       }
     });
-    $.validator.addMethod("pwcheck", function(value) {
-   return /^[A-Za-z0-9\d=!\-@._*]*$/.test(value) // consists of only these
-       && /[a-z]/.test(value) // has a lowercase letter
-       && /\d/.test(value) // has a digit
-});
-jQuery.validator.addMethod("validDate", function(value, element) {
-        return this.optional(element) || moment(value,"dd/mm/yyyy").isValid();
-    }, "Please enter a valid date in the format dd/mm/yyyy");
-document.addEventListener("wheel", function(event){
-    if(document.activeElement.type === "number"){
-        document.activeElement.blur();
-    }
-});
-$.validator.addMethod("emailcheck", function(value) {
-   return /^\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}\b$/i.test(value) // consists of only these
-},"Please enter a valid email address");
+    
 </script>
 {% endblock script %}

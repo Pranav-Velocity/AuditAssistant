@@ -103,9 +103,9 @@ class Client(models.Model):
 #auditplans
 class AuditPlanMapping(models.Model):
     auditplanname = models.CharField(max_length=255,null=False,blank=False)
-    start_date = models.DateField(auto_now_add=True,auto_now=False,blank=True, null=True) 
-    estimated_end_date = models.DateField(auto_now_add=True,auto_now=False,blank=True, null=True)
-    actual_end_date = models.DateField(auto_now_add=True,auto_now=False,blank=True, null=True)
+    start_date = models.DateField(auto_now_add=False,auto_now=False,blank=True, null=True) 
+    estimated_end_date = models.DateField(auto_now_add=False,auto_now=False,blank=True, null=True)
+    actual_end_date = models.DateField(auto_now_add=False,auto_now=False,blank=True, null=True)
     finance_year = models.CharField(max_length=20,null=True,blank=False)
     auditplan_frequency = models.CharField(max_length=20,null=True,blank=False)
     client = models.ForeignKey(Client, on_delete=models.CASCADE, blank=False, null=False)

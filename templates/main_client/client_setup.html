@@ -285,11 +285,12 @@
       rules:{
         client_name:{
           required:true,
-          alpha: true,
+          alphabets_and_spaces: true,
+          
         },
         client_email:{
           required:true,
-          email:true,
+          emailcheck:true,
         },
         finance_email:{
           required:false,
@@ -299,11 +300,11 @@
       messages:{
         client_name:{
           required:"Please Enter Client Name",
-          alpha: "Please Enter A Valid Client Name",
+          alphabets_and_spaces: "Please Enter A Valid Client Name",
         },
         client_email:{
           required:"Please Enter Client Email",
-          email:"Please Enter a Valid Client Email",
+          emailcheck:"Please Enter a Valid Client Email",
         },
         finance_email:{
           required:false,
@@ -315,13 +316,7 @@
       }
     });
 
-    jQuery.validator.addMethod("alphanumeric", function(value, element) {
-    return this.optional(element) || /^\w+$/i.test(value);
-    }, "Letters, numbers, and underscores only please");
-
-    $.validator.addMethod("alpha", function(value, element) {
-    return this.optional(element) || value == value.match(/^[a-zA-Z ]*$/);
- });
+    
 
 </script>
 {% endblock script %}

@@ -39,6 +39,11 @@ def SuperAdminDashboard(request):
         }
         return render(request,'super_admin/dashboard.html',params)
 
+def error_404_view(request, exception):
+   
+    # we add the path to the the 404.html file
+    # here. The name of our HTML file is 404.html
+    return render(request, 'includes/404.html')
 
 @login_required
 def ShowUsers(request):

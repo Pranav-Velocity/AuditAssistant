@@ -342,13 +342,16 @@
         employee_fname:{
           required:true,
           lettersonly: true,
+          maxlength:255,
         },
         employee_lname:{
           required:true,
           lettersonly: true,
+          maxlength:255,
         },
         employee_username:{
           required:true,
+          maxlength:255,
         },
         employee_password:{
           required:true,
@@ -359,6 +362,7 @@
         employee_email:{ 
           required:true,
           emailcheck:true,
+          maxlength:255,
         },
         client_mobile:{
           required:true,
@@ -374,13 +378,16 @@
         employee_fname:{
           required:"Please Enter First Name",
           lettersonly: "(Spaces, Special Characters and Numbers not Allowed ..!))",
+          maxlength:"Maximum Characters Allowed is 255.",
         },
         employee_lname:{
           required:"Please Enter Last Name",
           lettersonly: "(Spaces, Special Characters and Numbers not Allowed ..!))",
+          maxlength:"Maximum Characters Allowed is 255.",
         },
         employee_username:{
           required:"Please Enter User Name",
+          maxlength:"Maximum Characters Allowed is 255.",
         },
         employee_password:{
           required:"Please Enter Password",
@@ -391,6 +398,7 @@
         employee_email:{
           required:"Please Enter Email Address",
           emailcheck:"Please Enter a Valid Email Address",
+          maxlength:"Maximum Characters Allowed is 255.",
         },
         client_mobile:{
           required:"Please Enter Mobile",
@@ -406,15 +414,8 @@
         form.submit();
       }
     });
-    $.validator.addMethod("pwcheck", function(value) {
-      return /^[A-Za-z0-9\d=!\-@._*]*$/.test(value) // consists of only these
-          && /[a-z]/.test(value) // has a lowercase letter
-          && /\d/.test(value) // has a digit
-    });
-
-    $.validator.addMethod("emailcheck", function(value) {
-      return /^\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}\b$/i.test(value) // consists of only these
-    },"Please enter a valid email address");
+    
+    
     function SearchClients(){
       $('#task_status_report').empty();
       $('#task_status_report').val($('#search_task_status').val())

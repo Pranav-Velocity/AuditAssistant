@@ -957,64 +957,73 @@ def add_audit_plan(request,client_id):
     print(client_id)
     if request.method == "POST":
         audit_plan_name = request.POST.get('audit_plan_name')
-        auditplan_startdate = request.POST.get('auditplan_startdate')
-        auditplan_enddate = request.POST.get('auditplan_enddate')
-        auditplan_actual_enddate = request.POST.get('auditplan_actual_enddate')
+        audit_plan_startdate = request.POST.get('audit_plan_startdate')
+        audit_plan_enddate = request.POST.get('audit_plan_enddate')
+        audit_plan_actual_enddate = request.POST.get('audit_plan_actual_enddate')
         auditplan_frequency = request.POST.get('auditplan_frequency')
         auditplan_fy = request.POST.get('auditplan_fy')
         auditplan_ap = request.POST.get('auditplan_ap')
         is_billable = request.POST.get('is_billable')
-        
+        print("Data audit :",audit_plan_name , audit_plan_startdate , audit_plan_enddate , audit_plan_actual_enddate)
         if is_billable is None:
             is_billable = False
-        auditplan = AuditPlanMapping(auditplanname=audit_plan_name, start_date=auditplan_startdate,
-                                     estimated_end_date=auditplan_enddate, actual_end_date=auditplan_actual_enddate,
-                                     auditplan_frequency=auditplan_frequency, finance_year=auditplan_fy,
-                                     client_id=client_id, audittype_id=auditplan_ap, is_billable=is_billable)
-        # print(auditplan_startdate)
+        auditplan = AuditPlanMapping(
+            auditplanname=audit_plan_name, 
+            start_date=audit_plan_startdate,
+            estimated_end_date=audit_plan_enddate, 
+            actual_end_date=audit_plan_actual_enddate,
+            auditplan_frequency=auditplan_frequency, 
+            finance_year=auditplan_fy,
+            client_id=client_id, 
+            audittype_id=auditplan_ap, 
+            is_billable=is_billable
+            )
+        print("Saved audit :",auditplan.auditplanname ,auditplan.start_date ,auditplan.estimated_end_date ,auditplan.actual_end_date  )
+        # print(audit_plan_startdate)
         try:
             auditplan.save()
-            print("auditplan saved successfully :",auditplan_startdate, auditplan_enddate, auditplan_actual_enddate)
+            print("auditplan saved successfully :",auditplan.auditplanname ,auditplan.start_date ,auditplan.estimated_end_date ,auditplan.actual_end_date)
+            auditplan = AuditPlanMapping.objects.all().last()
+            industries = ClientIndustryAuditTypeEntity.objects.values_list('industry_id').filter(client_id=auditplan.client_id)
+            entities = ClientIndustryAuditTypeEntity.objects.values_list('entity_id').filter(client_id=auditplan.client_id)
+            # audittypes = ClientIndustryAuditTypeEntity.objects.values_list('audittype_id').filter(client_id=auditplan.client_id)
+            # print(industries,entities)
+            activities = set()
+
+                # Add to the mapping table
+            for industry in industries:
+                    for entity in entities:
+                        activity_objs = ActivityAuditTypeEntity.objects.filter(audittype=auditplan_ap, entity=entity,
+                                                                            industry=industry)
+                        print(activity_objs)
+                        for activity_obj in activity_objs:
+                            activities.add(activity_obj.activity_id)
+                
+            activities = list(activities)
+            print(activities)
+            for activity_id in activities:
+                #activity = Activity.objects.get(pk=activity_id)
+                tasks = Task.objects.filter(activity_id=activity_id)
+                #act = Act.objects.filter(id=activity.act.id)
+                print(tasks)
+                # area = Regulator.objects.filter(id=act.area.id)
+                for task in tasks:
+                    activity = Activity.objects.get(id=task.activity.id)
+                    act = Act.objects.get(id=activity.act.id)
+                    ClientTask.objects.create(
+                        client_id=auditplan.client_id, 
+                        task_name=task.task_name,
+                        task_estimated_days=task.task_estimated_days,
+                        task_auditing_standard=task.task_auditing_standard,
+                        task_international_auditing_standard=task.task_international_auditing_standard,
+                        activity=activity,
+                        act=act,
+                        auditplan_id = auditplan.id          
+                    )
         except Exception as e:
             raise e
         
-        auditplan = AuditPlanMapping.objects.all().last()
-        industries = ClientIndustryAuditTypeEntity.objects.values_list('industry_id').filter(client_id=auditplan.client_id)
-        entities = ClientIndustryAuditTypeEntity.objects.values_list('entity_id').filter(client_id=auditplan.client_id)
-        # audittypes = ClientIndustryAuditTypeEntity.objects.values_list('audittype_id').filter(client_id=auditplan.client_id)
-        print(industries,entities)
-        activities = set()
-
-            # Add to the mapping table
-        for industry in industries:
-                for entity in entities:
-                    activity_objs = ActivityAuditTypeEntity.objects.filter(audittype=auditplan_ap, entity=entity,
-                                                                           industry=industry)
-                    print(activity_objs)
-                    for activity_obj in activity_objs:
-                        activities.add(activity_obj.activity_id)
-            
-        activities = list(activities)
-        print(activities)
-        for activity_id in activities:
-            #activity = Activity.objects.get(pk=activity_id)
-            tasks = Task.objects.filter(activity_id=activity_id)
-            #act = Act.objects.filter(id=activity.act.id)
-            print(tasks)
-            # area = Regulator.objects.filter(id=act.area.id)
-            for task in tasks:
-                activity = Activity.objects.get(id=task.activity.id)
-                act = Act.objects.get(id=activity.act.id)
-                ClientTask.objects.create(
-                    client_id=auditplan.client_id, 
-                    task_name=task.task_name,
-                    task_estimated_days=task.task_estimated_days,
-                    task_auditing_standard=task.task_auditing_standard,
-                    task_international_auditing_standard=task.task_international_auditing_standard,
-                    activity=activity,
-                    act=act,
-                    auditplan_id = auditplan.id          
-                )
+        
 
     return HttpResponseRedirect(f'/main_client/client/{client_id}/profile')
 
@@ -1096,10 +1105,10 @@ def audit_plan(request, auditplan_id):
         ap.append(ActivityAuditTypeEntity.objects.values_list('activity_id',flat=True).filter(audittype_id = ca).distinct())
         ac = ActivityAuditTypeEntity.objects.filter(audittype_id = ca).distinct()
     audittypes = AuditType.objects.filter(pk = auditplan.audittype_id)
-    print(ap)
+    # print(ap)
     tlist = []
     j=0
-    print(len(ap))
+    # print(len(ap))
         
     # print(ac)
     # print("client audit types")
@@ -1147,13 +1156,18 @@ def audit_plan(request, auditplan_id):
     #     print(type(ct.task_estimated_days))
         # te = int(ct.task_estimated_days)
         # estimated_time = estimated_time + te
-    print(client_tasks)
-    print(client_tasks_list)
+    # print(client_tasks)
+    # print(client_tasks_list)
 
     # print(estimated_time)
     # print("=====TIME AVAILABLE=======")
-    time_available = auditplan.estimated_end_date - auditplan.start_date
-    buffer = auditplan.actual_end_date - auditplan.estimated_end_date
+    time_available = auditplan.estimated_end_date - date.today()
+    if time_available.days > 0:
+        buffer = auditplan.actual_end_date - auditplan.estimated_end_date
+    else:
+        buffer = auditplan.actual_end_date - date.today()
+    time_spent_in_days = date.today() - auditplan.start_date
+    time_spend_in_hours = time_spent_in_days.days * 9
     ta = time_available.days * 9
     buff = buffer.days * 9
     # print("=======================")
@@ -1170,13 +1184,14 @@ def audit_plan(request, auditplan_id):
         'looptimes' : looptimes,
         'time_available' : ta,
         'buffer' : buff,
+        'time_spent':time_spend_in_hours
         # 'industries_activities': industries_activities
     }
     return render(request, 'main_client/audit_plan.html', context_data)
 
 @login_required
 def render_client_profile(request, client_id):
-    print("yesssss")
+    # print("yesssss")
     if request.user.is_main_client:
         if request.method == "POST":
             get_email = request.POST.get('get_email')
@@ -1227,7 +1242,7 @@ def render_client_profile(request, client_id):
         completed_tasks = 0
         is_pending = False
         for a in audit_plan:
-            print(a.start_date, a.estimated_end_date , a.actual_end_date)
+            # print(a.start_date, a.estimated_end_date , a.actual_end_date)
             total_tasks = ClientTask.objects.filter(auditplan_id = a).count()
             completed_tasks = ClientTask.objects.filter(auditplan_id = a, is_approved_partner = True).count()
             if total_tasks == completed_tasks:
@@ -1383,7 +1398,7 @@ def add_area(request):
     if request.method == "POST":
         area_name = request.POST.get('area_name')
         type_of_audit = request.POST.get('types_of_audits')
-        is_there = Regulator.objects.filter(area_name=area_name).exists()
+        is_there = Regulator.objects.filter(Q(area_name=area_name) & Q(user_id=request.user.id)).exists()
         # print(is_there)
         error = ""
         if is_there:
@@ -1393,7 +1408,7 @@ def add_area(request):
             new_area.save()
             return HttpResponseRedirect('/main_client/areas')
         
-        areas = Regulator.objects.all()
+        areas = Regulator.objects.filter(user_id=request.user.id)
         context_data = {
             "error": error,
             "areas": areas,

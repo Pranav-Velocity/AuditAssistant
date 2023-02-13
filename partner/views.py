@@ -1589,7 +1589,6 @@ def partner_client_tasks(request,client_id):
                     all_others = User.objects.filter(linked_employee = manager.id)
                     for others in all_others:
                         users.append(others)
-        print("yes")
         # print(user)
         # for i in user:
         #     sub_user = User.objects.filter(linked_employee = i.id)

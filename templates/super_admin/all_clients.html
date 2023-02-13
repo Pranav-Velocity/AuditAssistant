@@ -276,6 +276,9 @@
     {% block script %}
 
     <script>
+        $('#save_billing_details').on('click', function () {
+        console.log($('#billing_amount').valid())
+    });
         function BillingDetails(id){
             if($('#ShowBillingDetails').is(':visible') == true){
                 $('#ShowBillingDetails').modal('hide');
