@@ -52,6 +52,11 @@ urlpatterns = [
     path('industry/edit', edit_industry, name="edit_industry"),
     path('industry/delete/<int:industry_id>', remove_industry, name="remove_industry"),
 
+    path('audits/', render_audits_master, name="render_audits_master"),
+    path('audits/add', add_audits, name='add_audits'),
+    path('audits/edit', edit_audits, name="edit_audits"),
+    path('audits/delete/<int:audit_id>', remove_audit, name="remove_audit"),
+
     path('activities/', render_activity_master, name="render_activity_master"),
     path('activity/add', add_activity, name='add_activity'),
     path('activity/entities', get_entities, name="get_entities"),

@@ -1729,6 +1729,66 @@ def remove_industry(request, industry_id):
         return HttpResponseRedirect("/main_client/industries") 
 # -----------------------------------End Industry--------------------------------
 
+@login_required
+def render_audits_master(request):
+    if request.method == 'GET':
+        audits = Audits.objects.filter(user_id = request.user.id)
+        context_data = {
+            'audits': audits
+        }
+        return render(request, "master/audits_master.html",context_data)
+
+
+
+@login_required
+def add_audits(request):
+    if request.method == 'POST':
+        audit_name = request.POST.get('audit_name')
+        
+        is_there = Audits.objects.filter(Q(audit_name=audit_name) & Q(user_id = request.user.id)).exists()
+        
+        error = ""
+        if is_there:
+            error = "Audit exists with name: " + str(audit_name)
+        else:
+            new_audit = Audits(user=request.user,audit_name=audit_name)
+            try:
+                new_audit.save()
+                return HttpResponseRedirect('/main_client/audits')
+            except Exception as e:
+                print(e)
+
+        audits = Audits.objects.filter(user_id = request.user.id)
+        context_data = {
+            'audits': audits,
+            'error': error
+        }
+        return render(request, "master/audit_master.html",context_data)  
+
+@login_required
+def edit_audits(request):
+    if request.method == 'POST':
+        edit_audits_id = request.POST.get('edit_audits_id')
+        edit_audits_name = request.POST.get('edit_audits_name')
+
+
+        audit = Audits.objects.get(pk=edit_audits_id)
+        audit.audit_name = edit_audits_name
+        # print(audit)
+        try:
+            audit.save()
+        except Exception as e:
+            print(e)
+        return HttpResponseRedirect("/main_client/audits")
+
+@login_required
+def remove_audit(request, audit_id):
+    if audit_id:
+        audit = Audits.objects.get(pk = audit_id)
+        audit.delete()
+        return HttpResponseRedirect("/main_client/audits") 
+
+
 # ---------------------------------------------------Activities--------------------------------
 
 @login_required

@@ -14,7 +14,7 @@ class UserLink(models.Model):
 class Regulator(models.Model):
     user = models.ForeignKey(User,on_delete=models.CASCADE,null=True,blank=True)
     area_name = models.CharField(max_length=255,null=False,blank=False)
-    type_of_audits =  models.CharField(max_length=1,null=False,blank=False)
+    type_of_audits =  models.CharField(max_length=20,null=False,blank=False)
 
     def __str__(self):
         return self.area_name
