@@ -1382,9 +1382,8 @@ def render_client_profile(request, client_id):
 # --------------------------------Masters--------------------------------
 @login_required
 def render_areas_master(request):
-    # Get all the areas
-    areas = Regulator.objects.filter(user_id=request.user.id)
-    audittypes=Audits.objects.filter(user_id=request.user.id)
+    areas = Regulator.objects.filter(Q(user_id=request.user.id) | Q(is_global=True))
+    audittypes=Audits.objects.filter(Q(user_id=request.user.id) | Q(is_global=True))
     # Pass it to the template
     context_data = {
         'areas': areas,

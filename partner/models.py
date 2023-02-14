@@ -15,7 +15,7 @@ class Regulator(models.Model):
     user = models.ForeignKey(User,on_delete=models.CASCADE,null=True,blank=True)
     area_name = models.CharField(max_length=255,null=False,blank=False)
     type_of_audits =  models.CharField(max_length=20,null=False,blank=False)
-
+    is_global = models.BooleanField(default=False)
     def __str__(self):
         return self.area_name
 
@@ -29,6 +29,7 @@ class Act(models.Model):
 class Activity_Labels(models.Model):
     user = models.ForeignKey(User,on_delete=models.CASCADE,null=True,blank=True)
     activity_label_name = models.CharField(max_length=255, null=False,blank=False)
+    is_global = models.BooleanField(default=False)
     def __str__(self):
         return self.activity_label_name
 # Level Three
@@ -39,6 +40,7 @@ class Activity(models.Model):
     label = models.ForeignKey(Activity_Labels,on_delete=models.CASCADE, blank=True, null=True)
     act = models.ForeignKey(Act, on_delete=models.CASCADE, blank=True, null=True, related_name='activity')
     process_notes = models.FileField(upload_to="activity_process_notes/", null=True, blank=True)
+    is_global = models.BooleanField(default=False)
     def __str__(self):
         return self.activity_name
 
@@ -51,7 +53,7 @@ class Task(models.Model):
     task_international_auditing_standard = models.CharField(max_length=255, null=True, blank=True)
     process_notes = models.FileField(upload_to="process_notes/", null=True, blank=True)
     activity = models.ForeignKey(Activity, on_delete=models.CASCADE, blank=True, null=True, related_name='task')
-
+    is_global = models.BooleanField(default=False)
     def __str__(self):
         return self.task_name
 
@@ -59,28 +61,28 @@ class Task(models.Model):
 class AuditType(models.Model):
     user = models.ForeignKey(User,on_delete=models.CASCADE,null=True,blank=True)
     audit_type_name = models.CharField(max_length=255, null=False, blank=False)
-
+    is_global = models.BooleanField(default=False)
     def __str__(self):
         return self.audit_type_name
 
 class Entity(models.Model):
     user = models.ForeignKey(User,on_delete=models.CASCADE,null=True,blank=True)
     entity_name = models.CharField(max_length=255,null=False,blank=False)
-
+    is_global = models.BooleanField(default=False)
     def __str__(self):
         return self.entity_name
 
 class Industry(models.Model):
     user = models.ForeignKey(User,on_delete=models.CASCADE,null=True,blank=True)
     industry_name = models.CharField(max_length=255,null=False,blank=False)
-
+    is_global = models.BooleanField(default=False)
     def __str__(self):
         return self.industry_name
 
 class Audits(models.Model):
     user = models.ForeignKey(User,on_delete=models.CASCADE,null=True,blank=True)
     audit_name = models.CharField(max_length=255,null=False,blank=False)
-
+    is_global = models.BooleanField(default=False)
     def __str__(self):
         return self.audit_names
 
