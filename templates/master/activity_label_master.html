@@ -109,7 +109,7 @@
         <!-- Edit Industry -->
         <div class="modal fade" id="editActivityLabel" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered" role="document" style="max-width: 900px !important;">
-                <form method="POST" action="{% url 'edit_activitylabel' %}">
+                <form method="POST" action="{% url 'edit_activitylabel' %}" id="edit_activitylabel_form">
                     {% csrf_token %}
                     <div class="modal-content">
                         <div class="modal-header">
@@ -123,7 +123,7 @@
                                 <div class="form-group col-md-12 mb-3">
                                     <label for="regulations" class="text-dark">Select Activity Label</label>
                                     <select name="edit_activity_label_id" id="edit_activity_label_id" class="custom-select">
-                                        <option value="-1">Please Select</option>
+                                        <option value="">Please Select</option>
                                         {% for activitylabel in activity_label %}
                                           <option value="{{ activitylabel.id }}">{{ activitylabel.activity_label_name }}
                                           </option>
@@ -200,7 +200,30 @@
         form.submit();
       }
     });
-    
+    jQuery('#edit_activitylabel_form').validate({
+      rules:{
+        edit_activity_label_name:{
+          required:true,
+        },
+        edit_activity_label_id:{
+          required:true,
+        },
+        
+        
+      },
+      messages:{
+        edit_activity_label_name:{
+          required:"Please Enter Activity Label Name",
+        },
+        edit_activity_label_id:{
+          required:"Please Select Activity Label",
+        },
+        
+      },
+      subitHandler:function(form){
+        form.submit();
+      }
+    });
 </script>
 
 {% endblock script %}

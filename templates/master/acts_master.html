@@ -31,10 +31,10 @@
                     </div>
                     <div class="col-sm-6">
                       <a type="button" class="btn btn-info float-right ml-3 text-white" data-toggle="modal" data-target="#editAct" id="popover" data-trigger="hover" data-content="Edit Sub Areas" data-placement="top">
-                        <i class="medium material-icons mt-1">edit</i>
+                        <div class="medium material-icons mt-1">Edit Sub Area</div>
                       </a>
                       <a type="button" class="btn btn-primary float-right text-white" data-toggle="modal" data-target="#addAct" id="popover1" data-trigger="hover" data-content="Add Sub Areas" data-placement="top">
-                        <i class="medium material-icons mt-1">add</i>
+                        <div class="medium material-icons mt-1">Add Sub Area</div>
                       </a>
                     </div>
                   </div>
@@ -121,7 +121,7 @@
             aria-labelledby="myModalLabel" aria-hidden="true">
             <div class="modal-dialog" role="document">
                 <!-- Edit Sub Area Form -->
-                <form method="POST" action="{% url 'edit_act' %}">
+                <form method="POST" action="{% url 'edit_act' %}" id="edit_act_form">
                     {% csrf_token %}
                     <div class="modal-content">
                         <div class="modal-header">
@@ -239,6 +239,34 @@
           required:"Please Select Act / Sub Area",
         },
         
+      },
+      subitHandler:function(form){
+        form.submit();
+      }
+    });
+
+    jQuery('#edit_act_form').validate({
+      rules:{
+        edit_act_name:{
+          required:true,
+        },
+        edit_area:{
+          required:true,
+        },
+        edit_act_id:{
+          required:true,
+        },
+      },
+      messages:{
+        edit_act_name:{
+          required:"Please Enter Sub Area Name",
+        },
+        edit_area:{
+          required:"Please Select Area",
+        },
+        edit_act_id:{
+          required:"Please Select Sub Area",
+        },
       },
       subitHandler:function(form){
         form.submit();

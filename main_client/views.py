@@ -1086,6 +1086,7 @@ def audit_plan(request, auditplan_id):
     auditplan = AuditPlanMapping.objects.get(id=auditplan_id)
     # print("AUDIT PLANS:\n",auditplan)
     client_tasks = ClientTask.objects.filter(auditplan_id=auditplan.id)
+    print(client_tasks)
     # print(client_tasks)
     labels = Activity_Labels.objects.values('activity_label_name')
     client_audittype = ClientIndustryAuditTypeEntity.objects.values_list('audittype_id').filter(client_id=auditplan.client_id).distinct()
@@ -1427,9 +1428,9 @@ def remove_area(request, area_id):
 def edit_area(request):
 
     if request.method == 'POST':
-        areaId = request.POST.get('area_id')
-        areaName = request.POST.get('area_name')
-        type_of_audit = request.POST.get('types_of_audits')
+        areaId = request.POST.get('edit_area_id')
+        areaName = request.POST.get('edit_area_name')
+        type_of_audit = request.POST.get('edit_types_of_audits')
         area = Regulator.objects.get(pk = areaId)
         area.area_name = areaName
         area.type_of_audits = type_of_audit
@@ -1450,7 +1451,7 @@ def add_activitylabel(request):
     if request.method == 'POST':
         activity_label_name = request.POST.get('activity_label_name')
         
-        is_there = Activity_Labels.objects.filter(activity_label_name=activity_label_name).exists()
+        is_there = Activity_Labels.objects.filter(Q(activity_label_name=activity_label_name) & Q(user_id=request.user.id)).exists()
         
         error = ""
         if is_there:
@@ -1615,7 +1616,7 @@ def add_audittype(request):
         audittype_name = request.POST.get('audit_type_name')
         
         # Check if already exists
-        is_there = AuditType.objects.filter(audit_type_name=audittype_name).exists()
+        is_there = AuditType.objects.filter(Q(audit_type_name=audittype_name) & Q(user_id=request.user.id)).exists()
         
         error = ""
         if is_there:
@@ -1685,7 +1686,7 @@ def add_industry(request):
     if request.method == 'POST':
         industry_name = request.POST.get('industry_name')
         
-        is_there = Industry.objects.filter(industry_name=industry_name).exists()
+        is_there = Industry.objects.filter(Q(industry_name=industry_name) & Q(user_id=request.user.id)).exists()
         
         error = ""
         if is_there:
@@ -2169,7 +2170,7 @@ def add_entity(request):
         
         entity_name = request.POST.get('entity_name')
 
-        is_there = Entity.objects.filter(entity_name=entity_name).exists()
+        is_there = Entity.objects.filter(Q(entity_name=entity_name) & Q(user_id=request.user.id)).exists()
         
         error = ""
         if is_there:
@@ -2267,7 +2268,7 @@ def add_task(request):
         international_auditing_standard = request.POST.get('international_auditing_standard')
         activity = request.POST.get('activity')
 
-        is_there = Task.objects.filter(task_name=task_name).exists()
+        is_there = Task.objects.filter(Q(task_name=task_name) & Q(user_id=request.user.id)).exists()
         
         # print(uploaded_attachment_filename)
         error = ""

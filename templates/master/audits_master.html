@@ -180,15 +180,17 @@
           
         });
     });
-    jQuery('#add_industry_form').validate({
+    jQuery('#add_audit_form').validate({
       rules:{
-        industry_name:{
+        audit_name:{
           required:true,
+          maxlength:255,
         },
       },
       messages:{
-        industry_name:{
-          required:"Please Enter Industry Name",
+        audit_name:{
+          required:"Please Enter Audit Name",
+          maxlength:"Maximum 255 Characters allowed",
         },
       },
       subitHandler:function(form){
@@ -196,21 +198,23 @@
       }
     });
 
-    jQuery('#edit_industry_form').validate({
+    jQuery('#edit_audits_form').validate({
       rules:{
-        edit_industry_id:{
+        edit_audits_id:{
           required:true,
         },
-        edit_industry_name:{
+        edit_audits_name:{
           required:true,
+          maxlength:255,
         },
       },
       messages:{
-        edit_industry_id:{
-          required:"Please Select Industry",
+        edit_audits_id:{
+          required:"Please Select Audit",
         },
-        edit_industry_name:{
-          required:"Please Enter Industry Name",
+        edit_audits_name:{
+          required:"Please Enter Audit Name",
+          maxlength:"Maximum 255 Characters allowed",
         },
       },
       subitHandler:function(form){

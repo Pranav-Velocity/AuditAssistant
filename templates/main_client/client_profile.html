@@ -552,7 +552,7 @@ jQuery('#add_client_task').validate({
   rules:{
     task_name:{
       required:true,
-      lettersonly: true,
+      alphabets_and_spaces: true,
     },
     estimated_hours:{
       required:true,
@@ -572,7 +572,7 @@ jQuery('#add_client_task').validate({
   messages:{
     task_name:{
       required:"Please Enter Task Name",
-      lettersonly: "Please Enter A Valid Task Name",
+      alphabets_and_spaces: "Please Enter A Valid Task Name",
     },
     estimated_hours:{
       required:"Please Enter Hour",
@@ -596,7 +596,7 @@ jQuery('#add_audit_plan').validate({
   rules:{
     audit_plan_name:{
       required:true,
-      lettersonly: true,
+      alphabets_and_spaces: true,
     },
     audit_plan_startdate:{
       required:true,
@@ -620,7 +620,7 @@ jQuery('#add_audit_plan').validate({
   messages:{
     audit_plan_name:{
       required:"Please Enter Audit Plan Name",
-      lettersonly: "Please Enter A Valid Audit Plan Name",
+      alphabets_and_spaces: "Please Enter A Valid Audit Plan Name",
     },
     audit_plan_startdate:{
       required:"Please Enter Audit Plan Start Date",
