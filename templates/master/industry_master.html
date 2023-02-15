@@ -49,9 +49,12 @@
                                     <td>{{ industry.id }}</td>
                                     <td>{{ industry.industry_name }}</td>
                                     
-                                    <td><a class="btn btn-danger" href="{% url 'remove_industry' industry_id=industry.id %}"
+                                    <td>
+                                      {% if industry.is_global == False %}
+                                      <a class="btn btn-danger" href="{% url 'remove_industry' industry_id=industry.id %}"
                                             onclick="return confirm('Are you sure you want to delete this industry?');">
                                             Delete</a>
+                                      {% endif %}
                                     </td>
                                 </tr>
                             {% endfor %}
@@ -124,7 +127,7 @@
                                     <label for="regulations" class="text-dark">Select Industry</label>
                                     <select name="edit_industry_id" id="edit_industry_id" class="custom-select">
                                         <option value="">Please Select</option>
-                                        {% for industry in industries %}
+                                        {% for industry in my_industries %}
                                           <option value="{{ industry.id }}">{{ industry.industry_name }}
                                           </option>
                                         {% endfor %}

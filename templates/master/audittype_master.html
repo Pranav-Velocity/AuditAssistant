@@ -49,9 +49,12 @@
                                     <td>{{ audittype.id }}</td>
                                     <td>{{ audittype.audit_type_name }}</td>
                                     
-                                    <td><a class="btn btn-danger" href="{% url 'remove_audittype' audittype_id=audittype.id %}"
+                                    <td>
+                                      {% if audittype.is_global == False %}
+                                      <a class="btn btn-danger" href="{% url 'remove_audittype' audittype_id=audittype.id %}"
                                             onclick="return confirm('Are you sure you want to delete this audit type?');">
                                             Delete</a>
+                                        {% endif %}
                                     </td>
                                 </tr>
                             {% endfor %}
@@ -110,7 +113,7 @@
                                     <label for="regulations" class="text-dark">Select Audit Type</label>
                                     <select name="edit_audittype_id" id="edit_audittype_id" class="custom-select">
                                         <option value="">Please Select</option>
-                                        {% for audittype in audittypes %}
+                                        {% for audittype in my_audittypes %}
                                           <option value="{{ audittype.id }}">{{ audittype.audit_type_name }}
                                           </option>
                                         {% endfor %}

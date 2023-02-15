@@ -49,9 +49,12 @@
                                     <td>{{ i.id }}</td>
                                     <td>{{ i.activity_label_name }}</td>
                                     
-                                    <td><a class="btn btn-danger" href="{% url 'remove_activitylabel' activitylabel_id=i.id %}"
+                                    <td>
+                                      {% if i.is_global == False %}
+                                      <a class="btn btn-danger" href="{% url 'remove_activitylabel' activitylabel_id=i.id %}"
                                             onclick="return confirm('Are you sure you want to delete this Activity Label?');">
                                             Delete</a>
+                                      {% endif %}
                                     </td>
                                 </tr>
                             {% endfor %}
@@ -124,7 +127,7 @@
                                     <label for="regulations" class="text-dark">Select Activity Label</label>
                                     <select name="edit_activity_label_id" id="edit_activity_label_id" class="custom-select">
                                         <option value="">Please Select</option>
-                                        {% for activitylabel in activity_label %}
+                                        {% for activitylabel in my_activity_label %}
                                           <option value="{{ activitylabel.id }}">{{ activitylabel.activity_label_name }}
                                           </option>
                                         {% endfor %}

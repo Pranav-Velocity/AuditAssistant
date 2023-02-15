@@ -57,10 +57,12 @@
                                     <td>{{ act.act_name }}</td>
                                     <td>{{ act.area }}</td>
                                     <td>
+                                      {% if act.area.is_global == False %}
                                         <a role="btn" class="btn btn-danger" href="{% url 'remove_act' act_id=act.id %}"
                                             onclick="return confirm('Are you sure you want to delete this act?');">
                                             Delete
                                         </a>
+                                      {% endif %}
                                     </td>
                                 
                                 </tr>
@@ -136,7 +138,7 @@
                                     <label for="acts" class="text-dark">Select Sub Area</label>
                                     <select name="edit_act_id" id="edit_act_id" class="custom-select" required>
                                         <option value="">Please Select</option>
-                                        {% for act in acts %}
+                                        {% for act in my_acts %}
                                             <option value="{{ act.id }}">{{ act.act_name }}</option>
                                         {% endfor %}
                                     </select>

@@ -49,9 +49,20 @@
                                     <td>{{ audit.id }}</td>
                                     <td>{{ audit.audit_name }}</td>
                                     
-                                    <td><a class="btn btn-danger" href="{% url 'remove_audit' audit_id=audit.id %}"
+                                    <td>
+                                      {% if request.user.is_super_admin %}
+                                      <a class="btn btn-danger" href="{% url 'remove_audit' audit_id=audit.id %}"
                                             onclick="return confirm('Are you sure you want to delete this audit?');">
-                                            Delete</a>
+                                            Delete
+                                      </a>
+                                      {% else %}
+                                        {% if audit.is_global == False %}
+                                        <a class="btn btn-danger" href="{% url 'remove_audit' audit_id=audit.id %}"
+                                              onclick="return confirm('Are you sure you want to delete this audit?');">
+                                              Delete
+                                        </a>
+                                        {% endif %}
+                                      {% endif %}
                                     </td>
                                 </tr>
                             {% endfor %}
@@ -124,7 +135,7 @@
                                     <label for="edit_audits_id" class="text-dark">Select Audits</label>
                                     <select name="edit_audits_id" id="edit_audits_id" class="custom-select">
                                         <option value="">Please Select</option>
-                                        {% for audit in audits %}
+                                        {% for audit in my_audits %}
                                           <option value="{{ audit.id }}">{{ audit.audit_name }}
                                           </option>
                                         {% endfor %}

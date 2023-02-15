@@ -366,7 +366,73 @@
             </p>
           </a>
         </li>
-      
+        <li class="nav-item has-treeview menu-open">
+          <a href="#" class="nav-link">
+              <i class="nav-icon fas fa-tachometer-alt"></i>
+              <p>
+                Masters
+                <i class="right fas fa-angle-left"></i>
+              </p>
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="{% url 'render_audits_master' %}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Audit Master</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="{% url 'render_areas_master' %}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Areas Master</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="{% url 'render_acts_master' %}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Sub Areas Master</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="{% url 'render_activity_label_master' %}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Activity Label</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="{% url 'render_activity_master' %}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Activity Master</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="{% url 'render_task_master' %}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Task Master</p>
+                </a>
+              </li>
+              
+              
+              <li class="nav-item">
+                <a href="{% url 'render_industry_master' %}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Industry Master</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="{% url 'render_audittype_master' %}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Audit Type Master</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="{% url 'render_entity_master' %}" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Entity Master</p>
+                </a>
+              </li>
+            </ul>
+        </li>
         <br>
         <li class="nav-item">
           <a href="{% url 'logout' %}" class="nav-link">

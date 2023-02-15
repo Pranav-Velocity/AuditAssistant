@@ -50,9 +50,12 @@
                                     <td>{{ entity.id }}</td>
                                     <td>{{ entity.entity_name }}</td>
                                     
-                                    <td><a class="btn btn-danger" href="{% url 'remove_entity' entity_id=entity.id %}"
+                                    <td>
+                                      {% if entity.is_global == False %}
+                                      <a class="btn btn-danger" href="{% url 'remove_entity' entity_id=entity.id %}"
                                             onclick="return confirm('Are you sure you want to delete this entity?');">
                                             Delete</a>
+                                      {% endif %}
                                     </td>
                                 </tr>
                             {% endfor %}
@@ -112,7 +115,7 @@
                                     <label for="regulations" class="text-dark">Select Entity</label>
                                     <select name="edit_entity_id" id="edit_entity_id" class="custom-select">
                                         <option value="">Please Select</option>
-                                        {% for entity in entities %}
+                                        {% for entity in my_entities %}
                                             <option value="{{ entity.id }}">{{ entity.entity_name }}</option>
                                         {% endfor %}
                                     </select>

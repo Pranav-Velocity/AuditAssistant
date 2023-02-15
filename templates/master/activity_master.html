@@ -14,6 +14,12 @@
     </div>
     <!-- Main content -->
     <section class="content">
+      Error : {{error}} 
+      {% if error %}
+          <div class="alert alert-danger">
+            {{ error }}
+          </div>
+        {% endif %}
             <div class="row">
                 <div class="col-12">
                     <div class="card">
@@ -61,15 +67,19 @@
                                         </td>
                                       {% endif %}
                                       <td>
+                                        {% if activity.is_global == False %}
                                           <a role="btn" class="btn btn-primary" onclick="edit_activity_function('{{activity.id}}')">
                                               Edit
                                           </a>
+                                          {% endif %}
                                         </td>
                                         <td>
+                                          {% if activity.is_global == False %}
                                             <a role="btn" class="btn btn-danger" href="{% url 'remove_activity' activity_id=activity.id %}"
                                                     onclick="return confirm('Are you sure you want to delete this activity?');">
                                                 Delete
                                             </a>
+                                            {% endif %}
                                         </td>
                                     
                                     </tr>
@@ -246,7 +256,7 @@
                                     <label for="acts" class="text-dark">Select Activity</label>
                                     <select name="edit_activity_id" id="edit_activity_id" class="custom-select">
                                         <option value="">Please Select</option>
-                                        {% for activity in activities %}
+                                        {% for activity in my_activities %}
                                             <option value="{{ activity.id }}">{{ activity.activity_name }}</option>
                                         {% endfor %}
                                     </select>
