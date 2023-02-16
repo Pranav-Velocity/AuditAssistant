@@ -78,21 +78,34 @@
                                     {% endif %}
                                     
                                     <td>
-                                      {% if task.is_global == False %}
+                                      {% if request.user.is_super_admin %}
                                       <a role="btn" class="btn btn-outline-primary" onclick="edit_task_master('{{task.id}}')">
-                                          Edit
+                                        Edit
                                       </a>
+                                      {% else %}
+                                        {% if task.is_global == False %}
+                                        <a role="btn" class="btn btn-outline-primary" onclick="edit_task_master('{{task.id}}')">
+                                            Edit
+                                        </a>
+                                        {% endif %}
                                       {% endif %}
                                     </td>
 
                                                                 
                                     <td>
-                                      {% if task.is_global == False %}
+                                      {% if request.user.is_super_admin %}
                                         <a role="btn" class="btn btn-outline-danger" href="{% url 'remove_task' task_id=task.id %}"
-                                            onclick="return confirm('Are you sure you want to delete this task?');">
-                                            Delete
+                                          onclick="return confirm('Are you sure you want to delete this task?');">
+                                          Delete
                                         </a>
+                                      {% else %}
+                                        {% if task.is_global == False %}
+                                          <a role="btn" class="btn btn-outline-danger" href="{% url 'remove_task' task_id=task.id %}"
+                                              onclick="return confirm('Are you sure you want to delete this task?');">
+                                              Delete
+                                          </a>
                                         {% endif %}
+                                      {% endif %}
                                     </td>
                                     
                                 </tr>
@@ -188,7 +201,7 @@
         <div class="modal fade" id="editTaskModal" tabindex="-1">
             <div class="modal-dialog" role="document" style="max-width: 900px !important;">
                 <div class="modal-content">
-                    <form action="{% url 'edit_task' %}" method="post">
+                    <form action="{% url 'edit_task' %}" method="post" id="edit_task_form">
                     {% csrf_token %}
                         <div class="modal-header">
                             <h5 class="modal-title" id="exampleModalLongTitle">Add New Task</h5>
@@ -201,7 +214,7 @@
                               <div class="form-group col-md-12 mb-3">
                                   <label for="tasks" class="text-dark">Select Task</label>
                                   <select name="edit_task_id" id="edit_task_id" class="custom-select">
-                                      <option value="-1">Please Select</option>
+                                      <option value="">Please Select</option>
                                       {% for task in my_tasks %}
                                           <option value="{{ task.id }}">{{ task.task_name }}</option>
                                       {% endfor %}
@@ -217,7 +230,7 @@
                             <div class="form-row">
                                 <div class="form-group col-md-12 mb-3">
                                   <label for="estimated_days_div" class="text-dark">Estimated Days</label>
-                                  <div id="estimated_days_div">HH : <input type="text" name="edit_estimated_hours" style="width:50px;"> MM :<input type="text" name="edit_estimated_minutes" style="width:50px;"></div>
+                                  <div id="estimated_days_div">HH : <input type="text" id="edit_estimated_hours" name="edit_estimated_hours" style="width:50px;"> MM :<input type="text" id="edit_estimated_minutes" name="edit_estimated_minutes" style="width:50px;"></div>
                                 </div>
                             </div>
                             <div class="form-row">
@@ -236,7 +249,7 @@
                                 <div class="form-group col-md-12 mb-3">
                                     <label for="taskName" class="text-dark">Activities</label>    
                                     <select name="edit_activity" id="edit_activity" class="custom-select">
-                                      <option value="-1">Please Select</option>
+                                      <option value="">Please Select</option>
                                       {% for activity in activities %}
                                         <option value="{{ activity.id }}">{{ activity.activity_name }}</option>
                                       {% endfor %}
@@ -347,6 +360,70 @@
       }
     });
 
+    jQuery('#edit_task_form').validate({
+      rules:{
+        edit_task_id:{
+          required:true,
+        },
+        edit_task_name:{
+          required:true,
+        },
+        edit_estimated_hours:{
+          required:true,
+          number:true,
+        },
+        edit_estimated_minutes:{
+          required:true,
+          number:true,
+        },
+        edit_activity:{
+          required:true,
+          number:true,
+        },
+        industries:{
+          required:true,
+        },
+        audittype:{
+          required:true,
+        },
+        entities:{
+          required:true,
+        },
+      },
+      messages:{
+        edit_task_id:{
+          required:"Please Select a Task",
+        },
+        edit_task_name:{
+          required:"Please Enter Task Name",
+        },
+        edit_estimated_hours:{
+          required:"Please Enter Estimated Hour",
+          number:"Please Enter valid Hour",
+        },
+        edit_estimated_minutes:{ 
+          required:"Please Enter Estimated Minutes",
+          number:"Please Enter valid Minute",
+        },
+        edit_activity:{
+          required:"Please Select Activity Name",
+          number:"Activity ID is incorrect. Please Select Activity Again",
+        },
+        industries:{
+          required:"Please select any one or multiple from list",
+        },
+        audittype:{
+          required:"Please select any one or multiple from list",
+        },
+        entities:{
+          required:"Please select any one or multiple from list",
+        },
+      },
+      subitHandler:function(form){
+        form.submit();
+      }
+    });
+
     function ViewProcessNotes(id,is_global){
       if(is_global == "True") {
         $('#process_notes_add_container').empty();
@@ -431,6 +508,11 @@
             const activity = data.activity
             $('#edit_task_id').val(data.task)
             $('#edit_activity').val(activity)
+            $('#edit_auditing_standard').val(data.task_auditing_standard);
+            $('#edit_international_auditing_standard').val(data.task_international_auditing_standard);
+            $('#edit_estimated_hours').val(data.hours);
+            $('#edit_estimated_minutes').val(data.minutes);
+            
           }
         });
     }

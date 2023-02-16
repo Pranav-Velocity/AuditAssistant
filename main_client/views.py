@@ -1418,11 +1418,17 @@ def add_area(request):
         if is_there:
             error = "Regulator exists with name: " + str(area_name)
         else:
-            new_area = Regulator(user=request.user,area_name=area_name,type_of_audits=type_of_audit)
+            if request.user.is_super_admin:
+                new_area = Regulator(user=request.user,area_name=area_name,type_of_audits=type_of_audit,is_global=True)
+            else:
+                new_area = Regulator(user=request.user,area_name=area_name,type_of_audits=type_of_audit,is_global=False)
             new_area.save()
             return HttpResponseRedirect('/main_client/areas')
         
-        areas = Regulator.objects.filter(Q(user_id=request.user.id) | Q(is_global=True))
+        if request.user.is_super_admin:
+            areas = Regulator.objects.filter(Q(is_global=True))
+        else:
+            areas = Regulator.objects.filter(Q(user_id=request.user.id) | Q(is_global=True))
         context_data = {
             "error": error,
             "areas": areas,
@@ -1453,8 +1459,12 @@ def edit_area(request):
 @login_required
 def render_activity_label_master(request):
     if request.method == 'GET':
-        activity_label = Activity_Labels.objects.filter(Q(user_id=request.user.id) | Q(is_global=True))
-        my_activity_label = Activity_Labels.objects.filter(Q(user_id=request.user.id) & Q(is_global=False))
+        if request.user.is_super_admin:
+            activity_label = Activity_Labels.objects.filter(Q(is_global=True))
+            my_activity_label = Activity_Labels.objects.filter(Q(is_global=True))
+        else:
+            activity_label = Activity_Labels.objects.filter(Q(user_id=request.user.id) | Q(is_global=True))
+            my_activity_label = Activity_Labels.objects.filter(Q(user_id=request.user.id) & Q(is_global=False))
         
         context_data = {
             'activity_label': activity_label,
@@ -1474,14 +1484,19 @@ def add_activitylabel(request):
         if is_there:
             error = "Activity Label exists with name: " + str(activity_label_name)
         else:
-            new_activity_label = Activity_Labels(user=request.user,activity_label_name=activity_label_name)
+            if request.user.is_super_admin:
+                new_activity_label = Activity_Labels(user=request.user,activity_label_name=activity_label_name,is_global=True)
+            else:
+                new_activity_label = Activity_Labels(user=request.user,activity_label_name=activity_label_name)
             try:
                 new_activity_label.save()
                 return HttpResponseRedirect('/main_client/activitylabel')
             except Exception as e:
                 print(e)
-
-        activity_label = Activity_Labels.objects.filter(Q(user_id=request.user.id) | Q(is_global=True))
+        if request.user.is_super_admin:
+            activity_label = Activity_Labels.objects.filter(Q(is_global=True))
+        else:
+            activity_label = Activity_Labels.objects.filter(Q(user_id=request.user.id) | Q(is_global=True))
         context_data = {
             'activity_label': activity_label,
             'error': error
@@ -1516,20 +1531,16 @@ def remove_activitylabel(request, activitylabel_id):
 def render_acts_master(request):
 
     # Get all the acts and areas from the master tables
-    acts = []
-    areas = Regulator.objects.filter(Q(user_id=request.user.id) | Q(is_global=True))
-    for i in areas:
-        act = Act.objects.filter(area=i)
-        for j in act:
-            acts.append(j)
-    my_acts = []
-    my_areas = Regulator.objects.filter(Q(user_id=request.user.id) & Q(is_global=False))
-    print("my_areas:",my_areas)
-    for i in my_areas:
-        act = Act.objects.filter(area=i)
-        for j in act:
-            my_acts.append(j)
-    
+    if request.user.is_super_admin:
+        acts = Act.objects.filter(Q(is_global = True))
+        areas = Regulator.objects.filter(Q(is_global=True))
+        my_acts = Act.objects.filter(Q(is_global = True))
+        my_areas = Regulator.objects.filter(Q(is_global=True))
+    else:
+        acts = Act.objects.filter(Q(user_id=request.user.id) | Q(is_global=True))
+        areas = Regulator.objects.filter(Q(user_id=request.user.id) | Q(is_global=True))
+        my_acts = Act.objects.filter(Q(user_id=request.user.id) | Q(is_global=False))
+        my_areas = Regulator.objects.filter(Q(user_id=request.user.id) & Q(is_global=False))
     # Pass it to the template
     context_data = {
         'acts': acts,
@@ -1559,20 +1570,20 @@ def add_act(request):
             error = "Act exists with name: " + str(act_name)
         else:
             # Create a new act
-            new_act = Act(act_name=act_name, area=area)
+            if request.user.is_super_admin:
+                new_act = Act(user=request.user,act_name=act_name, area=area,is_global=True)
+            else:
+                new_act = Act(user=request.user,act_name=act_name, area=area)
             try:
                 # Save it to database
                 new_act.save()
                 return HttpResponseRedirect('/main_client/acts')
             except Exception as e:
                 raise e
+        if request.user.is_super_admin:
+            acts = Act.objects.filter(Q(is_global = True))
+            areas = Regulator.objects.filter(Q(is_global=True))
         
-        acts = []
-        areas = Regulator.objects.filter(Q(user_id=request.user.id) | Q(is_global=True))
-        for i in areas:
-            act = Act.objects.filter(area=i)
-            for j in act:
-                acts.append(j)
         context_data = {
             'acts': acts,
             'areas' : areas,
@@ -1633,8 +1644,13 @@ def remove_act(request, act_id):
 def render_audittype_master(request):
     if request.method == 'GET':
         # Get all the records from master
-        audittypes = AuditType.objects.filter(Q(user_id = request.user.id) | Q(is_global=True))
-        my_audittypes = AuditType.objects.filter(Q(user_id = request.user.id) & Q(is_global=False))
+        
+        if request.user.is_super_admin:
+            audittypes = AuditType.objects.filter(Q(is_global=True))
+            my_audittypes = AuditType.objects.filter(Q(is_global=True))
+        else:
+            audittypes = AuditType.objects.filter(Q(user_id = request.user.id) | Q(is_global=True))
+            my_audittypes = AuditType.objects.filter(Q(user_id = request.user.id) & Q(is_global=False))
         # Pass it to template
         context_data = {
             'audittypes': audittypes,
@@ -1657,7 +1673,10 @@ def add_audittype(request):
             error = "Audit Type exists with name: " + str(audittype_name)
         else:
             # Create a new Audit type
-            new_audittype = AuditType(user=request.user,audit_type_name=audittype_name)
+            if request.user.is_super_admin:
+                new_audittype = AuditType(user=request.user,audit_type_name=audittype_name,is_global=True)
+            else:
+                new_audittype = AuditType(user=request.user,audit_type_name=audittype_name)
             try:
                 # Save it to DB
                 new_audittype.save()
@@ -1665,7 +1684,10 @@ def add_audittype(request):
             except Exception as e:
                 print(e)
 
-        audittypes = AuditType.objects.filter(Q(user_id = request.user.id) | Q(is_global=True))
+        if request.user.is_super_admin:
+            audittypes = AuditType.objects.filter(Q(is_global=True))
+        else:
+            audittypes = AuditType.objects.filter(Q(user_id = request.user.id) | Q(is_global=True))
         context_data = {
             'audittypes': audittypes,
             'error': error
@@ -1707,8 +1729,12 @@ def remove_audittype(request, audittype_id):
 @login_required
 def render_industry_master(request):
     if request.method == 'GET':
-        industries = Industry.objects.filter(Q(user_id = request.user.id) | Q(is_global=True))
-        my_industries = Industry.objects.filter(Q(user_id = request.user.id) & Q(is_global=False))
+        if request.user.is_super_admin:
+            industries = Industry.objects.filter(Q(is_global=True))
+            my_industries = Industry.objects.filter(Q(is_global=True))
+        else:
+            industries = Industry.objects.filter(Q(user_id = request.user.id) | Q(is_global=True))
+            my_industries = Industry.objects.filter(Q(user_id = request.user.id) & Q(is_global=False))
         context_data = {
             'industries': industries,
             'my_industries': my_industries,
@@ -1729,14 +1755,20 @@ def add_industry(request):
         if is_there:
             error = "Industry exists with name: " + str(industry_name)
         else:
-            new_industry = Industry(user=request.user,industry_name=industry_name)
+            if request.user.is_super_admin:
+                new_industry = Industry(user=request.user,industry_name=industry_name,is_global=True)
+            else:
+                new_industry = Industry(user=request.user,industry_name=industry_name)
             try:
                 new_industry.save()
                 return HttpResponseRedirect('/main_client/industries')
             except Exception as e:
                 print(e)
 
-        industries = Industry.objects.filter(Q(user_id = request.user.id) | Q(is_global=True))
+        if request.user.is_super_admin:
+            industries = Industry.objects.filter(Q(is_global=True))
+        else:
+            industries = Industry.objects.filter(Q(user_id = request.user.id) | Q(is_global=True))
         context_data = {
             'industries': industries,
             'error': error
@@ -1850,19 +1882,28 @@ def render_activity_master(request):
         count += len(files)
     print('file count:', count)
     if request.method == "GET":
-        activities = Activity.objects.filter(Q(user_id = request.user) | Q(is_global = True))
-        audit_types = AuditType.objects.filter(Q(user_id = request.user) | Q(is_global = True))
-        entities = Entity.objects.filter(Q(user_id = request.user) | Q(is_global = True))
-        industries = Industry.objects.filter(Q(user_id = request.user) | Q(is_global = True))
-        area = Regulator.objects.filter(Q(user_id = request.user) | Q(is_global = True))
-        acts = []
-        for a in area:
-            act = Act.objects.filter(area=a)
-            for j in act:
-                acts.append(j)
-        label = Activity_Labels.objects.filter(Q(user_id = request.user) | Q(is_global = True))
+        if request.user.is_super_admin:
+            activities = Activity.objects.filter(Q(is_global = True))
+            audit_types = AuditType.objects.filter(Q(is_global = True))
+            entities = Entity.objects.filter(Q(is_global = True))
+            industries = Industry.objects.filter(Q(is_global = True))
+            area = Regulator.objects.filter(Q(is_global = True))
+            acts = Act.objects.filter(Q(is_global = True))
+            
+            label = Activity_Labels.objects.filter(Q(is_global = True))
 
-        my_activities = Activity.objects.filter(Q(user_id = request.user) & Q(is_global = False))
+            my_activities = Activity.objects.filter(Q(is_global = True))
+        else:
+            activities = Activity.objects.filter(Q(user_id = request.user) | Q(is_global = True))
+            audit_types = AuditType.objects.filter(Q(user_id = request.user) | Q(is_global = True))
+            entities = Entity.objects.filter(Q(user_id = request.user) | Q(is_global = True))
+            industries = Industry.objects.filter(Q(user_id = request.user) | Q(is_global = True))
+            area = Regulator.objects.filter(Q(user_id = request.user) | Q(is_global = True))
+            acts = Act.objects.filter(Q(user_id = request.user) | Q(is_global = True))
+            
+            label = Activity_Labels.objects.filter(Q(user_id = request.user) | Q(is_global = True))
+
+            my_activities = Activity.objects.filter(Q(user_id = request.user) & Q(is_global = False))
         context_data = {
             'activities': activities,
             'audittypes': audit_types,
@@ -1911,11 +1952,16 @@ def add_activity(request):
         if is_there:
             error = "Activity exists with name: " + str(activity_name)
         else:
-            pass
-            activity = Activity(user=request.user,activity_name=activity_name, 
-                activity_description = activity_description,
-                act = Act.objects.get(pk=act),
-                label = Activity_Labels.objects.get(pk=label))
+            if request.user.is_super_admin:
+                activity = Activity(user=request.user,activity_name=activity_name, 
+                    activity_description = activity_description,
+                    act = Act.objects.get(pk=act),
+                    label = Activity_Labels.objects.get(pk=label),is_global=True)
+            else:
+                activity = Activity(user=request.user,activity_name=activity_name, 
+                    activity_description = activity_description,
+                    act = Act.objects.get(pk=act),
+                    label = Activity_Labels.objects.get(pk=label))
 
             
             try:
@@ -1982,17 +2028,22 @@ def add_activity(request):
                     activity.save()
                     max_files.current_files = int(max_files.current_files) + 1
                     max_files.save()
-        activities = Activity.objects.filter(Q(user_id = request.user) | Q(is_global = True))
-        audit_types = AuditType.objects.filter(Q(user_id = request.user) | Q(is_global = True))
-        entities = Entity.objects.filter(Q(user_id = request.user) | Q(is_global = True))
-        industries = Industry.objects.filter(Q(user_id = request.user) | Q(is_global = True))
-        area = Regulator.objects.filter(Q(user_id = request.user) | Q(is_global = True))
-        acts = []
-        for a in area:
-            act = Act.objects.filter(area=a)
-            for j in act:
-                acts.append(j)
-        labels = Activity_Labels.objects.filter(Q(user_id = request.user) | Q(is_global = True))
+        if request.user.is_super_admin:
+            activities = Activity.objects.filter(Q(is_global = True))
+            audit_types = AuditType.objects.filter(Q(is_global = True))
+            entities = Entity.objects.filter(Q(is_global = True))
+            industries = Industry.objects.filter(Q(is_global = True))
+            acts = Act.objects.filter(Q(is_global = True))
+            labels = Activity_Labels.objects.filter(Q(is_global = True))
+        else:
+            activities = Activity.objects.filter(Q(user_id = request.user) | Q(is_global = True))
+            audit_types = AuditType.objects.filter(Q(user_id = request.user) | Q(is_global = True))
+            entities = Entity.objects.filter(Q(user_id = request.user) | Q(is_global = True))
+            industries = Industry.objects.filter(Q(user_id = request.user) | Q(is_global = True))
+            acts = Act.objects.filter(Q(user_id = request.user) | Q(is_global = True))
+            labels = Activity_Labels.objects.filter(Q(user_id = request.user) | Q(is_global = True))
+        
+        
         context_data = {
             'activities' : activities,
             'acts': acts,
@@ -2214,9 +2265,12 @@ def remove_activity(request, activity_id):
 def render_entity_master(request):
     if request.method == 'GET':
         # Get values from master
-        entities = Entity.objects.filter(Q(user_id = request.user.id) | Q(is_global=True))
-        my_entities = Entity.objects.filter(Q(user_id = request.user.id) & Q(is_global=False))
-        
+        if request.user.is_super_admin:
+            entities = Entity.objects.filter(Q(is_global=True))
+            my_entities = Entity.objects.filter(Q(is_global=True))
+        else:
+            entities = Entity.objects.filter(Q(user_id = request.user.id) | Q(is_global=True))
+            my_entities = Entity.objects.filter(Q(user_id = request.user.id) & Q(is_global=False))
         
         # Pass it to the template
         context_data = {
@@ -2237,14 +2291,20 @@ def add_entity(request):
         if is_there:
             error = "Entity exists with name: " + str(entity_name)
         else:
-            new_entity = Entity(user=request.user,entity_name=entity_name)
+            if request.user.is_super_admin:
+                new_entity = Entity(user=request.user,entity_name=entity_name,is_global=True)
+            else:
+                new_entity = Entity(user=request.user,entity_name=entity_name)
             try:
                 new_entity.save()
                 return HttpResponseRedirect('/main_client/entities')
             except Exception as e:
                 raise e
         
-        entities = Entity.objects.filter(Q(user_id = request.user.id) | Q(is_global=True))
+        if request.user.is_super_admin:
+            entities = Entity.objects.filter(Q(is_global=True))
+        else:
+            entities = Entity.objects.filter(Q(user_id = request.user.id) | Q(is_global=True))
         context_data = {
             'entities': entities,
             'error': error
@@ -2336,9 +2396,14 @@ def add_task(request):
         if is_there:
             error = "Task exists with name: " + str(task_name)
         else:
-            task = Task(user=request.user,task_name=task_name, task_estimated_days=estimated_days, 
-                task_auditing_standard=auditing_standard, task_international_auditing_standard=international_auditing_standard,
-                    activity=Activity.objects.get(pk=activity))
+            if request.user.is_super_admin:
+                task = Task(user=request.user,task_name=task_name, task_estimated_days=estimated_days, 
+                    task_auditing_standard=auditing_standard, task_international_auditing_standard=international_auditing_standard,
+                        activity=Activity.objects.get(pk=activity),is_global=True)
+            else:
+                task = Task(user=request.user,task_name=task_name, task_estimated_days=estimated_days, 
+                    task_auditing_standard=auditing_standard, task_international_auditing_standard=international_auditing_standard,
+                        activity=Activity.objects.get(pk=activity))
             try:
                 task.save()
             except Exception as e:
@@ -2400,7 +2465,10 @@ def add_task(request):
             # task.process_notes.save(uploaded_attachment_filename, uploaded_attachment_file)
             # task.save()
         # print(tasks)
-        activities = Activity.objects.all()
+        if request.user.is_super_admin:
+            activities = Activity.objects.filter(Q(is_global=True))
+        else:
+            activities = Activity.objects.filter(Q(user_id = request.user) | Q(is_global=True))
         context_data = {
             'tasks': tasks,
             'activities' : activities,
@@ -2440,10 +2508,15 @@ def add_task(request):
 @login_required
 def render_task_master(request):
     if request.method == 'GET':
-        tasks = Task.objects.filter(Q(user_id = request.user) | Q(is_global = True))
-        activities = Activity.objects.filter(Q(user_id = request.user) | Q(is_global = True))
-
-        my_tasks = Task.objects.filter(Q(user_id = request.user) & Q(is_global = False))
+        if request.user.is_super_admin:
+            tasks = Task.objects.filter(Q(is_global = True))
+            activities = Activity.objects.filter(Q(is_global = True))
+            my_tasks = Task.objects.filter(Q(is_global = True))
+        else:
+            tasks = Task.objects.filter(Q(user_id = request.user) | Q(is_global = True))
+            activities = Activity.objects.filter(Q(user_id = request.user) | Q(is_global = True))
+            my_tasks = Task.objects.filter(Q(user_id = request.user) & Q(is_global = False))
+            print(my_tasks)
         context_data = {
             'tasks': tasks,
             'activities': activities,
@@ -2552,7 +2625,14 @@ def get_activities(request):
         task_id = request.POST.get('task_id')
         task = Task.objects.get(id=task_id)
         activity = Task.objects.get(pk=task_id).activity.id
-        return JsonResponse({'task':task.id,'activity' : activity})
+        if task.task_estimated_days:
+            hours = int(task.task_estimated_days) // 60
+            minutes = int(task.task_estimated_days) % 60
+            print(hours , minutes)
+        else:
+            hours = 0
+            minutes = 0
+        return JsonResponse({'task':task.id,'activity' : activity,'task_auditing_standard':task.task_auditing_standard,'task_international_auditing_standard':task.task_international_auditing_standard,'hours':hours,'minutes':minutes})
 
 @login_required
 def edit_task(request):

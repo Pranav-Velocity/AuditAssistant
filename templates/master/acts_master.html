@@ -57,11 +57,18 @@
                                     <td>{{ act.act_name }}</td>
                                     <td>{{ act.area }}</td>
                                     <td>
-                                      {% if act.area.is_global == False %}
-                                        <a role="btn" class="btn btn-danger" href="{% url 'remove_act' act_id=act.id %}"
-                                            onclick="return confirm('Are you sure you want to delete this act?');">
-                                            Delete
-                                        </a>
+                                      {% if request.user.is_super_admin %}
+                                      <a role="btn" class="btn btn-danger" href="{% url 'remove_act' act_id=act.id %}"
+                                          onclick="return confirm('Are you sure you want to delete this act?');">
+                                          Delete
+                                      </a>
+                                      {% else %}
+                                        {% if act.is_global == False %}
+                                          <a role="btn" class="btn btn-danger" href="{% url 'remove_act' act_id=act.id %}"
+                                              onclick="return confirm('Are you sure you want to delete this act?');">
+                                              Delete
+                                          </a>
+                                        {% endif %}
                                       {% endif %}
                                     </td>
                                 

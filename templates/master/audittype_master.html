@@ -50,10 +50,16 @@
                                     <td>{{ audittype.audit_type_name }}</td>
                                     
                                     <td>
-                                      {% if audittype.is_global == False %}
+                                      {% if request.user.is_super_admin %}
                                       <a class="btn btn-danger" href="{% url 'remove_audittype' audittype_id=audittype.id %}"
-                                            onclick="return confirm('Are you sure you want to delete this audit type?');">
-                                            Delete</a>
+                                                onclick="return confirm('Are you sure you want to delete this audit type?');">
+                                                Delete</a>
+                                      {% else %}
+                                          {% if audittype.is_global == False %}
+                                          <a class="btn btn-danger" href="{% url 'remove_audittype' audittype_id=audittype.id %}"
+                                                onclick="return confirm('Are you sure you want to delete this audit type?');">
+                                                Delete</a>
+                                          {% endif %}
                                         {% endif %}
                                     </td>
                                 </tr>

@@ -21,8 +21,10 @@ class Regulator(models.Model):
 
 # Level Two
 class Act(models.Model):
+    user = models.ForeignKey(User,on_delete=models.CASCADE,null=True,blank=True)
     act_name = models.CharField(max_length=255,null=False, blank=False)
     area = models.ForeignKey(Regulator, on_delete=models.CASCADE, blank=False, null=False)
+    is_global = models.BooleanField(default=False)
 
     def __str__(self):
         return self.act_name

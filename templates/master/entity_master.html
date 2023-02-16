@@ -51,10 +51,16 @@
                                     <td>{{ entity.entity_name }}</td>
                                     
                                     <td>
-                                      {% if entity.is_global == False %}
+                                      {% if request.user.is_super_admin %}
                                       <a class="btn btn-danger" href="{% url 'remove_entity' entity_id=entity.id %}"
-                                            onclick="return confirm('Are you sure you want to delete this entity?');">
-                                            Delete</a>
+                                              onclick="return confirm('Are you sure you want to delete this entity?');">
+                                              Delete</a>
+                                      {% else %}
+                                        {% if entity.is_global == False %}
+                                        <a class="btn btn-danger" href="{% url 'remove_entity' entity_id=entity.id %}"
+                                              onclick="return confirm('Are you sure you want to delete this entity?');">
+                                              Delete</a>
+                                        {% endif %}
                                       {% endif %}
                                     </td>
                                 </tr>

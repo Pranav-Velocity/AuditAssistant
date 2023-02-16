@@ -50,10 +50,17 @@
                                     <td>{{ industry.industry_name }}</td>
                                     
                                     <td>
-                                      {% if industry.is_global == False %}
+                                      {% if request.user.is_super_admin %}
                                       <a class="btn btn-danger" href="{% url 'remove_industry' industry_id=industry.id %}"
-                                            onclick="return confirm('Are you sure you want to delete this industry?');">
-                                            Delete</a>
+                                      onclick="return confirm('Are you sure you want to delete this industry?');">
+                                      Delete</a>
+                                      {% else %}
+
+                                        {% if industry.is_global == False %}
+                                        <a class="btn btn-danger" href="{% url 'remove_industry' industry_id=industry.id %}"
+                                              onclick="return confirm('Are you sure you want to delete this industry?');">
+                                              Delete</a>
+                                        {% endif %}
                                       {% endif %}
                                     </td>
                                 </tr>

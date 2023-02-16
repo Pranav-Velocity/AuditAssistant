@@ -50,10 +50,16 @@
                                     <td>{{ i.activity_label_name }}</td>
                                     
                                     <td>
-                                      {% if i.is_global == False %}
-                                      <a class="btn btn-danger" href="{% url 'remove_activitylabel' activitylabel_id=i.id %}"
-                                            onclick="return confirm('Are you sure you want to delete this Activity Label?');">
-                                            Delete</a>
+                                      {% if request.user.is_super_admin %}
+                                        <a class="btn btn-danger" href="{% url 'remove_activitylabel' activitylabel_id=i.id %}"
+                                        onclick="return confirm('Are you sure you want to delete this Activity Label?');">
+                                        Delete</a>
+                                      {% else %}
+                                        {% if i.is_global == False %}
+                                        <a class="btn btn-danger" href="{% url 'remove_activitylabel' activitylabel_id=i.id %}"
+                                              onclick="return confirm('Are you sure you want to delete this Activity Label?');">
+                                              Delete</a>
+                                        {% endif %}
                                       {% endif %}
                                     </td>
                                 </tr>
