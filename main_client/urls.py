@@ -18,6 +18,9 @@ urlpatterns = [
     path("client/<int:client_id>/tasks/",main_client_tasks,name="main_client_tasks"),
 
 
+    path('client/auditplan/lock/<int:auditplan_id>', lock_audit_plan, name="lock_audit_plan"),
+    path('client/auditplan/unlock/<int:auditplan_id>', unlock_audit_plan, name="unlock_audit_plan"),
+
     path('client/auditplan/add/<int:client_id>', add_audit_plan, name="add_audit_plan"),
     path('client/auditplan/<int:auditplan_id>', audit_plan, name="audit_plan"),
     

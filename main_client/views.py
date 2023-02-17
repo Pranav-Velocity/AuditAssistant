@@ -32,6 +32,7 @@ from babel.numbers import format_currency
 @login_required
 def Dashboard(request):
     if request.user.is_main_client:
+
         if request.method == 'POST':
             payment_gateway_button = request.POST.get('payment_gateway_button')
             if payment_gateway_button == "yes":
@@ -107,8 +108,10 @@ def Dashboard(request):
         except MaxFiles.DoesNotExist:
             get_max_files = ""
         all_linked_users = []
+        all_partners = []
         partners = User.objects.filter(linked_employee = request.user.id)
         for partner in partners:
+            all_partners.append(partner)
             all_linked_users.append(partner)
             managers = User.objects.filter(linked_employee = partner.id)
             for manager in managers:
@@ -133,14 +136,21 @@ def Dashboard(request):
                 message2 = ""
         except MaxUsers.DoesNotExist:
             message2 = ""
-        
+        clients = []
+        for partner in all_partners:
+            get_clients = Client.objects.filter(assigned_partner=partner)
+            for client in get_clients:
+                clients.append(client)
+
+        print("client count :",clients)
         params = {
             "total_users":len(all_linked_users),
             "total_files":MaxFiles.objects.get(main_client = request.user.id),
             "max_files":get_max_files,
             "message":message,
             "message2":message2,
-            "bill_expire_remaining_days":get_expiry_days
+            "bill_expire_remaining_days":get_expiry_days,
+            "client_count":len(clients)
         }
         return render(request,"main_client/dashboard.html",params)
 
@@ -696,14 +706,18 @@ def render_client_master(request):
         main_client_id = request.user.id
         print("Main Client Id :",main_client_id)
         clients = Client.objects.filter(user_id = request.user.id)
-        industries = Industry.objects.filter(user_id = request.user)
-        audits = Audits.objects.filter(user_id = request.user)
-        entities = Entity.objects.filter(user_id = request.user)
-        audittypes = AuditType.objects.filter(user_id = request.user)
+        industries = Industry.objects.filter(Q(user_id = request.user) | Q(is_global=True))
+        audits = Audits.objects.filter(Q(user_id = request.user) | Q(is_global=True))
+        entities = Entity.objects.filter(Q(user_id = request.user) | Q(is_global=True))
+        audittypes = AuditType.objects.filter(Q(user_id = request.user) | Q(is_global=True))
         user = User.objects.get(id = request.user.id)
         main_client = User.objects.get(id = request.user.id)
-        users = User.objects.filter((Q(is_manager = True) & Q(linked_employee = main_client.id))|(Q(is_manager = True) & Q(linked_employee = user.id)))
-
+        users = []
+        all_partners = User.objects.filter(Q(is_partner = True) & Q(linked_employee = request.user.id))
+        for partner in all_partners:
+            all_managers = User.objects.filter(Q(is_manager = True) & Q(linked_employee = partner.id))
+            for manager in all_managers:
+                users.append(manager)
         ac = Client.objects.filter(user_id = request.user.id)
         # print('\n',ac)
         client_invoicing = list(AuditPlanMapping.objects.filter(client_id__in=ac).values('client_id').order_by('client_id').annotate(total_price=Sum('invoice_amount'),total_price_paid=Sum('invoice_amount_paid'),non_billable=Sum('is_billable'),ofp=Sum('out_of_pocket_expenses'),igst=Sum('igst_amount'),sgst=Sum('sgst_amount'),cgst=Sum('cgst_amount'),invoices = Count('is_billable')))
@@ -1194,6 +1208,87 @@ def audit_plan(request, auditplan_id):
         # 'industries_activities': industries_activities
     }
     return render(request, 'main_client/audit_plan.html', context_data)
+
+@login_required
+def lock_audit_plan(request, auditplan_id):
+    if request.method == "POST":
+        audit_plan = AuditPlanMapping.objects.get(pk = auditplan_id)
+        check = request.POST.get('lock_audit_plan')
+        check_billing = request.POST.get('start_billing')
+        pwd = request.POST.get('password')
+        user = authenticate(username=request.user, password=pwd)
+        print(check)
+        print(user)
+        if audit_plan is not None:
+            if check == "yes" and user is not None:
+                audit_plan.is_audit_plan_locked = True
+                try:
+                    audit_plan.save()
+                    msg = "AUDIT PLAN LOCKED"
+                except Exception as e:
+                    print(e)
+            if check_billing == "yes":
+                invoice_number = request.POST.get('invoice_number')
+                invoice_date = request.POST.get('invoice_date')
+                invoice_amount = request.POST.get('invoice_amount')
+                out_of_pocket = request.POST.get('out_of_pocket')
+                audit_plan.invoice_number = invoice_number
+                audit_plan.invoice_date = invoice_date
+                audit_plan.invoice_amount = invoice_amount
+
+                igst = request.POST.get('igst')
+                sgst = request.POST.get('sgst')
+                cgst = request.POST.get('cgst')
+                
+                audit_plan.igst = igst
+                audit_plan.cgst = cgst
+                audit_plan.sgst = sgst
+                igsta = request.POST.get('igsta')
+                sgsta = request.POST.get('sgsta')
+                cgsta = request.POST.get('cgsta')
+                audit_plan.igst_amount = igsta
+                audit_plan.cgst_amount = cgsta
+                audit_plan.sgst_amount = sgsta
+
+                out_of_pocket = request.POST.get('out_of_pocket')
+                ope_igst = request.POST.get('ope_igst')
+                total_ope = request.POST.get('total_ope')
+                audit_plan.out_of_pocket_expenses = out_of_pocket
+                audit_plan.ope_igst = ope_igst
+
+                ope_sgst = request.POST.get('ope_sgst')
+                audit_plan.ope_sgst = ope_sgst
+
+                ope_cgst = request.POST.get('ope_cgst')
+                audit_plan.ope_cgst = ope_cgst
+                audit_plan.total_ope = total_ope
+
+                try:
+                    audit_plan.save()
+                    msg = "AUDIT PLAN LOCKED"
+                except Exception as e:
+                    print(e)
+        return HttpResponseRedirect(f'/main_client/client/auditplan/{audit_plan.id}',{'msg' : "msg"})
+
+@login_required
+def unlock_audit_plan(request, auditplan_id):
+    if request.method == "POST":
+        audit_plan = AuditPlanMapping.objects.get(pk = auditplan_id)
+        check = request.POST.get('unlock_audit_plan')
+        pwd = request.POST.get('password')
+        print("UNLOCK",check,pwd)
+        user = authenticate(username=request.user, password=pwd)
+        if audit_plan is not None:
+            if check == "yes" and user is not None:
+                audit_plan.is_audit_plan_locked = False
+                try:
+                    audit_plan.save()
+                    msg = "AUDIT PLAN UNLOCKED"
+                except Exception as e:
+                    print(e)
+    return HttpResponseRedirect(f'/main_client/client/auditplan/{audit_plan.id}',{'msg' : msg})
+
+
 
 @login_required
 def render_client_profile(request, client_id):

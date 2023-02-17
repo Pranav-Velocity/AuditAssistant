@@ -645,44 +645,7 @@ function edit_activity_function(id){
         });
     });
 
-    $("#editactivity_form").on("submit", function(e){
-      e.preventDefault()
-      edit_getindustries = $('#editBox_industries option:selected').text()
-      edit_getentities = $('#editBox_entities option:selected').text()
-      edit_getaudittype = $('#editBox_audittype option:selected').text()
-      
-      var edit_is_industries , edit_is_entities , edit_is_audittype;
-
-      if(edit_getindustries){
-        edit_is_industries = "yes"
-      }
-      else{
-        edit_is_industries = "no"
-      }
-
-      if(edit_getentities){
-        edit_is_entities = "yes"
-      }
-      else{
-        edit_is_entities = "no"
-      }
-
-      if(edit_getaudittype){
-        edit_is_audittype = "yes"
-      }
-      else{
-        edit_is_audittype = "no"
-      }
-      if(edit_is_industries == "yes" && edit_is_audittype == "yes"  && edit_is_entities == "yes"){
-        $('#editactivity_form').unbind('submit').submit();
-      }
-      else{
-        alert("Please Select Industries , Audit Type , Entities")
-      }
-      
-      
-      
-    });
+   
     
     
 
@@ -690,6 +653,8 @@ function edit_activity_function(id){
       rules:{
         activity_name:{
           required:true,
+          alphabets_and_spaces_and_underscore: true,
+          maxlength:1000,
         },
         activity_description:{
           required:true,
@@ -713,6 +678,8 @@ function edit_activity_function(id){
       messages:{
         activity_name:{
           required:"Please Enter Activity Name",
+          alphabets_and_spaces_and_underscore: "Please Enter A valid Activity Name",
+          maxlength:"Maximum 1000 Characters Allowed",
         },
         activity_description:{
           required:"Please Enter Activity Description",
@@ -737,5 +704,69 @@ function edit_activity_function(id){
         form.submit();
       }
     });
+
+    jQuery('#editactivity_form').validate({
+      rules:{
+        edit_activity_id:{
+          required:true,
+        },
+        edit_activity_name:{
+          required:true,
+          alphabets_and_spaces_and_underscore: true,
+          maxlength:1000,
+        },
+        edit_activity_description:{
+          required:true,
+        },
+        edit_label:{
+          required:true,
+        },
+        edit_act:{
+          required:true,
+        },
+        edit_industries:{
+          required:true,
+        },
+        edit_audittype:{
+          required:true,
+        },
+        editBox_entities:{
+          required:true,
+        },
+      },
+      messages:{
+        edit_activity_id:{
+          required:"Please Select a Activity",
+        },
+        edit_activity_name:{
+          required:"Please Enter Activity Name",
+          alphabets_and_spaces_and_underscore: "Please Enter A valid Activity Name",
+          maxlength:"Maximum 1000 Characters Allowed",
+        },
+        edit_activity_description:{
+          required:"Please Enter Activity Description",
+        },
+        edit_label:{ 
+          required:"Please select any one from list",
+        },
+        edit_act:{
+          required:"Please select any one from list",
+        },
+        edit_industries:{
+          required:"Please select any one or multiple from list",
+        },
+        edit_audittype:{
+          required:"Please select any one or multiple from list",
+        },
+        editBox_entities:{
+          required:"Please select any one or multiple from list",
+        },
+      },
+      subitHandler:function(form){
+        form.submit();
+      }
+    });
 </script>
+
+
 {% endblock script %}

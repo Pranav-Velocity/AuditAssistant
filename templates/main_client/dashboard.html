@@ -31,7 +31,7 @@
         
           <div class="card">
             <div class="card-header bg-blue-disabled">
-              <h1 class="card-title">Revenue</h1>
+              <h1 class="card-title">Overview</h1>
               <div class="card-tools">
                 <!-- Collapse Button -->
                 <button type="button" class="btn btn-tool" data-card-widget="collapse">
@@ -75,8 +75,8 @@
                   <!-- small box -->
                   <div class="small-box bg-danger">
                     <div class="inner">
-                      <h3>{{ invoices_notgenerated }}</h3>
-                      <h5>Invocies Not Generated</h5>
+                      <h3>{{ client_count }}</h3>
+                      <h5>Client Count</h5>
                     </div>
 
                     <div class="icon">
@@ -103,6 +103,7 @@
               </div>
             </div>
           </div>
+          
       </div>
     </div>
     
@@ -146,6 +147,9 @@
             </div>
     </div>
 </div>
+
+
+
 {% endblock content %}
 {% block script %}
   <script>
@@ -259,4 +263,8 @@
 
     chart.render();
   </script>
+
+
+
+
 {% endblock script %}

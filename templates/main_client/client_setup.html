@@ -285,7 +285,7 @@
       rules:{
         client_name:{
           required:true,
-          alphabets_and_spaces: true,
+          alphabets_and_spaces_and_underscore: true,
           maxlength:255,
         },
         client_email:{
@@ -302,7 +302,7 @@
       messages:{
         client_name:{
           required:"Please Enter Client Name",
-          alphabets_and_spaces: "Please Enter A Valid Client Name",
+          alphabets_and_spaces_and_underscore: "Please Enter A Valid Client Name",
           maxlength:"Maximum 255 Characters Allowed",
         },
         client_email:{

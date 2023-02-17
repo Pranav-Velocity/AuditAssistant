@@ -9,8 +9,7 @@ from .views import clone_client
 from .views import list_clients_setup
 from .views import Reports
 from .views import employee_setup, add_client_task, add_employee, edit_employee
-from .views import lock_audit_plan,mapping
-from .views import unlock_audit_plan
+from .views import mapping
 from partner.views import partner_approval_pending_tasks,pending_approval_task,approve_tasks,reject_task,partner_list_of_clients,partner_client_tasks,partner_assign_task_to_employee
 from partner.views import partner_tasks,show_individual_partner_task,partner_start_working,partner_task_submission,view_client_invoicing,client_invoice_download,edit_invoice,invoice_details,create_invoice,partner_dashboard
 from .views import test
@@ -84,8 +83,7 @@ urlpatterns = [
 
     path('client/<int:client_id>/task/add', add_client_task, name="add_client_task"),
     path('assign/clients/lists/', list_clients_setup, name="list_clients_setup"),
-    path('client/auditplan/lock/<int:auditplan_id>', lock_audit_plan, name="lock_audit_plan"),
-    path('client/auditplan/unlock/<int:auditplan_id>', unlock_audit_plan, name="unlock_audit_plan"),
+    
     path('client/mapping',mapping,name="mapping"),
     path('client/edit', edit_client, name="edit_client"),
     path('client/clientdetails', get_clientdetails, name="get_clientdetails"),

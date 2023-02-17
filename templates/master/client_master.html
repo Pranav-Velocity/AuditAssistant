@@ -410,11 +410,13 @@
       rules:{
         client_name:{
           required:true,
-          lettersonly: true,
+          alphabets_and_spaces_and_underscore: true,
+          maxlength:255,
         },
         clientEmail:{
           required:true,
-          email:true,
+          emailcheck:true,
+          maxlength:100,
         },
         financeEmail:{
           required:false,
@@ -424,11 +426,13 @@
       messages:{
         client_name:{
           required:"Please Enter Client Name",
-          lettersonly: "Please Enter A Valid Client Name",
+          alphabets_and_spaces_and_underscore: "Please Enter A Valid Client Name",
+          maxlength:"Maximum 255 Characters Allowed",
         },
         clientEmail:{
           required:"Please Enter Client Email",
-          email:"Please Enter a Valid Client Email",
+          emailcheck:"Please Enter a Valid Client Email",
+          maxlength:"Maximum 100 Characters Allowed",
         },
         financeEmail:{
           required:false,
