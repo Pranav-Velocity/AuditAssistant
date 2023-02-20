@@ -16,6 +16,11 @@
 
     <!-- Main content -->
     <section class="content">
+      {% if error %}
+          <div class="alert alert-danger">
+            {{ error }}
+          </div>
+        {% endif %}
         <div class="row">
             <div class="col-12">
                 <div class="card">
@@ -24,9 +29,14 @@
                   <button type="button" class="btn btn-info float-right ml-4" data-toggle="modal" data-target="#editTaskModal">
                     Edit Task
                   </button>
-                  <button type="button" class="btn btn-primary float-right" data-toggle="modal" data-target="#addTaskModal">
+                  <button type="button" class="btn btn-primary float-right ml-4" data-toggle="modal" data-target="#addTaskModal">
                     Add New Task
                   </button>
+                  {% if request.user.is_super_admin %}
+                    <button type="button" class="btn btn-warning float-right " data-toggle="modal" data-target="#addtoGlobalModal">
+                      Add to Global
+                  </button>
+                  {% endif %}
                   <form method="POST" action="{% url 'upload_task' %}" enctype="multipart/form-data">
                     {% csrf_token %}
                     <input type="file" class="btn btn-info float-left ml-5" name="upload_task_file">
@@ -65,13 +75,13 @@
                                     {% if task.process_notes %}
                                       <td style="text-align:center;"> 
                                         
-                                        <button class="btn btn-primary" onclick="ViewProcessNotes('{{task.id}}','{{task.is_global}}')">
+                                        <button class="btn btn-primary" onclick="ViewProcessNotes('{{task.id}}','{{task.is_global}}','{{task.user.id}}')">
                                           <i class="fas fa-paperclip" aria-hidden="true"></i>
                                         </button>
                                       </td>
                                       {% else %}
                                       <td style="text-align:center;"> 
-                                        <button class="btn" onclick="ViewProcessNotes('{{task.id}}','{{task.is_global}}')">
+                                        <button class="btn" onclick="ViewProcessNotes('{{task.id}}','{{task.is_global}}','{{task.user.id}}')">
                                           <i class="fas fa-paperclip" aria-hidden="true"></i>
                                         </a>
                                       </td>
@@ -293,6 +303,65 @@
               </div>
           </div>
       </div>
+
+      <div class="modal fade" id="addtoGlobalModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered" role="document" style="max-width: 900px !important;">
+            <div class="modal-content">
+                <form action="{% url 'add_audits' %}" method="post" id="add_audit_form">
+                    {% csrf_token %}
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLongTitle">Add Audit</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="table-for-audits">
+                          <table class="table">
+                            <thead>
+                              <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">Task Name</th>
+                                <th scope="col">Task User</th>
+                                <th scope="col">Save to Global</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {% for task in non_global_task %}
+                              <tr>
+                                <th scope="row">{{forloop.counter}}</th>
+                                <td>{{task.task_name}}</td>
+                                <td>{{task.user}}</td>
+                                <td>
+                                  <a class="btn btn-success" href="{% url 'task_make_global' task_id=task.id %}">Make Global</a>
+                                </td>
+                              </tr>
+                              {% endfor %}
+                            </tbody>
+                          </table>
+                        </div>
+                        <!-- <div class="form-row">
+                            <div class="form-group col-md-12 mb-3">
+                                <label for="taskName" class="text-dark">Regulations</label>    
+                                <div class="row">
+                                  {% for regulation in regulations %}
+                                    <div class="col-6 form-check">
+                                      <input class="form-check-input" type="checkbox" name="regulations" value="{{ regulation.id }}">
+                                      {{ regulation.regulation_name }}</strong>
+                                    </div>  
+                                  {% endfor %}
+                                </div>
+                            </div>
+                        </div> -->
+
+                    </div>
+                    <div class="modal-footer">
+                        <input type="submit" class="btn btn-success" value="Submit">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
     </section>
     <!-- /.content -->
   </div>
@@ -424,11 +493,10 @@
       }
     });
 
-    function ViewProcessNotes(id,is_global){
-      if(is_global == "True") {
-        $('#process_notes_add_container').empty();
-      }
-      else {
+    function ViewProcessNotes(id,is_global,user_id){
+      console.log("user_id :",user_id , '{{request.user.id}}')
+      if (user_id == '{{request.user.id}}'){
+        console.log("yes matched hence can add")
         $('#process_notes_add_container').empty();
         $('#process_notes_add_container').append(`
           <div class="col-sm-3">
@@ -443,7 +511,10 @@
           </div>
         `);
       }
-    
+      else{
+        $('#process_notes_add_container').empty();
+      }
+
         $('#processed_notes_task_id').val(id);
         console.log(is_global)
         $.ajax({

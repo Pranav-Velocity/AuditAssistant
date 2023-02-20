@@ -1487,28 +1487,40 @@ def render_areas_master(request):
         audittypes=Audits.objects.filter(Q(is_global=True))
 
         my_areas = Regulator.objects.filter(Q(is_global=True))
+        non_global_areas = Regulator.objects.filter(Q(is_global=False))
     else:
         areas = Regulator.objects.filter(Q(user_id=request.user.id) | Q(is_global=True))
         audittypes=Audits.objects.filter(Q(user_id=request.user.id) | Q(is_global=True))
 
         my_areas = Regulator.objects.filter(Q(user_id=request.user.id) & Q(is_global=False))
+        non_global_areas = []
     # Pass it to the template
     context_data = {
         'areas': areas,
         "audittypes" : audittypes,
-        "my_areas":my_areas
+        "my_areas":my_areas,
+        "non_global_areas":non_global_areas
     }
     
     return render(request, "master/areas_master.html",context_data)
         
+
+@login_required
+def area_make_global(request,area_id):
+    print(area_id)
+    area = Regulator.objects.get(id = area_id)
+    area.is_global = True
+    area.save()
+    return HttpResponseRedirect("/main_client/areas")
 # ----------------------------------Regulators -------------------------------------
 @login_required
 def add_area(request):
     if request.method == "POST":
         area_name = request.POST.get('area_name')
         type_of_audit = request.POST.get('types_of_audits')
-        is_there = Regulator.objects.filter(Q(area_name=area_name) & Q(user_id=request.user.id)).exists()
+        is_there = Regulator.objects.filter((Q(area_name=area_name) & Q(user_id=request.user.id)) | (Q(is_global=True) & Q(area_name=area_name))).exists()
         # print(is_there)
+        print(is_there)
         error = ""
         if is_there:
             error = "Regulator exists with name: " + str(area_name)
@@ -1557,23 +1569,32 @@ def render_activity_label_master(request):
         if request.user.is_super_admin:
             activity_label = Activity_Labels.objects.filter(Q(is_global=True))
             my_activity_label = Activity_Labels.objects.filter(Q(is_global=True))
+            non_global_activity_labels = Activity_Labels.objects.filter(Q(is_global=False))
         else:
             activity_label = Activity_Labels.objects.filter(Q(user_id=request.user.id) | Q(is_global=True))
             my_activity_label = Activity_Labels.objects.filter(Q(user_id=request.user.id) & Q(is_global=False))
-        
+            non_global_activity_labels = []
         context_data = {
             'activity_label': activity_label,
             'my_activity_label': my_activity_label,
-            
+            'non_global_activity_labels':non_global_activity_labels
         }
         return render(request, "master/activity_label_master.html",context_data)
+
+@login_required
+def activity_label_make_global(request,activitylabel_id):
+    print(activitylabel_id)
+    activitylabel = Activity_Labels.objects.get(id = activitylabel_id)
+    activitylabel.is_global = True
+    activitylabel.save()
+    return HttpResponseRedirect("/main_client/activitylabel")
 
 @login_required
 def add_activitylabel(request):
     if request.method == 'POST':
         activity_label_name = request.POST.get('activity_label_name')
         
-        is_there = Activity_Labels.objects.filter(Q(activity_label_name=activity_label_name) & Q(user_id=request.user.id)).exists()
+        is_there = Activity_Labels.objects.filter((Q(activity_label_name=activity_label_name) & Q(user_id=request.user.id)) | (Q(is_global=True) & Q(activity_label_name=activity_label_name))).exists()
         
         error = ""
         if is_there:
@@ -1631,21 +1652,31 @@ def render_acts_master(request):
         areas = Regulator.objects.filter(Q(is_global=True))
         my_acts = Act.objects.filter(Q(is_global = True))
         my_areas = Regulator.objects.filter(Q(is_global=True))
+        non_global_areas = Act.objects.filter(Q(is_global=False))
     else:
         acts = Act.objects.filter(Q(user_id=request.user.id) | Q(is_global=True))
         areas = Regulator.objects.filter(Q(user_id=request.user.id) | Q(is_global=True))
         my_acts = Act.objects.filter(Q(user_id=request.user.id) | Q(is_global=False))
         my_areas = Regulator.objects.filter(Q(user_id=request.user.id) & Q(is_global=False))
+        non_global_areas = []
     # Pass it to the template
     context_data = {
         'acts': acts,
         'areas': areas,
         'my_acts': my_acts,
         'my_areas': my_areas,
-        
+        'non_global_areas':non_global_areas
     }
     return render(request, 'master/acts_master.html', context_data)
 
+
+@login_required
+def acts_make_global(request,act_id):
+    print(act_id)
+    acts = Act.objects.get(id = act_id)
+    acts.is_global = True
+    acts.save()
+    return HttpResponseRedirect("/main_client/acts")
 
 @login_required
 def add_act(request):
@@ -1658,7 +1689,7 @@ def add_act(request):
         area = Regulator.objects.get(id = area)
 
         # Check if the act exists
-        is_there = Act.objects.filter(act_name=act_name).exists()
+        is_there = Act.objects.filter((Q(act_name=act_name) & Q(user_id = request.user.id)) | (Q(is_global=True) & Q(act_name=act_name))).exists()
         
         error = ""
         if is_there:
@@ -1678,6 +1709,10 @@ def add_act(request):
         if request.user.is_super_admin:
             acts = Act.objects.filter(Q(is_global = True))
             areas = Regulator.objects.filter(Q(is_global=True))
+        else:
+            acts = Act.objects.filter(Q(is_global = True) | Q(user_id = request.user.id))
+            areas = Regulator.objects.filter(Q(is_global=True) | Q(user_id = request.user.id))
+        
         
         context_data = {
             'acts': acts,
@@ -1743,16 +1778,26 @@ def render_audittype_master(request):
         if request.user.is_super_admin:
             audittypes = AuditType.objects.filter(Q(is_global=True))
             my_audittypes = AuditType.objects.filter(Q(is_global=True))
+            non_global_audit_type = AuditType.objects.filter(Q(is_global=False))
         else:
             audittypes = AuditType.objects.filter(Q(user_id = request.user.id) | Q(is_global=True))
             my_audittypes = AuditType.objects.filter(Q(user_id = request.user.id) & Q(is_global=False))
+            non_global_audit_type = []
         # Pass it to template
         context_data = {
             'audittypes': audittypes,
             'my_audittypes': my_audittypes,
-            
+            'non_global_audit_type':non_global_audit_type
         }
         return render(request, "master/audittype_master.html",context_data)
+
+@login_required
+def audit_type_make_global(request,audittype_id):
+    print(audittype_id)
+    audit_type = AuditType.objects.get(id = audittype_id)
+    audit_type.is_global = True
+    audit_type.save()
+    return HttpResponseRedirect("/main_client/audittypes")
 
 @login_required
 def add_audittype(request):
@@ -1761,7 +1806,7 @@ def add_audittype(request):
         audittype_name = request.POST.get('audit_type_name')
         
         # Check if already exists
-        is_there = AuditType.objects.filter(Q(audit_type_name=audittype_name) & Q(user_id=request.user.id)).exists()
+        is_there = AuditType.objects.filter((Q(audit_type_name=audittype_name) & Q(user_id=request.user.id)) | (Q(audit_type_name=audittype_name) & Q(is_global=True))).exists()
         
         error = ""
         if is_there:
@@ -1827,16 +1872,25 @@ def render_industry_master(request):
         if request.user.is_super_admin:
             industries = Industry.objects.filter(Q(is_global=True))
             my_industries = Industry.objects.filter(Q(is_global=True))
+            non_global_industry = Industry.objects.filter(is_global=False)
         else:
             industries = Industry.objects.filter(Q(user_id = request.user.id) | Q(is_global=True))
             my_industries = Industry.objects.filter(Q(user_id = request.user.id) & Q(is_global=False))
+            non_global_industry = []
         context_data = {
             'industries': industries,
             'my_industries': my_industries,
+            'non_global_industry':non_global_industry
             
         }
         return render(request, "master/industry_master.html",context_data)
-
+@login_required
+def industry_make_global(request,industry_id):
+    print(industry_id)
+    industry = Industry.objects.get(id = industry_id)
+    industry.is_global = True
+    industry.save()
+    return HttpResponseRedirect("/main_client/industries")
 
 
 @login_required
@@ -1844,7 +1898,7 @@ def add_industry(request):
     if request.method == 'POST':
         industry_name = request.POST.get('industry_name')
         
-        is_there = Industry.objects.filter(Q(industry_name=industry_name) & Q(user_id=request.user.id)).exists()
+        is_there = Industry.objects.filter((Q(industry_name=industry_name) & Q(user_id=request.user.id)) | (Q(industry_name=industry_name) & Q(is_global=True))).exists()
         
         error = ""
         if is_there:
@@ -1900,24 +1954,36 @@ def render_audits_master(request):
         if request.user.is_super_admin:
             audits = Audits.objects.filter(Q(is_global=True))
             my_audits = Audits.objects.filter(Q(is_global=True))
+            non_global_audits = Audits.objects.filter(Q(is_global=False))
         else:
             audits = Audits.objects.filter(Q(user_id = request.user.id) | Q(is_global=True))
             my_audits = Audits.objects.filter(Q(user_id = request.user.id) & Q(is_global=False))
+            non_global_audits = []
         context_data = {
             'audits': audits,
-            'my_audits': my_audits
+            'my_audits': my_audits,
+            'non_global_audits':non_global_audits
         }
         return render(request, "master/audits_master.html",context_data)
 
 
+
+
+@login_required
+def audits_make_global(request,audit_id):
+    print(audit_id)
+    audit = Audits.objects.get(id = audit_id)
+    audit.is_global = True
+    audit.save()
+    return HttpResponseRedirect("/main_client/audits")
 
 @login_required
 def add_audits(request):
     if request.method == 'POST':
         audit_name = request.POST.get('audit_name')
         
-        is_there = Audits.objects.filter(Q(audit_name=audit_name) & Q(user_id = request.user.id)).exists()
-        
+        is_there = Audits.objects.filter((Q(audit_name=audit_name) & Q(user_id = request.user.id)) | (Q(is_global=True) & Q(audit_name=audit_name))).exists()
+        print(is_there)
         error = ""
         if is_there:
             error = "Audit exists with name: " + str(audit_name)
@@ -1931,15 +1997,17 @@ def add_audits(request):
                 return HttpResponseRedirect('/main_client/audits')
             except Exception as e:
                 print(e)
+        print(error)
         if request.user.is_super_admin:
             audits = Audits.objects.filter(Q(is_global=True))
         else:
-            audits = Audits.objects.filter(user_id = request.user.id)
+            audits = Audits.objects.filter(Q(user_id = request.user.id) | Q(is_global=True))
         context_data = {
             'audits': audits,
             'error': error
         }
-        return render(request, "master/audit_master.html",context_data)  
+        
+        return render(request, "master/audits_master.html",context_data)  
 
 @login_required
 def edit_audits(request):
@@ -1988,6 +2056,7 @@ def render_activity_master(request):
             label = Activity_Labels.objects.filter(Q(is_global = True))
 
             my_activities = Activity.objects.filter(Q(is_global = True))
+            non_global_activity = Activity.objects.filter(Q(is_global = False))
         else:
             activities = Activity.objects.filter(Q(user_id = request.user) | Q(is_global = True))
             audit_types = AuditType.objects.filter(Q(user_id = request.user) | Q(is_global = True))
@@ -1999,6 +2068,7 @@ def render_activity_master(request):
             label = Activity_Labels.objects.filter(Q(user_id = request.user) | Q(is_global = True))
 
             my_activities = Activity.objects.filter(Q(user_id = request.user) & Q(is_global = False))
+            non_global_activity = []
         context_data = {
             'activities': activities,
             'audittypes': audit_types,
@@ -2007,10 +2077,19 @@ def render_activity_master(request):
             'acts': acts,
             'label' : label,
             'my_activities':my_activities,
-            
+            'non_global_activity':non_global_activity
         }
     
         return render(request, "master/activity_master.html",context_data)
+
+@login_required
+def activity_make_global(request,activity_id):
+    print(activity_id)
+    activity = Activity.objects.get(id = activity_id)
+    activity.is_global = True
+    activity.save()
+    return HttpResponseRedirect("/main_client/activities")
+
 
 @login_required
 def add_activity(request):
@@ -2041,7 +2120,7 @@ def add_activity(request):
             entities.append(Entity.objects.get(pk=i))
 
 
-        is_there = Activity.objects.filter(Q(activity_name=activity_name) & Q(user_id = request.user.id)).exists()
+        is_there = Activity.objects.filter((Q(activity_name=activity_name) & Q(user_id = request.user.id)) | (Q(activity_name=activity_name) & Q(is_global=True))).exists()
         print("is there ",is_there)
         error = ""
         if is_there:
@@ -2148,7 +2227,7 @@ def add_activity(request):
             'labels' : labels,
             'industries' : industries
         } 
-        return HttpResponseRedirect("/main_client/activities",context_data)
+        return render(request, "master/activity_master.html",context_data)
 
 @login_required
 def get_entities(request):
@@ -2363,16 +2442,26 @@ def render_entity_master(request):
         if request.user.is_super_admin:
             entities = Entity.objects.filter(Q(is_global=True))
             my_entities = Entity.objects.filter(Q(is_global=True))
+            non_global_entity = Entity.objects.filter(Q(is_global=False))
         else:
             entities = Entity.objects.filter(Q(user_id = request.user.id) | Q(is_global=True))
             my_entities = Entity.objects.filter(Q(user_id = request.user.id) & Q(is_global=False))
-        
+            non_global_entity = []
         # Pass it to the template
         context_data = {
             'entities': entities,
-            'my_entities':my_entities
+            'my_entities':my_entities,
+            'non_global_entity':non_global_entity
         }
         return render(request, "master/entity_master.html",context_data)
+
+@login_required
+def entity_make_global(request,entity_id):
+    print(entity_id)
+    entity = Entity.objects.get(id = entity_id)
+    entity.is_global = True
+    entity.save()
+    return HttpResponseRedirect("/main_client/entities")
 
 @login_required
 def add_entity(request):
@@ -2380,7 +2469,7 @@ def add_entity(request):
         
         entity_name = request.POST.get('entity_name')
 
-        is_there = Entity.objects.filter(Q(entity_name=entity_name) & Q(user_id=request.user.id)).exists()
+        is_there = Entity.objects.filter((Q(entity_name=entity_name) & Q(user_id=request.user.id)) | (Q(entity_name=entity_name) & Q(is_global=True))).exists()
         
         error = ""
         if is_there:
@@ -2484,7 +2573,7 @@ def add_task(request):
         international_auditing_standard = request.POST.get('international_auditing_standard')
         activity = request.POST.get('activity')
 
-        is_there = Task.objects.filter(Q(task_name=task_name) & Q(user_id=request.user.id)).exists()
+        is_there = Task.objects.filter((Q(task_name=task_name) & Q(user_id=request.user.id)) | (Q(task_name=task_name) & Q(is_global=True))).exists()
         
         # print(uploaded_attachment_filename)
         error = ""
@@ -2503,8 +2592,11 @@ def add_task(request):
                 task.save()
             except Exception as e:
                 raise e
-
-        tasks=Task.objects.all()
+        print(error)
+        if request.user.is_super_admin:
+            tasks=Task.objects.filter(is_global=True)
+        else:
+            tasks = Task.objects.filter(Q(is_global=True) | Q(user_id = request.user.id))
         task=Task.objects.get(task_name = task_name)
         task_id = Task.objects.get(task_name = task_name)
         
@@ -2569,36 +2661,36 @@ def add_task(request):
             'activities' : activities,
             "error": error,
         }
-    clients = Client.objects.all()
-    task_mappings = ActivityAuditTypeEntity.objects.filter(activity=activity)
-    for client in clients:
-        client_details = ClientIndustryAuditTypeEntity.objects.filter(client=client)
-        for client_detail in client_details:
-            for new_task in task_mappings:
-                if (client_detail.audittype_id == new_task.audittype_id) and (client_detail.entity_id == new_task.entity_id) and  (client_detail.industry_id==new_task.industry_id):
-                    print("match")
-                    is_there = ClientTask.objects.filter(client=client).filter(task_name=task_name).exists()
-        # print(is_there)
-                    error = ""
-                    if is_there:
-                        error = "Task exists with name: " + str(task_name) 
-                    else:
-                        audit_plan = AuditPlanMapping.objects.filter(client_id = client.id)
-                        for ap in audit_plan:
-                            if ap.is_audit_plan_locked == False:
-                                newTask = ClientTask(
-                                    task_name=task_name,
-                                    task_estimated_days=estimated_days,
-                                    task_auditing_standard=auditing_standard,
-                                    task_international_auditing_standard=international_auditing_standard,
-                                    activity=Activity.objects.get(id=activity),
-                                    # act=Act.objects.get(id=acti.act_id),
-                                    client=client,
-                                    auditplan_id = ap.id
-                                )
-                                newTask.save()
+        clients = Client.objects.all()
+        task_mappings = ActivityAuditTypeEntity.objects.filter(activity=activity)
+        for client in clients:
+            client_details = ClientIndustryAuditTypeEntity.objects.filter(client=client)
+            for client_detail in client_details:
+                for new_task in task_mappings:
+                    if (client_detail.audittype_id == new_task.audittype_id) and (client_detail.entity_id == new_task.entity_id) and  (client_detail.industry_id==new_task.industry_id):
+                        print("match")
+                        is_there = ClientTask.objects.filter(client=client).filter(task_name=task_name).exists()
+            # print(is_there)
+                        error = ""
+                        if is_there:
+                            error = "Task exists with name: " + str(task_name) 
+                        else:
+                            audit_plan = AuditPlanMapping.objects.filter(client_id = client.id)
+                            for ap in audit_plan:
+                                if ap.is_audit_plan_locked == False:
+                                    newTask = ClientTask(
+                                        task_name=task_name,
+                                        task_estimated_days=estimated_days,
+                                        task_auditing_standard=auditing_standard,
+                                        task_international_auditing_standard=international_auditing_standard,
+                                        activity=Activity.objects.get(id=activity),
+                                        # act=Act.objects.get(id=acti.act_id),
+                                        client=client,
+                                        auditplan_id = ap.id
+                                    )
+                                    newTask.save()
                 # print(activity)
-    return HttpResponseRedirect('/main_client/tasks')
+        return render(request, "master/task_master.html",context_data)
 
 @login_required
 def render_task_master(request):
@@ -2607,18 +2699,29 @@ def render_task_master(request):
             tasks = Task.objects.filter(Q(is_global = True))
             activities = Activity.objects.filter(Q(is_global = True))
             my_tasks = Task.objects.filter(Q(is_global = True))
+            non_global_task = Task.objects.filter(Q(is_global = False))
         else:
             tasks = Task.objects.filter(Q(user_id = request.user) | Q(is_global = True))
             activities = Activity.objects.filter(Q(user_id = request.user) | Q(is_global = True))
             my_tasks = Task.objects.filter(Q(user_id = request.user) & Q(is_global = False))
-            print(my_tasks)
+            non_global_task = []
         context_data = {
             'tasks': tasks,
             'activities': activities,
-            "my_tasks":my_tasks
+            "my_tasks":my_tasks,
+            'non_global_task':non_global_task
         }
     
         return render(request, "master/task_master.html",context_data)
+
+
+@login_required
+def task_make_global(request,task_id):
+    print(task_id)
+    task = Task.objects.get(id = task_id)
+    task.is_global = True
+    task.save()
+    return HttpResponseRedirect("/main_client/tasks")
 
 @login_required
 def crud_processed_notes(request):
