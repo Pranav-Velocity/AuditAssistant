@@ -6,6 +6,8 @@ def index(request):
 	if(request.user.is_authenticated):
 
 		if(request.user.is_main_client):
+
+
 			return HttpResponseRedirect('/main_client')
 		elif(request.user.is_super_admin):
 			return HttpResponseRedirect('/superadmin')

@@ -64,6 +64,17 @@
               
             </tbody>
           </table>
+          <div class="download_reports" id="download_reports" style="display:none;">
+            <div class="row ml-3">
+                <input type="text" id="reports_id" style="display:none;">
+                <div class="col-md-2">
+                    <button class="btn btn-success" onclick="export_pdf()">Export PDF</button>
+                </div>
+                <div class="col-md-2">
+                    <button class="btn btn-primary" onclick="export_excel()">Export EXCEL(XLSX)</button>
+                </div>
+            </div>
+          </div>
     </section>
     <!-- /.content -->
   </div>
@@ -75,6 +86,15 @@
         
         
     });
+    function export_excel()
+        {
+          window.location = `http://127.0.0.1:8000/partner/export_excel/${$('#reports_id').val()}`
+        }
+
+      function export_pdf()
+        {
+          window.location = `http://127.0.0.1:8000/partner/export_pdf/${$('#reports_id').val()}`
+        }
     function GetReports(id){
         var completed_tasks = $('#completed_tasks').is(':checked')
         var pending_tasks = $('#pending_tasks').is(':checked')
@@ -95,6 +115,8 @@
         else{
             console.log("throw error")
             toggle = "error"
+            $('#reports_id').val('')
+            $('#download_reports').css('display', 'none');
         }
         if(toggle != "error"){
             $.ajax({ // create an AJAX call...
@@ -107,14 +129,17 @@
                     headers: { 'X-CSRFToken': '{{ csrf_token }}' },
                     url: "{% url 'reports' %}", // the file to call
                 success: function (response) { 
+                    $('#reports_id').val('')
+                    $('#download_reports').css('display', 'none');
                   $('#reports_table_body').empty();
                     // console.log(response);
                     var data = response.data;
                     data.forEach(myfunction);
                     var count = 0;
                     function myfunction(item,count){
-                        // console.log(item)
+                        console.log(item)
                         count = count + 1;
+                        $('#download_reports').css('display', 'block');
                         if(item.is_approved_partner == true){
                             var status = "Completed";
                             var status_color = "green";
@@ -133,7 +158,13 @@
                         else{
                             var in_time_color = "red";
                         }
-                        
+                        var add_values = $('#reports_id').val();
+                        if(add_values.length <= 0){
+                        $('#reports_id').val( item.task_id )
+                        }
+                        else{
+                        $('#reports_id').val($('#reports_id').val() + "," + item.task_id )
+                        }
                         
                         
                         $('#reports_table_body').append(`

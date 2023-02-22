@@ -26,7 +26,7 @@ import json
 from babel.numbers import format_currency
 import os
 from django.core.files.base import ContentFile
-
+import xlwt
 import imaplib
 import email
 from email.header import decode_header
@@ -1092,12 +1092,20 @@ def Reports(request):
             if user_id and toggle:
                 user = User.objects.get(id = user_id)
                 get_client = Client.objects.filter(assigned_partner=user)
+                all_clients = []
+                for i in get_client:
+                    all_clients.append(i)
+                print(all_clients)
                 client_tasks = []
+                data = []
                 if toggle == "completed":
-                    for client in get_client:
+                    # for client in all_clients:
+                    #     print(client)
+                    for client in all_clients:
+                        print(client)
                         get_client_tasks = ClientTask.objects.filter(Q(client=client) & Q(is_approved_partner=True))
                         in_time =  False
-                        data = []
+                        
                         estimated_end_date = None
                         
                         for task in get_client_tasks:
@@ -1146,6 +1154,7 @@ def Reports(request):
                                 json_data = json.loads(str_data)
                                 article_file_location = json_data['file_location']
                             obj = {
+                                'task_id':task.id,
                                 'task_name':task.task_name,
                                 "is_approved_partner":task.is_approved_partner,
                                 'task_start_datetime':task_start_datetime,
@@ -1159,12 +1168,11 @@ def Reports(request):
                             }
                             data.append(obj)
                         
-                        return JsonResponse({'data':data})
+                    return JsonResponse({'data':data})
                 elif toggle == "pending":
                     for client in get_client:
-                        get_client_tasks = ClientTask.objects.filter(Q(client=client) & Q(is_approved_partner=False))
+                        get_client_tasks = ClientTask.objects.filter(Q(client=client) & Q(is_approved_partner=False) & Q(is_rejected = False))
                         in_time =  False
-                        data = []
                         estimated_end_date = None
                         
                         for task in get_client_tasks:
@@ -1214,6 +1222,7 @@ def Reports(request):
                                 json_data = json.loads(str_data)
                                 article_file_location = json_data['file_location']
                             obj = {
+                                'task_id':task.id,
                                 'task_name':task.task_name,
                                 "is_approved_partner":task.is_approved_partner,
                                 'task_start_datetime':task_start_datetime,
@@ -1227,13 +1236,13 @@ def Reports(request):
                             }
                             data.append(obj)
                         
-                        return JsonResponse({'data':data})
+                    return JsonResponse({'data':data})
                            
                 if toggle == "rejected":
                     for client in get_client:
                         get_client_tasks = ClientTask.objects.filter(Q(client=client) & Q(is_rejected=True))
+                        print(get_client_tasks)
                         in_time =  False
-                        data = []
                         estimated_end_date = None
                         
                         for task in get_client_tasks:
@@ -1245,6 +1254,17 @@ def Reports(request):
 
                                 if estimated_end_date < task.task_end_datetime:
                                     in_time = False    
+                            else:
+                                if task.task_start_datetime:
+                                    task_start_datetime = task.task_start_datetime.strftime("%d-%m-%Y %H:%M:%S")
+                                    estimated_datetime = (task.task_start_datetime + timedelta(minutes = int(task.task_estimated_days))).strftime("%d-%m-%Y %H:%M:%S")
+                                else:
+                                    task_start_datetime = "Not Started"
+                                    estimated_datetime = ""
+                                if task.task_end_datetime:
+                                    task_end_datetime = task.task_end_datetime.strftime("%d-%m-%Y %H:%M:%S")
+                                else:
+                                    task_end_datetime = "Not Completed"
                             # print(task.task_start_datetime.strftime("%Y-%m-%d %H:%M:%S"),task.task_end_datetime.strftime("%Y-%m-%d %H:%M:%S"),estimated_end_date.strftime("%Y-%m-%d %H:%M:%S"),in_time)
                             partner_file_location = ""
                             manager_file_location = ""
@@ -1268,12 +1288,12 @@ def Reports(request):
                                 article_file_location = json_data['file_location']
                             
                             obj = {
-
+                                'task_id':task.id,
                                 'task_name':task.task_name,
                                 "is_rejected":task.is_rejected,
-                                'task_start_datetime':task.task_start_datetime.strftime("%d-%m-%Y %H:%M:%S"),
-                                'estimated_end_date': estimated_end_date.strftime("%d-%m-%Y %H:%M:%S"),
-                                'task_end_datetime':task.task_end_datetime.strftime("%d-%m-%Y %H:%M:%S"),
+                                'task_start_datetime':task_start_datetime,
+                                'estimated_end_date': estimated_datetime,
+                                'task_end_datetime':task_end_datetime,
                                 'in_time':in_time,
                                 "partner_file_location":partner_file_location,
                                 "manager_file_location":manager_file_location,
@@ -1283,7 +1303,7 @@ def Reports(request):
                             }
                             data.append(obj)
                         
-                        return JsonResponse({'data':data})
+                    return JsonResponse({'data':data})
                 # in_time =  False
                 # data = []
                 # estimated_end_date = None
@@ -1902,3 +1922,232 @@ def partner_dashboard(request):
     }
 
     return render(request, 'partner/partner_dashboard.html', context_set)
+
+def export_users_xls_partner(request,employee_ids):
+    task_ids = employee_ids.split(',')
+    data = []
+    for i in task_ids:
+        task = ClientTask.objects.get(id = i)
+        if task.is_approved_partner == True:
+
+            status = "Completed"
+
+        elif task.is_approved_partner == False and task.is_rejected == False:
+            status = "Pending"
+
+        elif task.is_approved_partner == False and task.is_rejected == True:
+            status = "Rejected"
+
+
+
+        if task.task_start_datetime is not None and task.task_end_datetime is not None:
+            task_start_datetime = task.task_start_datetime.strftime("%d-%m-%Y %H:%M:%S")
+            task_end_datetime = task.task_end_datetime.strftime("%d-%m-%Y %H:%M:%S")
+            estimated_end_date = task.task_start_datetime + timedelta(minutes = int(task.task_estimated_days))
+            estimated_datetime = estimated_end_date.strftime("%d-%m-%Y %H:%M:%S")
+            # print("result 4 :",estimated_end_date , int(task.task_estimated_days))
+            
+
+            if estimated_end_date < task.task_end_datetime:
+                in_time = False  
+        else:
+            if task.task_start_datetime:
+                task_start_datetime = task.task_start_datetime.strftime("%d-%m-%Y %H:%M:%S")
+                estimated_datetime = (task.task_start_datetime + timedelta(minutes = int(task.task_estimated_days))).strftime("%d-%m-%Y %H:%M:%S")
+            else:
+                task_start_datetime = "Not Started"
+                estimated_datetime = ""
+            if task.task_end_datetime:
+                task_end_datetime = task.task_end_datetime.strftime("%d-%m-%Y %H:%M:%S")
+            else:
+                task_end_datetime = "Not Completed" 
+
+
+        
+        obj = (
+            task.task_name,
+            status,
+            task_start_datetime,
+            estimated_datetime,
+            task_end_datetime,
+            )
+        data.append(obj)
+    # for i in client_ids:
+    #     get_client = Client.objects.get(id=i)
+    #     assigned_manager = User.objects.get(id = get_client.assigned_user.id)
+    #     assigned_partner = User.objects.get(id=get_client.assigned_partner.id)
+    #     get_client_task_count = ClientTask.objects.filter(client = i).count()
+    #     pending_tasks = ClientTask.objects.filter(is_approved_partner=False,client=i).count()
+    #     completed_tasks = ClientTask.objects.filter(is_approved_partner=True,client=i).count()
+    #     obj = (
+    #         # "user_id":get_user.id,
+    #         assigned_partner.username,
+    #         assigned_manager.username,
+    #         get_client.id,
+    #         get_client.client_name,
+    #         get_client_task_count,
+    #         pending_tasks,
+    #         completed_tasks
+    #     )
+    #     data.append(obj)
+
+
+
+
+    # for i in client_ids:
+    #     get_client = Client.objects.get(id=i)
+    #     assigned_manager = User.objects.get(id = get_client.assigned_user.id)
+    #     assigned_partner = User.objects.get(id=get_client.assigned_partner.id)
+    #     get_client_task_count = ClientTask.objects.filter(client = i).count()
+    #     pending_tasks = ClientTask.objects.filter(is_approved_partner=False,client=i).count()
+    #     completed_tasks = ClientTask.objects.filter(is_approved_partner=True,client=i).count()
+    #     obj = {
+    #         # "user_id":get_user.id,
+    #         "assigned_partner":assigned_partner.username,
+    #         "assigned_manager":assigned_manager.username,
+    #         "client_id":get_client.id,
+    #         "client_name":get_client.client_name,
+    #         "client_task_count":get_client_task_count,
+    #         "pending_task_count":pending_tasks,
+    #         "completed_task_count":completed_tasks
+    #     }
+    #     data.append(obj)
+    # return JsonResponse({'data':data})
+            
+    print(data)
+    # return JsonResponse({'data':"data"})
+    response = HttpResponse(content_type='application/ms-excel')
+    response['Content-Disposition'] = 'attachment; filename="PartnerReports.xls"'
+
+    wb = xlwt.Workbook(encoding='utf-8')
+    ws = wb.add_sheet('Data Export') # this will make a sheet named Users Data
+
+    # Sheet header, first row
+    row_num = 0
+
+    font_style = xlwt.XFStyle()
+    font_style.font.bold = True
+
+    columns = ['Client Task Name', 'Status' , 'Task Start Time', 'Task End Time','Task Completed Time'  ]
+    print(len(columns))
+    for col_num in range(len(columns)):
+        ws.write(row_num, col_num, columns[col_num], font_style) # at 0 row 0 column 
+
+    # Sheet body, remaining rows
+    font_style = xlwt.XFStyle()
+
+    for row in data:
+        # print("row : ",row)
+        # print("_______________________________________________________________________________________________________")
+        row_num += 1
+        # print(row['first_name'])
+        # print(row_num)
+        for col_num in range(len(row)):
+            ws.write(row_num, col_num, row[col_num], font_style)
+
+    wb.save(response)
+
+    return response
+
+def export_pdf_partner(request,employee_ids):
+    task_ids = employee_ids.split(',')
+    data = []
+    for i in task_ids:
+        task = ClientTask.objects.get(id = i)
+        if task.is_approved_partner == True:
+
+            status = "Completed"
+            color = "green"
+        elif task.is_approved_partner == False and task.is_rejected == False:
+            status = "Pending"
+            color = "yellow"
+        elif task.is_approved_partner == False and task.is_rejected == True:
+            status = "Rejected"
+            color = "red"
+        in_time = True
+        in_time_color = "green"
+        if task.task_start_datetime is not None and task.task_end_datetime is not None:
+            task_start_datetime = task.task_start_datetime.strftime("%d-%m-%Y %H:%M:%S")
+            task_end_datetime = task.task_end_datetime.strftime("%d-%m-%Y %H:%M:%S")
+            estimated_end_date = task.task_start_datetime + timedelta(minutes = int(task.task_estimated_days))
+            estimated_datetime = estimated_end_date.strftime("%d-%m-%Y %H:%M:%S")
+            # print("result 4 :",estimated_end_date , int(task.task_estimated_days))
+            
+
+            if estimated_end_date < task.task_end_datetime:
+                in_time = False  
+                in_time_color = "red" 
+        else:
+            if task.task_start_datetime:
+                task_start_datetime = task.task_start_datetime.strftime("%d-%m-%Y %H:%M:%S")
+                estimated_datetime = (task.task_start_datetime + timedelta(minutes = int(task.task_estimated_days))).strftime("%d-%m-%Y %H:%M:%S")
+            else:
+                task_start_datetime = "Not Started"
+                estimated_datetime = ""
+            if task.task_end_datetime:
+                task_end_datetime = task.task_end_datetime.strftime("%d-%m-%Y %H:%M:%S")
+            else:
+                task_end_datetime = "Not Completed" 
+                in_time_color = "red"
+        partner_file_location = False
+        manager_file_location = False
+        auditor_file_location = False
+        article_file_location = False
+        if task.partner_attachment_file: 
+            partner_file_location = True
+        if task.manager_attachment_file: 
+            manager_file_location = True
+        if task.auditor_attachment_file: 
+            auditor_file_location = True
+        if task.article_attachment_file: 
+           article_file_location = True
+        
+        obj = {
+            "task_id":task.id,
+            "task_name":task.task_name,
+            "task_status":status,
+            "task_start_datetime":task_start_datetime,
+            "estimated_datetime":estimated_datetime,
+            "task_end_datetime":task_end_datetime,
+            "color":color,
+            "in_time_color":in_time_color,
+            "partner_file":partner_file_location,
+            "manager_file":manager_file_location,
+            "auditor_file":auditor_file_location,
+            "article_file":article_file_location,
+            
+            
+        }
+        print(obj)
+        data.append(obj)
+        
+    # for i in employees:
+    #     get_client = Client.objects.get(id=i)
+    #     assigned_manager = User.objects.get(id = get_client.assigned_user.id)
+    #     assigned_partner = User.objects.get(id=get_client.assigned_partner.id)
+    #     get_client_task_count = ClientTask.objects.filter(client = i).count()
+    #     pending_tasks = ClientTask.objects.filter(is_approved_partner=False,client=i).count()
+    #     completed_tasks = ClientTask.objects.filter(is_approved_partner=True,client=i).count()
+    #     obj = {
+    #         # "user_id":get_user.id,
+    #         "assigned_partner":assigned_partner.username,
+    #         "assigned_manager":assigned_manager.username,
+    #         "client_id":get_client.id,
+    #         "client_name":get_client.client_name,
+    #         "client_task_count":get_client_task_count,
+    #         "pending_task_count":pending_tasks,
+    #         "completed_task_count":completed_tasks
+    #     }
+    #     data.append(obj)
+    # # return JsonResponse({'data':data})
+    # print("data :",data)
+    params = {
+        "data":data
+    }
+    return render(request,"partner/export_pdf.html",params)
+
+
+
+
+
+

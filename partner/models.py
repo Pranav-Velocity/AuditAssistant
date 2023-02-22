@@ -41,7 +41,7 @@ class Activity(models.Model):
     activity_description = models.CharField(max_length=1024, null=False,blank=False, default="")
     label = models.ForeignKey(Activity_Labels,on_delete=models.CASCADE, blank=True, null=True)
     act = models.ForeignKey(Act, on_delete=models.CASCADE, blank=True, null=True, related_name='activity')
-    process_notes = models.FileField(upload_to="activity_process_notes/", null=True, blank=True)
+    process_notes = models.FileField(upload_to="activity_process_notes/", max_length=500, null=True, blank=True)
     is_global = models.BooleanField(default=False)
     def __str__(self):
         return self.activity_name
@@ -53,7 +53,7 @@ class Task(models.Model):
     task_estimated_days = models.CharField(max_length=255, null=True, blank=True)
     task_auditing_standard = models.CharField(max_length=255, null=True, blank=True)
     task_international_auditing_standard = models.CharField(max_length=255, null=True, blank=True)
-    process_notes = models.FileField(upload_to="process_notes/", null=True, blank=True)
+    process_notes = models.FileField(upload_to="process_notes/",max_length=500, null=True, blank=True)
     activity = models.ForeignKey(Activity, on_delete=models.CASCADE, blank=True, null=True, related_name='task')
     is_global = models.BooleanField(default=False)
     def __str__(self):
@@ -167,7 +167,7 @@ class ClientTask(models.Model):
     is_approved = models.BooleanField(default=False)
     is_approved_partner = models.BooleanField(default=False)
     # For attachment for which it will be sent for approval
-    attachment_file = models.FileField(upload_to="task_submission/", null=True, blank=True)
+    attachment_file = models.FileField(upload_to="task_submission/",max_length=500, null=True, blank=True)
     partner_attachment_file = models.TextField(null=True, blank=True)
     manager_attachment_file = models.TextField(null=True, blank=True)
     auditor_attachment_file = models.TextField(null=True, blank=True)

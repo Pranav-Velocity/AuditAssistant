@@ -106,4 +106,6 @@ urlpatterns = [
 
 
     path('reports/',Reports, name='reports'),
+    path('export_excel/<str:employee_ids>', export_users_xls_partner, name='export_excel_partner'),
+    path('export_pdf/<str:employee_ids>', export_pdf_partner, name='export_pdf_partner'),
 ]

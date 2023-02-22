@@ -31,7 +31,7 @@ from babel.numbers import format_currency
 # Create your views here.
 @login_required
 def Dashboard(request):
-    if request.user.is_main_client:
+    if request.user.is_main_client: 
 
         if request.method == 'POST':
             payment_gateway_button = request.POST.get('payment_gateway_button')
@@ -86,6 +86,7 @@ def Dashboard(request):
                 except BillingDetails.DoesNotExist:
                     pass
         get_expiry_days = ""
+        negative_remaining_days = ""
         try:
             get_billing_details = BillingDetails.objects.get(Q(main_client = request.user.id) & Q(is_active = True))
             print(get_billing_details)
@@ -98,9 +99,13 @@ def Dashboard(request):
             b = datetime.strptime(f'{m2}/{d2}/{y2}', date_format)
             delta = b - a
             remaining_days = delta.days
-            print(remaining_days)
-            if (remaining_days <= 30):
+            print("remaining_days :",remaining_days)
+            if (remaining_days <= 30 and remaining_days > -1):
                 get_expiry_days = remaining_days
+                print("Remaining Days :",get_expiry_days)
+            elif (remaining_days <= 30 and remaining_days <= -1):
+                negative_remaining_days = remaining_days * -1
+                print("Days Passed",negative_remaining_days)
         except BillingDetails.DoesNotExist:
             pass
         try:
@@ -150,15 +155,14 @@ def Dashboard(request):
             "message":message,
             "message2":message2,
             "bill_expire_remaining_days":get_expiry_days,
+            "negative_remaining_days":negative_remaining_days,
             "client_count":len(clients)
         }
         return render(request,"main_client/dashboard.html",params)
 
 @csrf_exempt
 def paymentsuccess(request):
-    get_billing_details = BillingDetails.objects.get(Q(main_client = request.user.id) & Q(is_active = True))
-    user = User.objects.get(id=request.user.id)
-    
+   
     if request.method == "POST":
         response = request.POST
         dumpdata = json.dumps(response)
@@ -218,7 +222,7 @@ def paymentsuccess(request):
         a = datetime.strptime(f'{m1}/{d1}/{y1}', date_format)
         b = datetime.strptime(f'{m2}/{d2}/{y2}', date_format)
         delta = b - a
-        till_date = date.today() + timedelta(days=delta.days) + timedelta(days=365)
+        till_date = date.today() + timedelta(days=delta.days) + timedelta(days=7)
         get_billing_details.is_active = False
         get_billing_details.save()
         create_new_billing_details = BillingDetails(
@@ -231,18 +235,18 @@ def paymentsuccess(request):
             transactionID=txnid,
             payment_status="Realised",
             remarks="Purchased",
-            created_by = request.user.id
+            created_by = get_main_client.id
         )
         create_new_billing_details.save()
         get_latest_transaction = TempTransaction.objects.latest('id')
         get_all_except_latest_transaction = TempTransaction.objects.filter(~Q(id=get_latest_transaction.id))
         get_all_except_latest_transaction.delete()
     
-    params = {
-        "user":User.objects.get(id=request.user.id),
-        "bill":BillingDetails.objects.get(Q(main_client = request.user.id) & Q(is_active = True))
-    }
-    return render(request,"main_client/payment_success.html",params)
+        params = {
+            "user":User.objects.get(id=get_main_client.id),
+            "bill":BillingDetails.objects.get(Q(main_client = get_main_client.id) & Q(is_active = True))
+        }
+        return render(request,"main_client/payment_success.html",params)
 
 @csrf_exempt
 def paymentfailure(request):
@@ -931,37 +935,37 @@ def add_client(request):
                             entity = entity,
                             industry = industry
                         )
-                        # activity_objs = ActivityAuditTypeEntity.objects.filter(audittype=audittype, entity=entity, industry=industry)
-                        # # print(activity_objs)
-                        # for activity_obj in activity_objs:
-                        #     activities.add(activity_obj.activity_id)
+                        activity_objs = ActivityAuditTypeEntity.objects.filter(audittype=audittype, entity=entity, industry=industry)
+                        # print(activity_objs)
+                        for activity_obj in activity_objs:
+                            activities.add(activity_obj.activity_id)
             # Activities
-            # print(activities)
+            print(activities)
             # activities = list(activities)
             # print(activities)
             # # print(activities)
             # count = 0
-            # for activity_id in activities:
-            #     #activity = Activity.objects.get(pk=activity_id)
-            #     tasks = Task.objects.filter(activity_id=activity_id)
-            #     #act = Act.objects.filter(id=activity.act.id)
-            #     # print(tasks)
-            #     # area = Regulator.objects.filter(id=act.area.id)
-            #     for task in tasks:
-            #         activity = Activity.objects.get(id=task.activity.id)
-            #         act = Act.objects.get(id=activity.act.id)
-            #         ClientTask.objects.create(
-            #             client=client, 
-            #             task_name=task.task_name,
-            #             task_estimated_days=task.task_estimated_days,
-            #             task_auditing_standard=task.task_auditing_standard,
-            #             task_international_auditing_standard=task.task_international_auditing_standard,
-            #             activity=activity,
-            #             act=act,
-            #             # area_id=act.area.id
-            #         )
-            #         count = count + 1
-            #         print("Loop number :",count)
+            for activity_id in activities:
+                #activity = Activity.objects.get(pk=activity_id)
+                tasks = Task.objects.filter(activity_id=activity_id)
+                #act = Act.objects.filter(id=activity.act.id)
+                # print(tasks)
+                # area = Regulator.objects.filter(id=act.area.id)
+                for task in tasks:
+                    activity = Activity.objects.get(id=task.activity.id)
+                    act = Act.objects.get(id=activity.act.id)
+                    ClientTask.objects.create(
+                        client=client, 
+                        task_name=task.task_name,
+                        task_estimated_days=task.task_estimated_days,
+                        task_auditing_standard=task.task_auditing_standard,
+                        task_international_auditing_standard=task.task_international_auditing_standard,
+                        activity=activity,
+                        act=act,
+                        # area_id=act.area.id
+                    )
+                    # count = count + 1
+                    # print("Loop number :",count)
 
 
             return HttpResponseRedirect('/main_client/clients')
@@ -1319,10 +1323,8 @@ def render_client_profile(request, client_id):
                         )
                 return JsonResponse({'send':'yes'})
         area = Regulator.objects.filter(user_id = request.user)
-        acts = []
-        for i in area:
-            act = Act.objects.filter(area = i)
-            acts.append(act)
+        
+        acts = Act.objects.filter(Q(user_id=request.user.id) | Q(is_global=True))
         # print("acts :",acts)
         activities = Activity.objects.filter(Q(user_id=request.user) | Q(is_global = True))
         audit_type = AuditType.objects.filter(Q(user_id=request.user) | Q(is_global = True))
