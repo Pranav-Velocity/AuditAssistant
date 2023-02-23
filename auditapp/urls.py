@@ -4,7 +4,7 @@ from django.urls import path, include
 
 from django.conf.urls.static import static
 from django.conf import settings
-from .views import index
+from .views import index , LoginPage , Logout_page
 
 urlpatterns = [
     path('', index),
@@ -12,7 +12,10 @@ urlpatterns = [
     
     path('developers_console/',include('dev_admin.urls')),
     path('superadmin/',include('super_admin.urls')),
-    path('accounts/',include('django.contrib.auth.urls')),
+    path('login/',LoginPage,name = 'login'),
+    path('logout/',Logout_page,name = 'logout'),
+    
+
     path('main_client/',include('main_client.urls')),
     path('partner/', include('partner.urls')),
     path('manager/', include('manager.urls')),

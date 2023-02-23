@@ -227,18 +227,20 @@ def paymentsuccess(request):
         if (remaining_days <= 30 and remaining_days > -1):
             get_expiry_days = remaining_days
             till_date = date.today() + timedelta(days=delta.days) + timedelta(days=180)
+            add_start_date = get_billing_details.end_date + timedelta(days=1)
             print("Remaining Days :",get_expiry_days)
         elif (remaining_days <= 30 and remaining_days <= -1):
             get_expiry_days = remaining_days * -1
             till_date = date.today()  + timedelta(days=180)
             print("Days Passed",get_expiry_days)
-            
+            add_start_date = date.today()
+        
         get_billing_details.is_active = False
         get_billing_details.save()
         create_new_billing_details = BillingDetails(
             main_client = get_main_client.id,
             account_type = "Purchased",
-            start_date = date.today(),
+            start_date = add_start_date,
             end_date = till_date,
             current_date =  date.today(),
             amount=amount,
