@@ -30,7 +30,7 @@
         {% endif %}
         {% if negative_remaining_days %}
         <div class="alert alert-danger alert-dismissible fade show" role="alert">
-          <strong>{{negative_remaining_days}} Days Passed. Please Pay <a href="#" onclick="paymentGateway()">here</a> to continue services</strong>
+          <strong>{{negative_remaining_days}} Days Over Due. Please Pay <a href="#" onclick="paymentGateway()">here</a> to continue services</strong>
           <button type="button" class="close" data-dismiss="alert" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
@@ -177,13 +177,33 @@
              var start_date = response.start_date;
              var end_date = response.end_date;
               
-              var date1 = new Date(start_date);
-              var date2 = new Date(end_date);
-              const date = new Date();
-              console.log("Current Date :",date)
-              console.log("End Date",date2)
-              console.log(date2 - date)
-              var result = new Date(date2.setDate(date2.getDate() + 1));
+              var startdate = new Date(start_date);
+              var enddate = new Date(end_date);
+              var currentdate = new Date();
+              // console.log(startdate);
+              console.log(currentdate);
+              console.log(enddate);
+              if(currentdate > enddate){
+                var result = new Date(currentdate.setDate(currentdate.getDate() + 180));
+              }
+              else{
+                var result = new Date(enddate.setDate(enddate.getDate() + 180));
+              }
+          // var dateOne = new Date(2010, 00, 15); //Year, Month, Date    
+          //  var dateTwo = new Date(2011, 00, 15); //Year, Month, Date    
+          //  if (dateOne > dateTwo) {    
+          //       alert("Date One is greater than Date Two.");    
+          //   }else {    
+          //       alert("Date Two is greater than Date One.");    
+          //   }
+              // const diffTime = currentdate - enddate
+              // console.log("Diff Time:",diffTime)
+              // const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+              // console.log(diffTime + " milliseconds");
+              // console.log(diffDays + " days");
+              
+              
+             
               // console.log(result);
               let day1 = result.getDate();
               let month1 = result.getMonth() + 1;

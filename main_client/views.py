@@ -222,7 +222,17 @@ def paymentsuccess(request):
         a = datetime.strptime(f'{m1}/{d1}/{y1}', date_format)
         b = datetime.strptime(f'{m2}/{d2}/{y2}', date_format)
         delta = b - a
-        till_date = date.today() + timedelta(days=delta.days) + timedelta(days=7)
+        print("Delta Days :",delta.days)
+        remaining_days = delta.days
+        if (remaining_days <= 30 and remaining_days > -1):
+            get_expiry_days = remaining_days
+            till_date = date.today() + timedelta(days=delta.days) + timedelta(days=180)
+            print("Remaining Days :",get_expiry_days)
+        elif (remaining_days <= 30 and remaining_days <= -1):
+            get_expiry_days = remaining_days * -1
+            till_date = date.today()  + timedelta(days=180)
+            print("Days Passed",get_expiry_days)
+            
         get_billing_details.is_active = False
         get_billing_details.save()
         create_new_billing_details = BillingDetails(

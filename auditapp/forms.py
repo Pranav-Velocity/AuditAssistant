@@ -64,6 +64,7 @@ class LoginForm(forms.Form):
         email  = data.get("email")
         password  = data.get("password")
         qs = User.objects.filter(email=email)
+        print("User :",qs)
         if qs.exists():
             # user email is registered, check active/
             not_active = qs.filter(is_active=False)
@@ -87,9 +88,10 @@ class LoginForm(forms.Form):
         user = authenticate(request, username=email, password=password)
         if user is None:
             raise forms.ValidationError("Invalid credentials")
-        login(request, user)
-        self.user = user
-        return data
+        print("User Logging in Is :",user)
+        # login(request, user)
+        # self.user = user
+        # return data
 
 class RegisterForm(forms.ModelForm):
     """A form for creating new users. Includes all the required
