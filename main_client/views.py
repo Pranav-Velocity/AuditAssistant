@@ -1176,7 +1176,11 @@ def audit_plan(request, auditplan_id):
             str_data = task.article_attachment_file.replace("'",'"')
             json_data = json.loads(str_data)
             article_attachment_file = json_data['file_location']
-            
+        
+        try:
+            estimated_hours = str(int(task.task_estimated_days)  // 60) + ":" + str(int(task.task_estimated_days)  % 60)
+        except:
+            estimated_hours = 0
         
         obj = {
             "tasks": task,
@@ -1184,7 +1188,7 @@ def audit_plan(request, auditplan_id):
             "manager_upload":manager_attachment_file,
             "auditor_upload":auditor_attachment_file,
             "article_upload":article_attachment_file,
-            "estimated_time":str(int(task.task_estimated_days)  // 60) + ":" + str(int(task.task_estimated_days)  % 60)
+            "estimated_time":estimated_hours
             
         }
         client_tasks_list.append(obj)

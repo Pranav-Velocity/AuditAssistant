@@ -105,6 +105,19 @@ DATABASES = {
     
     }
 }
+# DATABASES = {
+#         'default': {
+#             'ENGINE': 'django.db.backends.mysql',
+#             'NAME': 'sharpeff_dev_auditassistant_2023_1',
+#             'USER': 'sharpeff_dev_auditassistant_2023_1_user',
+#             'PASSWORD': '0Q6~JBudGxea',
+#             'HOST': '127.0.0.1',
+#             'PORT': '3306',
+#             'OPTIONS': {
+#                 'sql_mode': 'STRICT_ALL_TABLES'
+#             }
+#         }
+#     }
 # if LOCAL:
 #     DATABASES = {
 #         'default': {
