@@ -298,6 +298,17 @@
                 <div class="modal-body">
                   <div class="form-row">
                     <div class="form-group col-md-12 mb-3">
+                      <label for="auditplan" class="text-dark">Audit Plan</label>
+                      <select name="auditplan" id="auditplan" class="custom-select" required>
+                        <option value="">Please Select Audit Plan</option>
+                        {% for auditplan in audit_plans %}
+                        <option value="{{ auditplan.id }}">{{ auditplan.auditplanname }}</option>
+                        {% endfor %}
+                      </select>
+                    </div>
+                  </div>
+                  <div class="form-row">
+                    <div class="form-group col-md-12 mb-3">
                       <label for="taskName" class="text-dark">Task Name</label>
                       <input type="text" name="task_name" id="task_name" class="form-control" required />
                     </div>
@@ -311,14 +322,14 @@
                   <div class="form-row">
                     <div class="form-group col-md-12 mb-3">
                       <label for="taskName" class="text-dark">Auditing Standard</label>
-                      <input type="text" name="auditing_standard" id="auditing_standard" class="form-control" required/>
+                      <input type="text" name="auditing_standard" id="auditing_standard" class="form-control" />
                     </div>
                   </div>
                   <div class="form-row">
                     <div class="form-group col-md-12 mb-3">
                       <label for="taskName" class="text-dark">International Auditing Standard</label>
                       <input type="text" name="international_auditing_standard" id="international_auditing_standard"
-                        class="form-control" required/>
+                        class="form-control" />
                     </div>
                   </div>
                   
@@ -552,7 +563,6 @@ jQuery('#add_client_task').validate({
   rules:{
     task_name:{
       required:true,
-      alphabets_and_spaces: true,
     },
     estimated_hours:{
       required:true,
@@ -572,7 +582,6 @@ jQuery('#add_client_task').validate({
   messages:{
     task_name:{
       required:"Please Enter Task Name",
-      alphabets_and_spaces: "Please Enter A Valid Task Name",
     },
     estimated_hours:{
       required:"Please Enter Hour",
@@ -596,7 +605,6 @@ jQuery('#add_audit_plan').validate({
   rules:{
     audit_plan_name:{
       required:true,
-      alphabets_and_spaces: true,
     },
     audit_plan_startdate:{
       required:true,
@@ -620,7 +628,6 @@ jQuery('#add_audit_plan').validate({
   messages:{
     audit_plan_name:{
       required:"Please Enter Audit Plan Name",
-      alphabets_and_spaces: "Please Enter A Valid Audit Plan Name",
     },
     audit_plan_startdate:{
       required:"Please Enter Audit Plan Start Date",

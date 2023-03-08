@@ -8,12 +8,317 @@ from django.contrib.auth.hashers import make_password
 from django.db.models import Q
 from .serializers import ClientSerializer,BillingDetailsSerializer
 # Create your views here.
+from django.core.files.base import ContentFile
 import os
 import json
 from django.conf import settings
 from datetime import date, datetime ,timedelta
 import xlwt
 from django.contrib import messages
+
+def FilesStorage(request,user,type_of_file_upload,task_id,file_upload_type,file):
+    print(user,task_id,file)
+    if type_of_file_upload == "clienttask":
+        task = ClientTask.objects.get(id = task_id)
+        uploaded_filename = file.name
+
+        if request.user.is_partner:
+            main_client = User.objects.get(id = user.linked_employee)
+            logged_in_user = "partner"
+            check_for = task.partner_attachment_file
+
+        elif request.user.is_articleholder:
+            article = User.objects.get(id = request.user.id)
+            manager = User.objects.get(id = article.linked_employee)
+            partner = User.objects.get(id = manager.linked_employee)
+            main_client = User.objects.get(id = partner.linked_employee)
+            logged_in_user = "article"
+            check_for = task.article_attachment_file
+
+        elif request.user.is_auditorclerk:
+            auditor = User.objects.get(id = request.user.id)
+            manager = User.objects.get(id = auditor.linked_employee)
+            partner = User.objects.get(id = manager.linked_employee)
+            main_client = User.objects.get(id = partner.linked_employee)
+            logged_in_user = "auditor"
+            check_for = task.auditor_attachment_file
+
+        elif request.user.is_manager:
+            manager = User.objects.get(id = request.user.id)
+            partner = User.objects.get(id = manager.linked_employee)
+            main_client = User.objects.get(id = partner.linked_employee)
+            logged_in_user = "manager"
+            check_for = task.manager_attachment_file
+        
+        get_max_files = MaxFiles.objects.get(main_client = main_client.id)
+        if file_upload_type == "task_submission":
+            if int(get_max_files.current_files) == int(get_max_files.max_files):
+                error = "Maximum File Upload Limit Reached..!"
+            else:
+                path = str(settings.MEDIA_ROOT) + '\\clients\\'+ str(main_client.username) + '\\'
+                dire = os.path.join(path, file_upload_type)
+                try:
+                    os.makedirs(dire)
+                except:
+                    pass
+                task_file_upload_path = str(dire) + '\\'+str(task_id) + '\\' + logged_in_user +'\\'
+                try:
+                    os.makedirs(task_file_upload_path)
+                except:
+                    pass
+                    
+                full_filename = os.path.join(task_file_upload_path, uploaded_filename)
+                fout = open(full_filename, 'wb+')
+
+                file_content = ContentFile( request.FILES['attachment'].read() )
+
+                for chunk in file_content.chunks():
+                    fout.write(chunk)
+                fout.close()
+                remove_absolute_path = full_filename.replace(str(settings.MEDIA_ROOT),'')
+                print("removed path :",remove_absolute_path)
+                if check_for:
+                    str_data = check_for.replace("'",'"')
+                    json_data = json.loads(str_data)
+                    file_location = json_data['file_location']
+                    delete_file = str(settings.MEDIA_ROOT) + file_location
+                    if os.path.exists(delete_file):
+                        os.remove(delete_file)
+                    print("attachment file present")
+                    attachment_file =  {
+                    "user_id":f"{request.user.id}",
+                    "file_location":f"{remove_absolute_path}"
+                    }
+                else:
+                    print("attachment added")
+                    attachment_file =  {
+                        "user_id":f"{request.user.id}",
+                        "file_location":f"{remove_absolute_path}"
+                        }
+                    get_max_files.current_files = int(get_max_files.current_files) + 1
+                    get_max_files.save()
+                return attachment_file
+    elif type_of_file_upload == "activity":
+        if request.user.is_main_client:
+            main_client = request.user
+            max_files = MaxFiles.objects.get(main_client=main_client.id)
+            if max_files.max_files == max_files.current_files:
+                print("give error")  
+                error = "Maximum number of files exceeded"
+            else:
+                print("save the file")
+                path = str(settings.MEDIA_ROOT) + '\\clients\\'+ str(main_client.username) + '\\'
+                directory = 'activity_process_notes'
+                dire = os.path.join(path, directory)
+                print(dire) 
+
+                uploaded_filename = request.FILES['attachment'].name    
+                try:
+                    os.makedirs(dire)
+                    print("created folder")
+                except:
+                    print("folder already created")
+                    pass
+                full_filename = os.path.join(dire, uploaded_filename)
+                fout = open(full_filename, 'wb+')
+                print("full_filename :",full_filename)
+
+                file_content = ContentFile( request.FILES['attachment'].read())
+
+                # Iterate through the chunks.
+                for chunk in file_content.chunks():
+                    fout.write(chunk)
+                fout.close()
+                remove_absolute_path = full_filename.replace(str(settings.MEDIA_ROOT),'')
+                print("removed path :",remove_absolute_path)
+                task_id.process_notes.name = remove_absolute_path
+                task_id.save()
+                max_files.current_files = int(max_files.current_files) + 1
+                max_files.save()
+        elif request.user.is_super_admin:
+            path = str(settings.MEDIA_ROOT)
+            directory = 'activity_process_notes'
+            dire = os.path.join(path, directory)
+
+            uploaded_filename = request.FILES['attachment'].name
+            try:
+                os.makedirs(dire)
+                print("created folder")
+            except:
+                print("folder already created")
+                pass
+            full_filename = os.path.join(dire, uploaded_filename)
+            fout = open(full_filename, 'wb+')
+            print("full_filename :",full_filename)
+
+            file_content = ContentFile( request.FILES['attachment'].read())
+
+            # Iterate through the chunks.
+            for chunk in file_content.chunks():
+                fout.write(chunk)
+            fout.close()
+            remove_absolute_path = full_filename.replace(str(settings.MEDIA_ROOT),'')
+            print("removed path :",remove_absolute_path)
+            task_id.process_notes.name = remove_absolute_path
+            task_id.save()
+    elif type_of_file_upload == "task":
+        print("task is given")
+        if file_upload_type == "task_update_upload":
+            print("yes")
+            if request.user.is_main_client:
+                task = Task.objects.get(id=task_id)
+                main_client = request.user
+                max_files = MaxFiles.objects.get(main_client=main_client.id)
+                if max_files.max_files == max_files.current_files:
+                    print("give error")  
+                    error = "Maximum number of files exceeded"
+                else:
+                    print("save the file")
+                    path = str(settings.MEDIA_ROOT) + '\\clients\\'+ str(main_client.username) + '\\'
+                    directory = 'task_process_notes'
+                    dire = os.path.join(path, directory)
+                    print(dire) 
+
+                    uploaded_filename = request.FILES['process_notes_file'].name    
+                    try:
+                        os.makedirs(dire)
+                        print("created folder")
+                    except:
+                        print("folder already created")
+                        pass
+                    full_filename = os.path.join(dire, uploaded_filename)
+                    fout = open(full_filename, 'wb+')
+                    print("full_filename :",full_filename)
+
+                    file_content = ContentFile( request.FILES['process_notes_file'].read())
+
+                    # Iterate through the chunks.
+                    for chunk in file_content.chunks():
+                        fout.write(chunk)
+                    fout.close()
+                    remove_absolute_path = full_filename.replace(str(settings.MEDIA_ROOT),'')
+                    check_for = task.process_notes
+                    if check_for:                       
+                        file_location = check_for
+                        print("File Location:",file_location)
+                        delete_file = str(settings.MEDIA_ROOT) + file_location
+                        if os.path.exists(delete_file):
+                            os.remove(delete_file)
+                        print("attachment file present")
+                        task.process_notes = remove_absolute_path
+                        task.save()
+                    else:
+                        
+                        task.process_notes = remove_absolute_path
+                        task.save()
+                        max_files.current_files = int(max_files.current_files) + 1
+                        max_files.save()
+            elif request.user.is_super_admin:
+                task = Task.objects.get(id=task_id)
+               
+                path = str(settings.MEDIA_ROOT) 
+                directory = 'task_process_notes'
+                dire = os.path.join(path, directory)
+                print(dire) 
+
+                uploaded_filename = request.FILES['process_notes_file'].name    
+                try:
+                    os.makedirs(dire)
+                    print("created folder")
+                except:
+                    print("folder already created")
+                    pass
+                full_filename = os.path.join(dire, uploaded_filename)
+                fout = open(full_filename, 'wb+')
+                print("full_filename :",full_filename)
+
+                file_content = ContentFile( request.FILES['process_notes_file'].read())
+
+                # Iterate through the chunks.
+                for chunk in file_content.chunks():
+                    fout.write(chunk)
+                fout.close()
+                remove_absolute_path = full_filename.replace(str(settings.MEDIA_ROOT),'')
+                check_for = task.process_notes
+                if check_for:                       
+                    file_location = check_for
+                    print("File Location:",file_location)
+                    delete_file = str(settings.MEDIA_ROOT) + file_location
+                    if os.path.exists(delete_file):
+                        os.remove(delete_file)
+                    print("attachment file present")
+                    task.process_notes = remove_absolute_path
+                    task.save()
+                else:
+                    
+                    task.process_notes = remove_absolute_path
+                    task.save()
+        else:
+            print("no")
+            if request.user.is_main_client:
+                main_client = request.user
+                max_files = MaxFiles.objects.get(main_client=main_client.id)
+                if max_files.max_files == max_files.current_files:
+                    print("give error")  
+                    error = "Maximum number of files exceeded"
+                else:
+                    print("save the file")
+                    path = str(settings.MEDIA_ROOT) + '\\clients\\'+ str(main_client.username) + '\\'
+                    directory = 'task_process_notes'
+                    dire = os.path.join(path, directory)
+                    print(dire) 
+
+                    uploaded_filename = request.FILES['attachment'].name    
+                    try:
+                        os.makedirs(dire)
+                        print("created folder")
+                    except:
+                        print("folder already created")
+                        pass
+                    full_filename = os.path.join(dire, uploaded_filename)
+                    fout = open(full_filename, 'wb+')
+                    print("full_filename :",full_filename)
+
+                    file_content = ContentFile( request.FILES['attachment'].read())
+
+                    # Iterate through the chunks.
+                    for chunk in file_content.chunks():
+                        fout.write(chunk)
+                    fout.close()
+                    remove_absolute_path = full_filename.replace(str(settings.MEDIA_ROOT),'')
+                    print("removed path :",remove_absolute_path)
+                    task_id.process_notes.name = remove_absolute_path
+                    task_id.save()
+                    max_files.current_files = int(max_files.current_files) + 1
+                    max_files.save()
+            elif request.user.is_super_admin:
+                path = str(settings.MEDIA_ROOT)
+                directory = 'task_process_notes'
+                dire = os.path.join(path, directory)
+
+                uploaded_filename = request.FILES['attachment'].name
+                try:
+                    os.makedirs(dire)
+                    print("created folder")
+                except:
+                    print("folder already created")
+                    pass
+                full_filename = os.path.join(dire, uploaded_filename)
+                fout = open(full_filename, 'wb+')
+                print("full_filename :",full_filename)
+
+                file_content = ContentFile( request.FILES['attachment'].read())
+
+                # Iterate through the chunks.
+                for chunk in file_content.chunks():
+                    fout.write(chunk)
+                fout.close()
+                remove_absolute_path = full_filename.replace(str(settings.MEDIA_ROOT),'')
+                print("removed path :",remove_absolute_path)
+                task_id.process_notes.name = remove_absolute_path
+                task_id.save()
+
+
 
 @login_required
 def SuperAdminDashboard(request):

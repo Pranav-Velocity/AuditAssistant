@@ -224,7 +224,7 @@
           aria-hidden="true">
           <div class="modal-dialog" role="document" style="max-width: 900px !important;">
             <!-- Edit Activity Form -->
-            <form method="POST" action="{% url 'edit_client' %}" id="client_edit_form">
+            <form method="POST" action="{% url 'edit_client' %}" id="client_edit_forms">
               {% csrf_token %}
               <div class="modal-content">
                 <div class="modal-header">
@@ -236,7 +236,7 @@
                 <div class="modal-body">
                   <div class="form-row">
                     <div class="form-group col-md-12 mb-3">
-                      <label for="acts" class="text-dark">Select Client</label>
+                      <label for="client_id" class="text-dark">Select Client</label>
                       <select name="client_id" id="client_id" class="custom-select">
                         <option value="">Please Select</option>
                         {% for client in clients %}
@@ -245,7 +245,7 @@
                       </select>
                     </div>
                     <div class="col-md-6 mb-4">
-                      <label for="clientName" class="text-dark">Client Name</label>
+                      <label for="client_name" class="text-dark">Client Name</label>
                       <input type="text" name="client_name" id="client_name" class="form-control" />
                     </div>
                     <div class="col-md-6 mb-4">
@@ -270,9 +270,9 @@
                       <input type="text" name="tan_number" id="tan_number" class="form-control" />
                     </div>
                     <div class="col-md-6 mb-4">
-                      <label for="clientManager" class="text-dark">Assign Manager</label>
-                      <select name="assigned_user" id="manager" class="custom-select">
-                        <option value="-1">Please Select</option>
+                      <label for="assigned_user" class="text-dark">Assign Manager</label>
+                      <select name="assigned_user" id="assigned_user" class="custom-select" required>
+                        <option value="">Please Select</option>
                         {% for user in users %}
                         <option value="{{ user.id }}">{{ user.username }}</option>
                         {% endfor %}
@@ -352,6 +352,7 @@
                     <input type="submit" class="btn btn-success" value="Submit">
                   </div>
                 </div>
+              </div>
             </form>
           </div>
         </div>
@@ -406,11 +407,10 @@
 {% endblock content %}
 {% block script %}
   <script>
-    jQuery('#client_edit_form').validate({
+    jQuery('#client_edit_forms').validate({
       rules:{
         client_name:{
           required:true,
-          alphabets_and_spaces_and_underscore: true,
           maxlength:255,
         },
         clientEmail:{
@@ -421,12 +421,14 @@
         financeEmail:{
           required:false,
           email:true,
+        },
+        assigned_user:{
+          required:true,
         }
       },
       messages:{
         client_name:{
           required:"Please Enter Client Name",
-          alphabets_and_spaces_and_underscore: "Please Enter A Valid Client Name",
           maxlength:"Maximum 255 Characters Allowed",
         },
         clientEmail:{
@@ -437,6 +439,9 @@
         financeEmail:{
           required:false,
           email:"Please Enter a Valid Finance Email",
+        },
+        assigned_user:{
+          required:"Please Select Manager",
         }
       }
     });

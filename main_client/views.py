@@ -1,5 +1,6 @@
 import re
 from django.db.models.fields import NullBooleanField
+from django.template.response import TemplateResponse
 from django.db.models.query import RawQuerySet
 from django.shortcuts import render, HttpResponseRedirect, HttpResponse, redirect
 from partner. models import Regulator,UserLink, Act, Activity, Industry, Task, Client,ClientTask, Entity, AuditType, ActivityAuditTypeEntity, ClientIndustryAuditTypeEntity,AuditPlanMapping
@@ -27,12 +28,13 @@ from django.views.decorators.csrf import csrf_exempt
 from .serializers import *
 from django.core.files.base import ContentFile
 from babel.numbers import format_currency
-
+from super_admin.views import FilesStorage
 # Create your views here.
 @login_required
 def Dashboard(request):
     if request.user.is_main_client: 
-
+        # x,y = FilesStorage(request,request.user)
+        # print(x,y)
         if request.method == 'POST':
             payment_gateway_button = request.POST.get('payment_gateway_button')
             if payment_gateway_button == "yes":
@@ -957,25 +959,27 @@ def add_client(request):
             # print(activities)
             # # print(activities)
             # count = 0
-            for activity_id in activities:
-                #activity = Activity.objects.get(pk=activity_id)
-                tasks = Task.objects.filter(activity_id=activity_id)
-                #act = Act.objects.filter(id=activity.act.id)
-                # print(tasks)
-                # area = Regulator.objects.filter(id=act.area.id)
-                for task in tasks:
-                    activity = Activity.objects.get(id=task.activity.id)
-                    act = Act.objects.get(id=activity.act.id)
-                    ClientTask.objects.create(
-                        client=client, 
-                        task_name=task.task_name,
-                        task_estimated_days=task.task_estimated_days,
-                        task_auditing_standard=task.task_auditing_standard,
-                        task_international_auditing_standard=task.task_international_auditing_standard,
-                        activity=activity,
-                        act=act,
-                        # area_id=act.area.id
-                    )
+            # ------------------un comment from here to create clienttask on client creation------------
+            # for activity_id in activities:
+            #     #activity = Activity.objects.get(pk=activity_id)
+            #     tasks = Task.objects.filter(activity_id=activity_id)
+            #     #act = Act.objects.filter(id=activity.act.id)
+            #     # print(tasks)
+            #     # area = Regulator.objects.filter(id=act.area.id)
+            #     for task in tasks:
+            #         activity = Activity.objects.get(id=task.activity.id)
+            #         act = Act.objects.get(id=activity.act.id)
+            #         ClientTask.objects.create(
+            #             client=client, 
+            #             task_name=task.task_name,
+            #             task_estimated_days=task.task_estimated_days,
+            #             task_auditing_standard=task.task_auditing_standard,
+            #             task_international_auditing_standard=task.task_international_auditing_standard,
+            #             activity=activity,
+            #             act=act,
+            #             # area_id=act.area.id
+            #         )
+            # --------------------------till here-------------------------
                     # count = count + 1
                     # print("Loop number :",count)
 
@@ -1552,14 +1556,26 @@ def add_area(request):
         
         if request.user.is_super_admin:
             areas = Regulator.objects.filter(Q(is_global=True))
+            audittypes=Audits.objects.filter(Q(is_global=True))
+
+            my_areas = Regulator.objects.filter(Q(is_global=True))
+            non_global_areas = Regulator.objects.filter(Q(is_global=False))
         else:
             areas = Regulator.objects.filter(Q(user_id=request.user.id) | Q(is_global=True))
+            audittypes=Audits.objects.filter(Q(user_id=request.user.id) | Q(is_global=True))
+
+            my_areas = Regulator.objects.filter(Q(user_id=request.user.id) & Q(is_global=False))
+        non_global_areas = []
         context_data = {
             "error": error,
-            "areas": areas,
+            'areas': areas,
+            "audittypes" : audittypes,
+            "my_areas":my_areas,
+            "non_global_areas":non_global_areas
         }
-        return render(request, "master/areas_master.html", context_data)
-
+        return render(request, "master/areas_master.html",context_data)
+    else:
+        return redirect('render_areas_master')
 @login_required
 def remove_area(request, area_id):
     
@@ -1629,13 +1645,21 @@ def add_activitylabel(request):
                 print(e)
         if request.user.is_super_admin:
             activity_label = Activity_Labels.objects.filter(Q(is_global=True))
+            my_activity_label = Activity_Labels.objects.filter(Q(is_global=True))
+            non_global_activity_labels = Activity_Labels.objects.filter(Q(is_global=False))
         else:
             activity_label = Activity_Labels.objects.filter(Q(user_id=request.user.id) | Q(is_global=True))
+            my_activity_label = Activity_Labels.objects.filter(Q(user_id=request.user.id) & Q(is_global=False))
+            non_global_activity_labels = []
         context_data = {
+            "error":error,
             'activity_label': activity_label,
-            'error': error
+            'my_activity_label': my_activity_label,
+            'non_global_activity_labels':non_global_activity_labels
         }
         return render(request, "master/activity_label_master.html",context_data)  
+    else:
+        return redirect('render_activity_label_master')
 
 @login_required
 def edit_activitylabel(request):
@@ -1727,18 +1751,27 @@ def add_act(request):
         if request.user.is_super_admin:
             acts = Act.objects.filter(Q(is_global = True))
             areas = Regulator.objects.filter(Q(is_global=True))
+            my_acts = Act.objects.filter(Q(is_global = True))
+            my_areas = Regulator.objects.filter(Q(is_global=True))
+            non_global_areas = Act.objects.filter(Q(is_global=False))
         else:
-            acts = Act.objects.filter(Q(is_global = True) | Q(user_id = request.user.id))
-            areas = Regulator.objects.filter(Q(is_global=True) | Q(user_id = request.user.id))
-        
-        
+            acts = Act.objects.filter(Q(user_id=request.user.id) | Q(is_global=True))
+            areas = Regulator.objects.filter(Q(user_id=request.user.id) | Q(is_global=True))
+            my_acts = Act.objects.filter(Q(user_id=request.user.id) & Q(is_global=False))
+            my_areas = Regulator.objects.filter(Q(user_id=request.user.id) & Q(is_global=False))
+            non_global_areas = []
+        # Pass it to the template
         context_data = {
+            "error":error,
             'acts': acts,
-            'areas' : areas,
-            "error": error,
+            'areas': areas,
+            'my_acts': my_acts,
+            'my_areas': my_areas,
+            'non_global_areas':non_global_areas
         }
         return render(request, "master/acts_master.html", context_data) 
-
+    else:
+        return redirect('render_acts_master')
 @login_required
 def get_industries(request):
     if request.method == "POST":
@@ -1844,13 +1877,22 @@ def add_audittype(request):
 
         if request.user.is_super_admin:
             audittypes = AuditType.objects.filter(Q(is_global=True))
+            my_audittypes = AuditType.objects.filter(Q(is_global=True))
+            non_global_audit_type = AuditType.objects.filter(Q(is_global=False))
         else:
             audittypes = AuditType.objects.filter(Q(user_id = request.user.id) | Q(is_global=True))
+            my_audittypes = AuditType.objects.filter(Q(user_id = request.user.id) & Q(is_global=False))
+            non_global_audit_type = []
+        # Pass it to template
         context_data = {
+            "error":error,
             'audittypes': audittypes,
-            'error': error
+            'my_audittypes': my_audittypes,
+            'non_global_audit_type':non_global_audit_type
         }
         return render(request, "master/audittype_master.html",context_data)  
+    else:
+        return redirect('render_audittype_master')
 
 @login_required
 def edit_audittype(request):
@@ -1934,13 +1976,22 @@ def add_industry(request):
 
         if request.user.is_super_admin:
             industries = Industry.objects.filter(Q(is_global=True))
+            my_industries = Industry.objects.filter(Q(is_global=True))
+            non_global_industry = Industry.objects.filter(is_global=False)
         else:
             industries = Industry.objects.filter(Q(user_id = request.user.id) | Q(is_global=True))
+            my_industries = Industry.objects.filter(Q(user_id = request.user.id) & Q(is_global=False))
+            non_global_industry = []
         context_data = {
+            "error":error,
             'industries': industries,
-            'error': error
+            'my_industries': my_industries,
+            'non_global_industry':non_global_industry
+            
         }
         return render(request, "master/industry_master.html",context_data)  
+    else:
+        return redirect('render_industry_master')
 
 @login_required
 def edit_industry(request):
@@ -2018,15 +2069,22 @@ def add_audits(request):
         print(error)
         if request.user.is_super_admin:
             audits = Audits.objects.filter(Q(is_global=True))
+            my_audits = Audits.objects.filter(Q(is_global=True))
+            non_global_audits = Audits.objects.filter(Q(is_global=False))
         else:
             audits = Audits.objects.filter(Q(user_id = request.user.id) | Q(is_global=True))
+            my_audits = Audits.objects.filter(Q(user_id = request.user.id) & Q(is_global=False))
+            non_global_audits = []
         context_data = {
+            "error":error,
             'audits': audits,
-            'error': error
+            'my_audits': my_audits,
+            'non_global_audits':non_global_audits
         }
         
         return render(request, "master/audits_master.html",context_data)  
-
+    else:
+        return redirect('render_audits_master')
 @login_required
 def edit_audits(request):
     if request.method == 'POST':
@@ -2171,7 +2229,7 @@ def add_activity(request):
                 # return HttpResponseRedirect('/main_client/activities')
             except Exception as e:
                 raise e
-        activity_id = Activity.objects.get(activity_name = activity_name)
+        # activity_id = Activity.objects.get(activity_name = activity_name)
         activity = Activity.objects.get(activity_name = activity_name)
         # print(activity_id)
         
@@ -2179,73 +2237,86 @@ def add_activity(request):
         # print(attachment)
         if is_there == False:
             if attachment:
-                main_client = User.objects.get(id = request.user.id)
-                max_files = MaxFiles.objects.get(main_client=main_client.id)
-                if max_files.max_files == max_files.current_files:
-                    print("give error")  
-                    error = "Maximum number of files exceeded"
-                else:
-                    print("save the file")
-                    path = str(settings.MEDIA_ROOT) + '\\clients\\'+ str(main_client.username) + '\\'
-                    directory = 'process_notes'
-                    dire = os.path.join(path, directory)
-                    print(dire) 
+                attachment_file = FilesStorage(request,request.user,"activity",activity,"activity_task_submission",request.FILES['attachment'])
+                # activity.partner_attachment_file = attachment_file
+                # main_client = User.objects.get(id = request.user.id)
+                # max_files = MaxFiles.objects.get(main_client=main_client.id)
+                # if max_files.max_files == max_files.current_files:
+                #     print("give error")  
+                #     error = "Maximum number of files exceeded"
+                # else:
+                #     print("save the file")
+                #     path = str(settings.MEDIA_ROOT) + '\\clients\\'+ str(main_client.username) + '\\'
+                #     directory = 'process_notes'
+                #     dire = os.path.join(path, directory)
+                #     print(dire) 
 
-                    uploaded_filename = request.FILES['attachment'].name    
-                    try:
-                        os.makedirs(dire)
-                        print("created folder")
-                    except:
-                        print("folder already created")
-                        pass
-                    full_filename = os.path.join(dire, uploaded_filename)
-                    fout = open(full_filename, 'wb+')
-                    print("full_filename :",full_filename)
+                #     uploaded_filename = request.FILES['attachment'].name    
+                #     try:
+                #         os.makedirs(dire)
+                #         print("created folder")
+                #     except:
+                #         print("folder already created")
+                #         pass
+                #     full_filename = os.path.join(dire, uploaded_filename)
+                #     fout = open(full_filename, 'wb+')
+                #     print("full_filename :",full_filename)
+                #     file_content = ContentFile( request.FILES['attachment'].read() )
 
-                    file_content = ContentFile( request.FILES['attachment'].read() )
-
-                    # Iterate through the chunks.
-                    for chunk in file_content.chunks():
-                        fout.write(chunk)
-                    fout.close()
-                    remove_absolute_path = full_filename.replace(str(settings.MEDIA_ROOT),'')
-                    print("removed path :",remove_absolute_path)
-                    activity.process_notes.name = remove_absolute_path
-                    # uploaded_attachment_filename = request.FILES[u'attachment'].name
-                    # uploaded_attachment_file = request.FILES['attachment']
-                    # uploaded_attachment_filename = str(activity_id) + "/" +  uploaded_attachment_filename
-                    # activity.process_notes.save(uploaded_attachment_filename, uploaded_attachment_file)
+                #     # Iterate through the chunks.
+                #     for chunk in file_content.chunks():
+                #         fout.write(chunk)
+                #     fout.close()
+                #     remove_absolute_path = full_filename.replace(str(settings.MEDIA_ROOT),'')
+                #     print("removed path :",remove_absolute_path)
+                #     activity.process_notes.name = remove_absolute_path
+                #     # uploaded_attachment_filename = request.FILES[u'attachment'].name
+                #     # uploaded_attachment_file = request.FILES['attachment']
+                #     # uploaded_attachment_filename = str(activity_id) + "/" +  uploaded_attachment_filename
+                #     # activity.process_notes.save(uploaded_attachment_filename, uploaded_attachment_file)
                     
-                    # Add to the mapping table
-                    activity.save()
-                    max_files.current_files = int(max_files.current_files) + 1
-                    max_files.save()
+                #     # Add to the mapping table
+                #     activity.save()
+                #     max_files.current_files = int(max_files.current_files) + 1
+                #     max_files.save()
         if request.user.is_super_admin:
             activities = Activity.objects.filter(Q(is_global = True))
             audit_types = AuditType.objects.filter(Q(is_global = True))
             entities = Entity.objects.filter(Q(is_global = True))
             industries = Industry.objects.filter(Q(is_global = True))
+            area = Regulator.objects.filter(Q(is_global = True))
             acts = Act.objects.filter(Q(is_global = True))
-            labels = Activity_Labels.objects.filter(Q(is_global = True))
+            
+            label = Activity_Labels.objects.filter(Q(is_global = True))
+
+            my_activities = Activity.objects.filter(Q(is_global = True))
+            non_global_activity = Activity.objects.filter(Q(is_global = False))
         else:
             activities = Activity.objects.filter(Q(user_id = request.user) | Q(is_global = True))
             audit_types = AuditType.objects.filter(Q(user_id = request.user) | Q(is_global = True))
             entities = Entity.objects.filter(Q(user_id = request.user) | Q(is_global = True))
             industries = Industry.objects.filter(Q(user_id = request.user) | Q(is_global = True))
+            area = Regulator.objects.filter(Q(user_id = request.user) | Q(is_global = True))
             acts = Act.objects.filter(Q(user_id = request.user) | Q(is_global = True))
-            labels = Activity_Labels.objects.filter(Q(user_id = request.user) | Q(is_global = True))
-        
-        
+            
+            label = Activity_Labels.objects.filter(Q(user_id = request.user) | Q(is_global = True))
+
+            my_activities = Activity.objects.filter(Q(user_id = request.user) & Q(is_global = False))
+            non_global_activity = []
         context_data = {
-            'activities' : activities,
-            'acts': acts,
+            "error":error,
+            'activities': activities,
             'audittypes': audit_types,
             'entities': entities,
-            "error":error,
-            'labels' : labels,
-            'industries' : industries
-        } 
+            'industries': industries,
+            'acts': acts,
+            'label' : label,
+            'my_activities':my_activities,
+            'non_global_activity':non_global_activity
+        }
         return render(request, "master/activity_master.html",context_data)
+    else:
+        return redirect('render_activity_master')
 
 @login_required
 def get_entities(request):
@@ -2505,13 +2576,22 @@ def add_entity(request):
         
         if request.user.is_super_admin:
             entities = Entity.objects.filter(Q(is_global=True))
+            my_entities = Entity.objects.filter(Q(is_global=True))
+            non_global_entity = Entity.objects.filter(Q(is_global=False))
         else:
             entities = Entity.objects.filter(Q(user_id = request.user.id) | Q(is_global=True))
+            my_entities = Entity.objects.filter(Q(user_id = request.user.id) & Q(is_global=False))
+            non_global_entity = []
+        # Pass it to the template
         context_data = {
+            "error":error,
             'entities': entities,
-            'error': error
+            'my_entities':my_entities,
+            'non_global_entity':non_global_entity
         }
         return render(request, "master/entity_master.html",context_data)
+    else:
+        return redirect('render_entity_master')
 
 @login_required
 def edit_entity(request):
@@ -2621,49 +2701,50 @@ def add_task(request):
         attachment = request.FILES.get('attachment', False)
         print(attachment)
         if attachment:
-            main_client = User.objects.get(id = request.user.id)
-            max_files = MaxFiles.objects.get(main_client=main_client.id)
-            if max_files.max_files == max_files.current_files:
-                print("give error")
-                error = "Maximum number of files exceeded"
-            else:
-                print("save the file")
-                path = str(settings.MEDIA_ROOT) + '\\clients\\'+ str(main_client.username) + '\\'
-                directory = 'activity_process_notes'
-                dire = os.path.join(path, directory)
-                print(dire) 
+            attachment_file = FilesStorage(request,request.user,"task",task,"task_process_notes",request.FILES['attachment'])
+            # main_client = User.objects.get(id = request.user.id)
+            # max_files = MaxFiles.objects.get(main_client=main_client.id)
+            # if max_files.max_files == max_files.current_files:
+            #     print("give error")
+            #     error = "Maximum number of files exceeded"
+            # else:
+            #     print("save the file")
+            #     path = str(settings.MEDIA_ROOT) + '\\clients\\'+ str(main_client.username) + '\\'
+            #     directory = 'activity_process_notes'
+            #     dire = os.path.join(path, directory)
+            #     print(dire) 
 
-                uploaded_filename = request.FILES['attachment'].name    
-                try:
-                    os.makedirs(dire)
-                    print("created folder")
-                except:
-                    print("folder already created")
-                    pass
-                task_file_upload_path = str(dire) + '\\'
-                try:
-                    os.makedirs(task_file_upload_path)
-                    print("created folder")
-                except:
-                    print("folder already created")
-                    pass
-                full_filename = os.path.join(task_file_upload_path, uploaded_filename)
-                fout = open(full_filename, 'wb+')
-                print("full_filename :",full_filename)
+            #     uploaded_filename = request.FILES['attachment'].name    
+            #     try:
+            #         os.makedirs(dire)
+            #         print("created folder")
+            #     except:
+            #         print("folder already created")
+            #         pass
+            #     task_file_upload_path = str(dire) + '\\'
+            #     try:
+            #         os.makedirs(task_file_upload_path)
+            #         print("created folder")
+            #     except:
+            #         print("folder already created")
+            #         pass
+            #     full_filename = os.path.join(task_file_upload_path, uploaded_filename)
+            #     fout = open(full_filename, 'wb+')
+            #     print("full_filename :",full_filename)
 
-                file_content = ContentFile( request.FILES['attachment'].read() )
+            #     file_content = ContentFile( request.FILES['attachment'].read() )
 
-                # Iterate through the chunks.
-                for chunk in file_content.chunks():
-                    fout.write(chunk)
-                fout.close()
-                remove_absolute_path = full_filename.replace(str(settings.MEDIA_ROOT),'')
-                print("removed path :",remove_absolute_path)
-                task.process_notes.name = remove_absolute_path
+            #     # Iterate through the chunks.
+            #     for chunk in file_content.chunks():
+            #         fout.write(chunk)
+            #     fout.close()
+            #     remove_absolute_path = full_filename.replace(str(settings.MEDIA_ROOT),'')
+            #     print("removed path :",remove_absolute_path)
+            #     task.process_notes.name = remove_absolute_path
                 
-                task.save()
-                max_files.current_files = int(max_files.current_files) + 1
-                max_files.save()
+            #     task.save()
+            #     max_files.current_files = int(max_files.current_files) + 1
+            #     max_files.save()
             # uploaded_attachment_filename = request.FILES[u'attachment'].name
             # uploaded_attachment_file = request.FILES['attachment']
             # uploaded_attachment_filename = str(task_id) + "/" +  uploaded_attachment_filename
@@ -2671,13 +2752,21 @@ def add_task(request):
             # task.save()
         # print(tasks)
         if request.user.is_super_admin:
-            activities = Activity.objects.filter(Q(is_global=True))
+            tasks = Task.objects.filter(Q(is_global = True))
+            activities = Activity.objects.filter(Q(is_global = True))
+            my_tasks = Task.objects.filter(Q(is_global = True))
+            non_global_task = Task.objects.filter(Q(is_global = False))
         else:
-            activities = Activity.objects.filter(Q(user_id = request.user) | Q(is_global=True))
+            tasks = Task.objects.filter(Q(user_id = request.user) | Q(is_global = True))
+            activities = Activity.objects.filter(Q(user_id = request.user) | Q(is_global = True))
+            my_tasks = Task.objects.filter(Q(user_id = request.user) & Q(is_global = False))
+            non_global_task = []
         context_data = {
+            "error":error,
             'tasks': tasks,
-            'activities' : activities,
-            "error": error,
+            'activities': activities,
+            "my_tasks":my_tasks,
+            'non_global_task':non_global_task
         }
         clients = Client.objects.all()
         task_mappings = ActivityAuditTypeEntity.objects.filter(activity=activity)
@@ -2709,6 +2798,8 @@ def add_task(request):
                                     newTask.save()
                 # print(activity)
         return render(request, "master/task_master.html",context_data)
+    else:
+        return redirect('render_task_master')
 
 @login_required
 def render_task_master(request):
@@ -2748,75 +2839,76 @@ def crud_processed_notes(request):
         process_notes_file = request.FILES.get('process_notes_file',False)
 
         if process_task_id and process_notes_file:
-            task = Task.objects.get(id = process_task_id)
-            main_client = User.objects.get(id = request.user.id)
-            max_files = MaxFiles.objects.get(main_client=main_client.id)
-            if max_files.max_files == max_files.current_files:
-                print("give error")
-                error = "Maximum number of files exceeded"
-            else:
-                print("save the file")
-                get_previous_file = task.process_notes
+                attachment_file = FilesStorage(request,request.user,'task',process_task_id,"task_update_upload",request.FILES['process_notes_file'])
+            # task = Task.objects.get(id = process_task_id)
+            # main_client = User.objects.get(id = request.user.id)
+            # max_files = MaxFiles.objects.get(main_client=main_client.id)
+            # if max_files.max_files == max_files.current_files:
+            #     print("give error")
+            #     error = "Maximum number of files exceeded"
+            # else:
+            #     print("save the file")
+            #     get_previous_file = task.process_notes
                 
-                path = str(settings.MEDIA_ROOT) + '\\clients\\'+ str(main_client.username) + '\\'
-                directory = 'activity_process_notes'
-                dire = os.path.join(path, directory)
+            #     path = str(settings.MEDIA_ROOT) + '\\clients\\'+ str(main_client.username) + '\\'
+            #     directory = 'activity_process_notes'
+            #     dire = os.path.join(path, directory)
 
-                uploaded_filename = request.FILES['process_notes_file'].name    
-                try:
-                    os.makedirs(dire)
-                    print("created folder")
-                except:
-                    print("folder already created")
-                    pass
-                task_file_upload_path = str(dire) + '\\'
-                try:
-                    os.makedirs(task_file_upload_path)
-                    print("created folder")
-                except:
-                    print("folder already created")
-                    pass
-                if get_previous_file:
-                    print(get_previous_file)
-                    try:
-                        os.remove(str(settings.MEDIA_ROOT) + str(get_previous_file))
+            #     uploaded_filename = request.FILES['process_notes_file'].name    
+            #     try:
+            #         os.makedirs(dire)
+            #         print("created folder")
+            #     except:
+            #         print("folder already created")
+            #         pass
+            #     task_file_upload_path = str(dire) + '\\'
+            #     try:
+            #         os.makedirs(task_file_upload_path)
+            #         print("created folder")
+            #     except:
+            #         print("folder already created")
+            #         pass
+            #     if get_previous_file:
+            #         print(get_previous_file)
+            #         try:
+            #             os.remove(str(settings.MEDIA_ROOT) + str(get_previous_file))
                         
                         
-                    except Exception as e:
-                        print("error :",e)
-                    full_filename = os.path.join(task_file_upload_path, uploaded_filename)
-                    fout = open(full_filename, 'wb+')
-                    print("full_filename :",full_filename)
+            #         except Exception as e:
+            #             print("error :",e)
+            #         full_filename = os.path.join(task_file_upload_path, uploaded_filename)
+            #         fout = open(full_filename, 'wb+')
+            #         print("full_filename :",full_filename)
 
-                    file_content = ContentFile(request.FILES['process_notes_file'].read())
+            #         file_content = ContentFile(request.FILES['process_notes_file'].read())
 
-                    # Iterate through the chunks.
-                    for chunk in file_content.chunks():
-                        fout.write(chunk)
-                    fout.close()
-                    remove_absolute_path = full_filename.replace(str(settings.MEDIA_ROOT),'')
-                    print("removed path :",remove_absolute_path)
-                    task.process_notes.name = remove_absolute_path
+            #         # Iterate through the chunks.
+            #         for chunk in file_content.chunks():
+            #             fout.write(chunk)
+            #         fout.close()
+            #         remove_absolute_path = full_filename.replace(str(settings.MEDIA_ROOT),'')
+            #         print("removed path :",remove_absolute_path)
+            #         task.process_notes.name = remove_absolute_path
                     
-                    task.save()
-                else:
-                    full_filename = os.path.join(task_file_upload_path, uploaded_filename)
-                    fout = open(full_filename, 'wb+')
-                    print("full_filename :",full_filename)
+            #         task.save()
+            #     else:
+            #         full_filename = os.path.join(task_file_upload_path, uploaded_filename)
+            #         fout = open(full_filename, 'wb+')
+            #         print("full_filename :",full_filename)
 
-                    file_content = ContentFile(request.FILES['process_notes_file'].read())
+            #         file_content = ContentFile(request.FILES['process_notes_file'].read())
 
-                    # Iterate through the chunks.
-                    for chunk in file_content.chunks():
-                        fout.write(chunk)
-                    fout.close()
-                    remove_absolute_path = full_filename.replace(str(settings.MEDIA_ROOT),'')
-                    print("removed path :",remove_absolute_path)
-                    task.process_notes.name = remove_absolute_path
+            #         # Iterate through the chunks.
+            #         for chunk in file_content.chunks():
+            #             fout.write(chunk)
+            #         fout.close()
+            #         remove_absolute_path = full_filename.replace(str(settings.MEDIA_ROOT),'')
+            #         print("removed path :",remove_absolute_path)
+            #         task.process_notes.name = remove_absolute_path
                     
-                    task.save()
-                    max_files.current_files = int(max_files.current_files) + 1
-                    max_files.save()
+            #         task.save()
+            #         max_files.current_files = int(max_files.current_files) + 1
+            #         max_files.save()
                 return JsonResponse({'saved':'yes'})
 
 

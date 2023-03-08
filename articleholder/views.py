@@ -11,6 +11,7 @@ from django.http import JsonResponse
 # Create your views here.
 from django.db.models import Count
 import json
+from super_admin.views import FilesStorage
 
 @login_required
 def article_dashboard(request):
@@ -27,7 +28,7 @@ def article_dashboard(request):
                     return JsonResponse({'saved':'yes'})
                 except ClientTask.DoesNotExist:
                     pass
-        all_tasks = ClientTask.objects.filter(user=request.user.id,is_approved=False,is_rejected=False,status=False).count()
+        all_tasks = ClientTask.objects.filter(user=request.user.id,is_approved=False,is_reject=False,is_rejected=False,status=False).count()
         all_approved_tasks = ClientTask.objects.filter(user=request.user.id,is_approved=True).count()
         all_rejected_tasks = ClientTask.objects.filter(user=request.user.id,is_rejected=True).count()
         pending_tasks = ClientTask.objects.filter(user=request.user.id,is_approved=False,status=True).count()
@@ -147,59 +148,61 @@ def task_submission(request, task_id):
             task = ClientTask.objects.get(id = task_id)
             attachment = request.FILES.get('attachment', False)
             print(attachment)
-            if attachment:
-                print("attachment got :")
-                if getuser == "none":
-                    pass
-                else:
-                    article = User.objects.get(id = request.user.id)
-                    manager = User.objects.get(id = article.linked_employee)
-                    partner = User.objects.get(id = manager.linked_employee)
-                    mainclient = User.objects.get(id = partner.linked_employee)
-                    print(article , manager , partner , mainclient)
+            attachment_file = FilesStorage(request,request.user,'clienttask',task.id,"task_submission",request.FILES['attachment'])
+            task.article_attachment_file = attachment_file
+            # if attachment:
+            #     print("attachment got :")
+            #     if getuser == "none":
+            #         pass
+            #     else:
+                    # article = User.objects.get(id = request.user.id)
+                    # manager = User.objects.get(id = article.linked_employee)
+                    # partner = User.objects.get(id = manager.linked_employee)
+                    # mainclient = User.objects.get(id = partner.linked_employee)
+            #         print(article , manager , partner , mainclient)
                     
-                    try:
-                        get_max_files = MaxFiles.objects.get(main_client = mainclient.id)
-                        if int(get_max_files.current_files) == int(get_max_files.max_files):
-                            print("error files exceeded limit")
-                        else:
-                            path = str(settings.MEDIA_ROOT) + '\\clients\\'+ str(mainclient.username) + '\\'
-                            directory = 'task_submission'
-                            dire = os.path.join(path, directory)
-                            print(dire) 
+            #         try:
+            #             get_max_files = MaxFiles.objects.get(main_client = mainclient.id)
+            #             if int(get_max_files.current_files) == int(get_max_files.max_files):
+            #                 print("error files exceeded limit")
+            #             else:
+            #                 path = str(settings.MEDIA_ROOT) + '\\clients\\'+ str(mainclient.username) + '\\'
+            #                 directory = 'task_submission'
+            #                 dire = os.path.join(path, directory)
+            #                 print(dire) 
 
-                            uploaded_filename = request.FILES['attachment'].name
-                            try:
-                                os.makedirs(dire)
-                                print("created folder")
-                            except:
-                                print("folder already created")
-                                pass
-                            task_file_upload_path = str(dire) + '\\'+str(task_id) + '\\' + 'articleholder' +'\\'
-                            try:
-                                os.makedirs(task_file_upload_path)
-                                print("created folder")
-                            except:
-                                print("folder already created")
-                                pass
-                            full_filename = os.path.join(task_file_upload_path, uploaded_filename)
-                            fout = open(full_filename, 'wb+')
-                            print("full_filename :",full_filename)
-                            file_content = ContentFile( request.FILES['attachment'].read() )
-                            # Iterate through the chunks.
-                            for chunk in file_content.chunks():
-                                fout.write(chunk)
-                            fout.close()
-                            remove_absolute_path = full_filename.replace(str(settings.MEDIA_ROOT),'')
-                            print("removed path :",remove_absolute_path)
-                            task.article_attachment_file =  {
-                                "user_id":f"{request.user.id}",
-                                "file_location":f"{remove_absolute_path}"
-                            }
-                            get_max_files.current_files = int(get_max_files.current_files) + 1
-                            get_max_files.save()
-                    except MaxFiles.DoesNotExist:
-                        print("no max files found")
+            #                 uploaded_filename = request.FILES['attachment'].name
+            #                 try:
+            #                     os.makedirs(dire)
+            #                     print("created folder")
+            #                 except:
+            #                     print("folder already created")
+            #                     pass
+            #                 task_file_upload_path = str(dire) + '\\'+str(task_id) + '\\' + 'articleholder' +'\\'
+            #                 try:
+            #                     os.makedirs(task_file_upload_path)
+            #                     print("created folder")
+            #                 except:
+            #                     print("folder already created")
+            #                     pass
+            #                 full_filename = os.path.join(task_file_upload_path, uploaded_filename)
+            #                 fout = open(full_filename, 'wb+')
+            #                 print("full_filename :",full_filename)
+            #                 file_content = ContentFile( request.FILES['attachment'].read() )
+            #                 # Iterate through the chunks.
+            #                 for chunk in file_content.chunks():
+            #                     fout.write(chunk)
+            #                 fout.close()
+            #                 remove_absolute_path = full_filename.replace(str(settings.MEDIA_ROOT),'')
+            #                 print("removed path :",remove_absolute_path)
+            #                 task.article_attachment_file =  {
+            #                     "user_id":f"{request.user.id}",
+            #                     "file_location":f"{remove_absolute_path}"
+            #                 }
+            #                 get_max_files.current_files = int(get_max_files.current_files) + 1
+            #                 get_max_files.save()
+            #         except MaxFiles.DoesNotExist:
+            #             print("no max files found")
             # if attachment:
             #     uploaded_attachment_filename = request.FILES[u'attachment'].name
             #     uploaded_attachment_file = request.FILES['attachment']

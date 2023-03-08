@@ -31,6 +31,11 @@ import imaplib
 import email
 from email.header import decode_header
 import webbrowser
+from super_admin.views import FilesStorage
+
+
+
+
 
 def clean(text):
     # clean text for creating a folder
@@ -122,6 +127,7 @@ def test(request):
 @login_required
 def index(request):
     if request.user.is_partner:
+        
         all_tasks = ClientTask.objects.filter(user=request.user.id,status=False).count()
         all_clients = Client.objects.filter(assigned_partner_id =request.user.id).count()
         ac = Client.objects.filter(assigned_partner_id =request.user.id)
@@ -142,7 +148,21 @@ def index(request):
         cgst = taxes['cgst'] or 0
         addi = invoices_total+ofp+sgst+cgst+igst
         total = format_currency(addi, 'INR', locale='en_IN')
-        
+        main_client = User.objects.get(id = request.user.linked_employee)
+        all_partners = User.objects.filter(linked_employee = main_client.id)
+        count = 0
+        for partner in all_partners:
+            count = count + 1
+            all_managers = User.objects.filter(linked_employee = partner.id)
+            for manager in all_managers:
+                count = count + 1
+                all_auditors = User.objects.filter(linked_employee = manager.id)
+                for auditor in all_auditors:
+                    count = count + 1
+                all_articles = User.objects.filter(linked_employee = manager.id)
+                for article in all_articles:
+                    count = count + 1
+                # print(all_auditors,all_articles)
         # invoice_details = ClientTask.objects.raw('SELECT client_id FROM partner_clienttask')
         # # print(invoice_details)
         # for i in invoice_details:
@@ -158,7 +178,8 @@ def index(request):
                     'billable_invoices':billable_invoices,
                     'invoices_generated':invoices_generated,
                     'invoices_notgenerated':invoices_notgenerated,
-                    'invoices_total':total
+                    'invoices_total':total,
+                    'all_users':count
                     }
         return render(request, 'partner/partner_index.html', context_set)
 
@@ -478,43 +499,50 @@ def edit_invoice(request):
 
 @login_required
 def add_client_task(request, client_id):
-    if request.method == "POST":
-        task_name = request.POST.get('task_name')
-        # estimated_days = request.POST.get('estimated_days')
-        estimated_hours = request.POST.get('estimated_hours')
-        estimated_minutes = request.POST.get('estimated_minutes')
-        print(type(estimated_hours) , type(estimated_minutes))
-        estimated_hours = int(estimated_hours)
-        estimated_minutes = int(estimated_minutes)
-        estimated_days = (estimated_hours * 60) + estimated_minutes
-        print("total minutes :",estimated_days)
-        auditing_standard = request.POST.get('auditing_standard')
-        international_auditing_standard = request.POST.get('international_auditing_standard')
-        act = request.POST.get('act')
-        activity = request.POST.get('activity')
-        # audit_type = request.POST.get('audit_type')
+    if request.user.is_main_client:
+        print("main client login")
+        if request.method == "POST":
+            auditplan = request.POST.get('auditplan')
+            task_name = request.POST.get('task_name')
+            # estimated_days = request.POST.get('estimated_days')
+            estimated_hours = request.POST.get('estimated_hours')
+            estimated_minutes = request.POST.get('estimated_minutes')
+            print(type(estimated_hours) , type(estimated_minutes))
+            estimated_hours = int(estimated_hours)
+            estimated_minutes = int(estimated_minutes)
+            estimated_days = (estimated_hours * 60) + estimated_minutes
+            print("total minutes :",estimated_days)
+            auditing_standard = request.POST.get('auditing_standard')
+            international_auditing_standard = request.POST.get('international_auditing_standard')
+            act = request.POST.get('act')
+            activity = request.POST.get('activity')
+            # audit_type = request.POST.get('audit_type')
 
-        is_there = ClientTask.objects.filter(client__id=client_id).filter(task_name=task_name).exists()
-        # print(is_there)
-        error = ""
-        if is_there:
-            error = "Task exists with name: " + str(task_name) 
-        else:
-            client = Client.objects.get(id=client_id)
-            audit_plan = AuditPlanMapping.objects.get(client_id=client_id)
-            if audit_plan.is_audit_plan_locked == False:
-                newTask = ClientTask(
-                    task_name=task_name,
-                    task_estimated_days=estimated_days,
-                    task_auditing_standard=auditing_standard,
-                    task_international_auditing_standard=international_auditing_standard,
-                    act=Act.objects.get(id=act),
-                    activity=Activity.objects.get(id=activity),
-                    client=client,
-                    auditplan_id = audit_plan.id
-                )
-                newTask.save()
-        return HttpResponseRedirect(f'/partner/client/{client_id}/profile')
+            is_there = ClientTask.objects.filter(client__id=client_id).filter(task_name=task_name).exists()
+            # print(is_there)
+            error = ""
+            if is_there:
+                error = "Task exists with name: " + str(task_name) 
+            else:
+                client = Client.objects.get(id=client_id)
+                try:
+                    audit_plan = AuditPlanMapping.objects.get(Q(client_id=client_id) & Q(id = auditplan))
+                    print("Audit Plan Present :",audit_plan)
+                    if audit_plan.is_audit_plan_locked == False:
+                        newTask = ClientTask(
+                            task_name=task_name,
+                            task_estimated_days=estimated_days,
+                            task_auditing_standard=auditing_standard,
+                            task_international_auditing_standard=international_auditing_standard,
+                            act=Act.objects.get(id=act),
+                            activity=Activity.objects.get(id=activity),
+                            client=client,
+                            auditplan_id = audit_plan.id
+                        )
+                        newTask.save()
+                except AuditPlanMapping.DoesNotExist:
+                    print("auditplan not present")
+            return HttpResponseRedirect(f'/main_client/client/{client_id}/profile')
         
         
 # ------------------------------------------------End Tasks---------------------------------
@@ -731,7 +759,7 @@ def edit_client(request):
             clientmap.save()
         except Exception as e:
             print(e)
-    return HttpResponseRedirect('/partner/clients')
+    return HttpResponseRedirect('/main_client/clients')
 def get_tasks(data):
     # Industry : 1-Pharma, 2-Chemical
     # Audit Type: Internal Audit
@@ -1390,79 +1418,15 @@ def approve_tasks(request,task_id):
             attachment = request.FILES.get('attachment', False)
             print(attachment)
             if attachment:
-                print("attachment got :")
-                if getuser == "none":
-                    pass
-                else:
-                    main_client = User.objects.get(id = getuser.linked_employee)
-                    print(main_client)
-                    try:
-                        get_max_files = MaxFiles.objects.get(main_client = main_client.id)
-                        if int(get_max_files.current_files) == int(get_max_files.max_files):
-                            print("error files exceeded limit")
-                        else:
-                            path = str(settings.MEDIA_ROOT) + '\\clients\\'+ str(main_client.username) + '\\'
-                            directory = 'task_submission'
-                            dire = os.path.join(path, directory)
-                            print(dire) 
-
-                            uploaded_filename = request.FILES['attachment'].name
-                            try:
-                                os.makedirs(dire)
-                                print("created folder")
-                            except:
-                                print("folder already created")
-                                pass
-                            task_file_upload_path = str(dire) + '\\'+str(task_id) + '\\' + 'partner' +'\\'
-                            try:
-                                os.makedirs(task_file_upload_path)
-                                print("created folder")
-                            except:
-                                print("folder already created")
-                                pass
-                            full_filename = os.path.join(task_file_upload_path, uploaded_filename)
-                            fout = open(full_filename, 'wb+')
-                            print("full_filename :",full_filename)
-
-                            file_content = ContentFile( request.FILES['attachment'].read() )
-
-                            # Iterate through the chunks.
-                            for chunk in file_content.chunks():
-                                fout.write(chunk)
-                            fout.close()
-                            remove_absolute_path = full_filename.replace(str(settings.MEDIA_ROOT),'')
-                            print("removed path :",remove_absolute_path)
-                            # task.partner_attachment_file.name = remove_absolute_path
-                            
-                            task.partner_attachment_file =  {
-                                "user_id":f"{request.user.id}",
-                                "file_location":f"{remove_absolute_path}"
-                            }
-                            
-                            get_max_files.current_files = int(get_max_files.current_files) + 1
-                            get_max_files.save()
-                    except MaxFiles.DoesNotExist:
-                        print("no max files found")
+                attachment_file = FilesStorage(request,request.user,'clienttask',task.id,"task_submission",request.FILES['attachment'])
+                task.partner_attachment_file = attachment_file
                     
-                task.status = True
-                # task.save()
-
-            # if attachment:
-            #     uploaded_attachment_filename = request.FILES[u'attachment'].name
-            #     uploaded_attachment_file = request.FILES['attachment']
-            #     uploaded_attachment_filename = str(task_id) + "/" +  uploaded_attachment_filename
-            #     # print(uploaded_attachment_filename)
                 
-            #     task.partner_attachment_file.save(uploaded_attachment_filename, uploaded_attachment_file)
-            #     # task.attachment_file = request.FILES['attachment']
-            #     task.status = True
-            #     task.save()
-
+        task.status = True
         task.is_approved_partner = True                                                                             
         print(task)
         task.task_end_date = date.today()
         task.save()
-        print(task.partner_attachment_file)
         return HttpResponseRedirect(f'/partner/approval/{task_id}')
 
 @login_required
@@ -1661,82 +1625,26 @@ def partner_task_submission(request, task_id):
     if request.user.is_partner:
         if request.method == "POST":            
             feedback = request.POST.get('feedback')      
-            print(feedback)
+            # print(feedback)
             try:
                 getuser = User.objects.get(id=request.user.id)
-                print(getuser)
+                # print(getuser)
             except User.DoesNotExist:
                 getuser = "none"
             task = ClientTask.objects.get(id = task_id)
             task.partner_feedback = feedback
             task.is_approved_partner = True
             attachment = request.FILES.get('attachment', False)
-            print(attachment)
+            # print(attachment)
             if attachment:
-                print("attachment got :")
-                if getuser == "none":
-                    pass
-                else:
-                    partner = User.objects.get(id = request.user.id)
-                    mainclient = User.objects.get(id = partner.linked_employee)
-                    print(mainclient)
-                    try:
-                        get_max_files = MaxFiles.objects.get(main_client = mainclient.id)
-                        if int(get_max_files.current_files) == int(get_max_files.max_files):
-                            print("error files exceeded limit")
-                        else:
-                            path = str(settings.MEDIA_ROOT) + '\\clients\\'+ str(mainclient.username) + '\\'
-                            directory = 'task_submission'
-                            dire = os.path.join(path, directory)
-                            print(dire) 
-
-                            uploaded_filename = request.FILES['attachment'].name
-                            try:
-                                os.makedirs(dire)
-                                print("created folder")
-                            except:
-                                print("folder already created")
-                                pass
-                            task_file_upload_path = str(dire) + '\\'+str(task_id) + '\\' + 'partner' +'\\'
-                            try:
-                                os.makedirs(task_file_upload_path)
-                                print("created folder")
-                            except:
-                                print("folder already created")
-                                pass
-                            full_filename = os.path.join(task_file_upload_path, uploaded_filename)
-                            fout = open(full_filename, 'wb+')
-                            print("full_filename :",full_filename)
-
-                            file_content = ContentFile( request.FILES['attachment'].read() )
-
-                            # Iterate through the chunks.
-                            for chunk in file_content.chunks():
-                                fout.write(chunk)
-                            fout.close()
-                            remove_absolute_path = full_filename.replace(str(settings.MEDIA_ROOT),'')
-                            print("removed path :",remove_absolute_path)
-                            # task.manager_attachment_file.name = remove_absolute_path
-                            task.partner_attachment_file =  {
-                                "user_id":f"{request.user.id}",
-                                "file_location":f"{remove_absolute_path}"
-                            }
-                            get_max_files.current_files = int(get_max_files.current_files) + 1
-                            get_max_files.save()
-                    except MaxFiles.DoesNotExist:
-                        print("no max files found")
-            # if attachment:
-            #     uploaded_attachment_filename = request.FILES[u'attachment'].name
-            #     uploaded_attachment_file = request.FILES['attachment']
-            #     uploaded_attachment_filename = str(task_id) + "/" +  uploaded_attachment_filename
-            #     # print(uploaded_attachment_filename)
-
-            #     task.partner_attachment_file.save(uploaded_attachment_filename, uploaded_attachment_file)
-            #     # task.attachment_file = request.FILES['attachment']
-            #     task.remark = request.POST.get('remark')
+                attachment_file = FilesStorage(request,request.user,'clienttask',task.id,"task_submission",request.FILES['attachment'])
+                task.partner_attachment_file = attachment_file
+                
+            
             task.remark = request.POST.get('remark')
             task.task_end_datetime = datetime.now()
             task.status = True
+            task.is_approved_partner = True
             task.save()
         return HttpResponseRedirect('/partner/my_task/{}'.format(task_id))
 

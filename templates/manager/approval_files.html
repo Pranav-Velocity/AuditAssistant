@@ -107,17 +107,22 @@
                                                 
                                                 <hr>
                                                 {% comment %} <input type="submit" class="btn btn-block btn-success  col-5 float-right" value="Send for Approval"> {% endcomment %}
-                                                {% if task.attachment_file %}
-                                                  <a role="btn" class="btn btn-primary col-12" href="http://127.0.0.1:8000\media{{ file_location }}" download="http://127.0.0.1:8000\media{{ file_location }}">
+                                                {% if task.auditor_attachment_file %}
+                                                  <a role="btn" class="btn btn-secondary col-12" href="\media{{ auditor_attachment_file }}" download="\media{{ auditor_attachment_file }}">
                                                     <i class="fa fa-download" aria-hidden="true"></i>
-                                                      Download Submission
+                                                      Download Auditor Submission
+                                                  </a>
+                                                  {% elif task.article_attachment_file %}
+                                                  <a role="btn" class="btn btn-success col-12" href="\media{{ article_attachment_file }}" download="\media{{ article_attachment_file }}">
+                                                    <i class="fa fa-download" aria-hidden="true"></i>
+                                                      Download Auditor Submission
                                                   </a>
                                                 {% endif %}
                                                 <br>
                                             </div>
                                             <div class="form-group col-12">
                                                 {% if task.manager_attachment_file %}
-                                                  <a role="btn" class="btn btn-primary col-12" href="http://127.0.0.1:8000\media{{ file_location }}" download="http://127.0.0.1:8000\media{{ file_location }}">
+                                                  <a role="btn" class="btn btn-primary col-12" href="\media{{ manager_attachment_file }}" download="\media{{ manager_attachment_file }}">
                                                     <i class="fa fa-download" aria-hidden="true"></i>
                                                       Download Manager Submission
                                                   </a>

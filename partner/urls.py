@@ -7,8 +7,8 @@ from .views import *
 from .views import  remove_client,view_client_activitiess,assign_task_to_employee,edit_client,get_clientdetails
 from .views import clone_client
 from .views import list_clients_setup
-from .views import Reports
-from .views import employee_setup, add_client_task, add_employee, edit_employee
+from .views import Reports , add_client_task
+# from .views import employee_setup,add_employee, edit_employee
 from .views import mapping
 from partner.views import partner_approval_pending_tasks,pending_approval_task,approve_tasks,reject_task,partner_list_of_clients,partner_client_tasks,partner_assign_task_to_employee
 from partner.views import partner_tasks,show_individual_partner_task,partner_start_working,partner_task_submission,view_client_invoicing,client_invoice_download,edit_invoice,invoice_details,create_invoice,partner_dashboard
@@ -94,9 +94,9 @@ urlpatterns = [
     path('client/invocing/details', invoice_details, name="invoice_details"),
     path('client/<int:auditplan_id>/download',client_invoice_download,name="client_invoice_download"),
 
-    path('employee/setup',employee_setup,name="employee_setup"),
-    path('employee/add', add_employee, name="add_employee"),
-    path('employee/edit', edit_employee, name="edit_employee"),
+    # path('employee/setup',employee_setup,name="employee_setup"),
+    # path('employee/add', add_employee, name="add_employee"),
+    # path('employee/edit', edit_employee, name="edit_employee"),
 
 
     path('my_tasks/', partner_tasks, name="partner_tasks"),

@@ -1,4 +1,4 @@
-from django.shortcuts import render, HttpResponseRedirect
+from django.shortcuts import render, HttpResponseRedirect , redirect
 from django.contrib.auth.decorators import login_required
 from auditapp.models import User
 from partner.models import Client, Act, Task
@@ -13,6 +13,7 @@ import os
 from django.http import JsonResponse
 from django.db.models import Q
 import json
+from super_admin.views import FilesStorage
 # Create your views here.   
 @login_required
 def manager_dashboard(request): 
@@ -145,6 +146,7 @@ def show_individual_task(request, task_id):
             str_data = task.article_attachment_file.replace("'",'"')
             json_data = json.loads(str_data)
             article_attachment_file = json_data['file_location']
+        print("manager_attachment_file :",manager_attachment_file)
         context_data = {
             'task': task, 
             'client': client,   
@@ -184,87 +186,15 @@ def approved_tasks(request,task_id):
             task.manager_feedback = feedback
 
             attachment = request.FILES.get('attachment', False)
-            print(attachment)
-            if attachment:
-                print("attachment got :")
-                if getuser == "none":
-                    pass
-                else:
-                    if user_type == "manager":
-                        manager = User.objects.get(id = request.user.id)
-                        partner = User.objects.get(id = manager.linked_employee)
-                        mainclient = User.objects.get(id = partner.linked_employee)
-                    elif user_type == "partner":
-                        partner = User.objects.get(id = request.user.id)
-                        mainclient = User.objects.get(id = partner.linked_employee)
-                    print(mainclient)
-                    try:
-                        get_max_files = MaxFiles.objects.get(main_client = mainclient.id)
-                        if int(get_max_files.current_files) == int(get_max_files.max_files):
-                            print("error files exceeded limit")
-                        else:
-                            path = str(settings.MEDIA_ROOT) + '\\clients\\'+ str(mainclient.username) + '\\'
-                            directory = 'task_submission'
-                            dire = os.path.join(path, directory)
-                            print(dire) 
+            if request.FILES['attachment']:
+                attachment_file = FilesStorage(request,request.user,'clienttask',task.id,"task_submission",request.FILES['attachment'])
+                task.manager_attachment_file = attachment_file
 
-                            uploaded_filename = request.FILES['attachment'].name
-                            try:
-                                os.makedirs(dire)
-                                print("created folder")
-                            except:
-                                print("folder already created")
-                                pass
-                            task_file_upload_path = str(dire) + '\\'+str(task_id) + '\\' + user_type +'\\'
-                            try:
-                                os.makedirs(task_file_upload_path)
-                                print("created folder")
-                            except:
-                                print("folder already created")
-                                pass
-                            full_filename = os.path.join(task_file_upload_path, uploaded_filename)
-                            fout = open(full_filename, 'wb+')
-                            print("full_filename :",full_filename)
-
-                            file_content = ContentFile( request.FILES['attachment'].read() )
-
-                            # Iterate through the chunks.
-                            for chunk in file_content.chunks():
-                                fout.write(chunk)
-                            fout.close()
-                            remove_absolute_path = full_filename.replace(str(settings.MEDIA_ROOT),'')
-                            print("removed path :",remove_absolute_path)
-                            # task.manager_attachment_file.name = remove_absolute_path
-                            if request.user.is_manager:
-                                task.manager_attachment_file =  {
-                                    "user_id":f"{request.user.id}",
-                                    "file_location":f"{remove_absolute_path}"
-                                }
-                            elif request.user.is_partner:
-                                task.partner_attachment_file =  {
-                                    "user_id":f"{request.user.id}",
-                                    "file_location":f"{remove_absolute_path}"
-                                }
-                            get_max_files.current_files = int(get_max_files.current_files) + 1
-                            get_max_files.save()
-                    except MaxFiles.DoesNotExist:
-                        print("no max files found")
-            # if attachment:
-            #     uploaded_attachment_filename = request.FILES[u'attachment'].name
-            #     uploaded_attachment_file = request.FILES['attachment']
-            #     uploaded_attachment_filename = str(task_id) + "/" +  uploaded_attachment_filename
-            #     # print(uploaded_attachment_filename)
-                
-            #     task.manager_attachment_file.save(uploaded_attachment_filename, uploaded_attachment_file)
-            #     # task.attachment_file = request.FILES['attachment']
-            #     task.status = True
-            #     task.save()
-
-        task.is_approved = True                                                                             
-        print(task)
-        task.task_end_date = date.today()
-        task.task_end_datetime = datetime.now()
-        task.save()
+            task.is_approved = True                                                                             
+            print(task)
+            task.task_end_date = date.today()
+            task.task_end_datetime = datetime.now()
+            task.save()
         return HttpResponseRedirect(f'/manager/approval/{task_id}')
     elif request.user.is_main_client:
         task = ClientTask.objects.get(id = task_id)
@@ -322,21 +252,20 @@ def assign_task_to_employee(request, client_id):
             task.task_volume = volume
             task.task_sample_rate = samplerate
             task.save()
-            if user.email is not None:
+            # if user.email is not None:
                 
-                msg = '''
-                    Task Details are:=
-                    Task ID: {0}
-                    Task Name: {1}
-                    Client: {2}
-                    Auditing Standard: {3}
-                    International Auditing Standard: {4}
-                    Estimated Days: {5} days
-                '''.format(task.id, task.task_name, task.client.client_name,
-                    task.task_auditing_standard, task.task_international_auditing_standard,
-                    task.task_estimated_days)
-                # print(msg)
-                send_mail("Task Assignment", msg, 'icraftsolution.com@gmail.com',[user.email], fail_silently=False)
+                # msg = '''
+                #     Task Details are:=
+                #     Task ID: {0}
+                #     Task Name: {1}
+                #     Client: {2}
+                #     Auditing Standard: {3}
+                #     International Auditing Standard: {4}
+                #     Estimated Days: {5} days
+                # '''.format(task.id, task.task_name, task.client.client_name,
+                #     task.task_auditing_standard, task.task_international_auditing_standard,
+                #     task.task_estimated_days)
+                # send_mail("Task Assignment", msg, 'icraftsolution.com@gmail.com',[user.email], fail_silently=False)
         except Exception as e:
             print(e)
         return HttpResponseRedirect(f"/manager/client/{client_id}/tasks/") 
@@ -355,15 +284,33 @@ def all_task_status(request):
         return render(request,"manager/tasks_status.html",context)
 
 def reassign_task(request,client_id):
-    # reassign_all_tasks=ClientTask.objects.all()
-    if request.method=="POST":
+    if request.method == "POST":
         reassign_user = request.POST.get('user')
         task = request.POST.get('task_id')
+        print(reassign_user,task)
         task = ClientTask.objects.get(id=task)  
         task.user = User.objects.get(id=reassign_user)
         task.is_reject = False
         task.save()
-    return HttpResponseRedirect(f"/manager/reassign/{client_id}/tasks/")
+        if request.user.is_main_client:
+            return HttpResponseRedirect(f"/main_client/client/{client_id}/tasks/")
+        elif request.user.is_partner:
+            return HttpResponseRedirect(f"/partner/client/{client_id}/tasks/")
+        elif request.user.is_manager:
+            return HttpResponseRedirect(f"/manager/client/{client_id}/tasks/")
+    # return redirect('/manager/reassign/%s/tasks/' % client_id)
+    # reassign_all_tasks=ClientTask.objects.all()
+    # if request.method=="POST":
+        # reassign_user = request.POST.get('user')
+        # task = request.POST.get('task_id')
+        # task = ClientTask.objects.get(id=task)  
+        # task.user = User.objects.get(id=reassign_user)
+        # task.is_reject = False
+        # task.save()
+    #     return HttpResponseRedirect(f"/manager/reassign/{client_id}/tasks/")
+    # else:
+    #     print("not post hence redirecting to homepage of manager")
+    #     return redirect('manager_dashboard')
 
 @login_required
 def assign_multiple_task(request, client_id):
@@ -380,22 +327,26 @@ def assign_multiple_task(request, client_id):
                 task.user = user
                 task.save()
                 if user.email is not None:
-                    msg = '''
-                        Task Details are:
-                        Task ID: {0}
-                        Task Name: {1}
-                        Client: {2}
-                        Auditing Standard: {3}
-                        International Auditing Standard: {4}
-                        Estimated Days: {5} days
-                    '''.format(task.id, task.task_name, task.client.client_name,
-                        task.task_auditing_standard, task.task_international_auditing_standard,
-                        task.task_estimated_days)
+                    pass
+                    # msg = '''
+                    #     Task Details are:
+                    #     Task ID: {0}
+                    #     Task Name: {1}
+                    #     Client: {2}
+                    #     Auditing Standard: {3}
+                    #     International Auditing Standard: {4}
+                    #     Estimated Days: {5} days
+                    # '''.format(task.id, task.task_name, task.client.client_name,
+                    #     task.task_auditing_standard, task.task_international_auditing_standard,
+                    #     task.task_estimated_days)
                     # print(msg)
-                    send_mail("Task Assignment", msg, 'icraftsolution.com@gmail.com',[user.email], fail_silently=False)
+                    # send_mail("Task Assignment", msg, 'icraftsolution.com@gmail.com',[user.email], fail_silently=False)
             except Exception as e:
                 print(e)
-        return HttpResponseRedirect(f"/manager/client/{client_id}/tasks/") 
+        if request.user.is_manager:
+            return HttpResponseRedirect(f"/manager/client/{client_id}/tasks/") 
+        elif request.user.is_partner:
+            return HttpResponseRedirect(f"/partner/client/{client_id}/tasks/")
 
 
 def list_of_clients(request):
@@ -547,65 +498,66 @@ def manager_task_submission(request, task_id):
         if request.method == "POST":            
             task = ClientTask.objects.get(id = task_id)
             print("task.id :" ,task.id)
-            attachment = request.FILES.get('attachment', False)
-            print("attachment :",attachment)
-            if attachment:
-                print("attachment got :")
-                if getuser == "none":
-                    pass
-                else:
-                    manager = User.objects.get(id = request.user.id)
-                    partner = User.objects.get(id = manager.linked_employee)
-                    mainclient = User.objects.get(id = partner.linked_employee)
-                    print( manager , partner , mainclient)
-                    try:
-                        get_max_files = MaxFiles.objects.get(main_client = mainclient.id)
-                        if int(get_max_files.current_files) == int(get_max_files.max_files):
-                            print("error files exceeded limit")
-                        else:
-                            path = str(settings.MEDIA_ROOT) + '\\clients\\'+ str(mainclient.username) + '\\'
-                            directory = 'task_submission'
-                            dire = os.path.join(path, directory)
-                            print(dire) 
+            # attachment = request.FILES.get('attachment', False)
+            # print(attachment)
+            if request.FILES['attachment']:
+                attachment_file = FilesStorage(request,request.user,'clienttask',task.id,"task_submission",request.FILES['attachment'])
+                task.manager_attachment_file = attachment_file
+                # if getuser == "none":
+                #     pass
+                # else:
+                #     manager = User.objects.get(id = request.user.id)
+                #     partner = User.objects.get(id = manager.linked_employee)
+                #     mainclient = User.objects.get(id = partner.linked_employee)
+                #     print( manager , partner , mainclient)
+                #     try:
+                #         get_max_files = MaxFiles.objects.get(main_client = mainclient.id)
+                #         if int(get_max_files.current_files) == int(get_max_files.max_files):
+                #             print("error files exceeded limit")
+                #         else:
+                #             path = str(settings.MEDIA_ROOT) + '\\clients\\'+ str(mainclient.username) + '\\'
+                #             directory = 'task_submission'
+                #             dire = os.path.join(path, directory)
+                #             print(dire) 
 
-                            uploaded_filename = request.FILES['attachment'].name
-                            try:
-                                os.makedirs(dire)
-                                print("created folder")
-                            except:
-                                print("folder already created")
-                                pass
-                            task_file_upload_path = str(dire) + '\\'+str(task_id) +  '\\' + 'manager' +'\\'
-                            try:
-                                os.makedirs(task_file_upload_path)
-                                print("created folder")
-                            except:
-                                print("folder already created")
-                                pass
-                            full_filename = os.path.join(task_file_upload_path, uploaded_filename)
-                            fout = open(full_filename, 'wb+')
-                            print("full_filename :",full_filename)
+                #             uploaded_filename = request.FILES['attachment'].name
+                #             try:
+                #                 os.makedirs(dire)
+                #                 print("created folder")
+                #             except:
+                #                 print("folder already created")
+                #                 pass
+                #             task_file_upload_path = str(dire) + '\\'+str(task_id) +  '\\' + 'manager' +'\\'
+                #             try:
+                #                 os.makedirs(task_file_upload_path)
+                #                 print("created folder")
+                #             except:
+                #                 print("folder already created")
+                #                 pass
+                #             full_filename = os.path.join(task_file_upload_path, uploaded_filename)
+                #             fout = open(full_filename, 'wb+')
+                #             print("full_filename :",full_filename)
 
-                            file_content = ContentFile( request.FILES['attachment'].read() )
+                #             file_content = ContentFile( request.FILES['attachment'].read() )
 
-                            # Iterate through the chunks.
-                            for chunk in file_content.chunks():
-                                fout.write(chunk)
-                            fout.close()
-                            remove_absolute_path = full_filename.replace(str(settings.MEDIA_ROOT),'')
-                            print("removed path :",remove_absolute_path)
-                            task.manager_attachment_file =  {
-                                "user_id":f"{request.user.id}",
-                                "file_location":f"{remove_absolute_path}"
-                            }
-                            get_max_files.current_files = int(get_max_files.current_files) + 1
-                            get_max_files.save()
-                    except MaxFiles.DoesNotExist:
-                        print("no max files found")
+                #             # Iterate through the chunks.
+                #             for chunk in file_content.chunks():
+                #                 fout.write(chunk)
+                #             fout.close()
+                #             remove_absolute_path = full_filename.replace(str(settings.MEDIA_ROOT),'')
+                #             print("removed path :",remove_absolute_path)
+                #             task.manager_attachment_file =  {
+                #                 "user_id":f"{request.user.id}",
+                #                 "file_location":f"{remove_absolute_path}"
+                #             }
+                #             get_max_files.current_files = int(get_max_files.current_files) + 1
+                #             get_max_files.save()
+                #     except MaxFiles.DoesNotExist:
+                #         print("no max files found")
             task.status = True
-            task.is_approved = True                                                                             
+            task.is_approved = True
             task.task_end_date = date.today()
-            task.task_end_datetime = datetime.now()        
+            task.task_end_datetime = datetime.now()
             task.remark = request.POST.get('remark')
             task.save()
                 # if attachment:
@@ -631,9 +583,12 @@ def manager_start_working(request,task_id):
     
 @login_required
 def manager_rejected_task_remark(request,task_id):
-    if request.user.is_articleholder:
-        if request.method == 'POST':
-            remark_data = request.POST.get('remark')
-            task = ClientTask.objects.filter(id=task_id).update(rejection_remark=remark_data)
-            task_rejected = ClientTask.objects.filter(id=task_id).update(is_reject=True)
+    if request.method == 'POST':
+        remark_data = request.POST.get('remark')
+        task = ClientTask.objects.filter(id=task_id).update(rejection_remark=remark_data)
+        task_rejected = ClientTask.objects.filter(id=task_id).update(is_reject=True)
+        if request.user.is_articleholder:
             return HttpResponseRedirect('/article/task/{}'.format(task_id))
+        elif request.user.is_manager:
+            return HttpResponseRedirect('/manager/task/{}'.format(task_id))
+        

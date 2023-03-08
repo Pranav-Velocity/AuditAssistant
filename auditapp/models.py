@@ -24,11 +24,12 @@ class UserManager(BaseUserManager):
         user.save(using=self._db)
         return user
     
-    def create_superuser(self, username, password, email=None, mobile=None, first_name=None, last_name=None,is_super_admin=None, is_main_client=None, is_partner=False,
+    def create_superuser(self, username, password, email=None, mobile=None, first_name=None, last_name=None,is_super_admin=True, is_main_client=False, is_partner=False,
                     is_manager=False, is_auditorclerk=False, is_articleholder=False,is_developer_admin=False):
         user = self.create_user(username=username,password=password,email=None,mobile=None, first_name=None, last_name=None, is_main_client=False,
-         is_partner=False, is_manager=False, is_auditorclerk=False, is_articleholder=False,is_developer_admin=False)
+         is_partner=False, is_manager=False,is_super_admin=True, is_auditorclerk=False, is_articleholder=False,is_developer_admin=False)
         user.is_admin = True
+        user.is_super_admin = True
         user.save(using=self._db)
         return user
 
