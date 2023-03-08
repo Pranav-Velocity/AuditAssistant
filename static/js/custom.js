@@ -53,3 +53,10 @@ $('INPUT[type="file"]').change(function(){
     $.validator.addMethod("alphabets_and_spaces_and_underscore", function(value, element) {
         return this.optional(element) || value == value.match(/^[-\w\s]+$/);
      });
+
+     $(() => {
+        $('body').toggleClass('sidebar-collapse');
+        
+        
+       
+    });

@@ -17,11 +17,14 @@ import xlwt
 from django.contrib import messages
 
 def FilesStorage(request,user,type_of_file_upload,task_id,file_upload_type,file):
-    print(user,task_id,file)
+    # print(user,task_id,file)
+    removed_spaces = file.name
+    removed_spaces = removed_spaces.replace(" ","_")
+    uploaded_filename = removed_spaces
     if type_of_file_upload == "clienttask":
         task = ClientTask.objects.get(id = task_id)
-        uploaded_filename = file.name
-
+        
+        
         if request.user.is_partner:
             main_client = User.objects.get(id = user.linked_employee)
             logged_in_user = "partner"
@@ -55,19 +58,24 @@ def FilesStorage(request,user,type_of_file_upload,task_id,file_upload_type,file)
             if int(get_max_files.current_files) == int(get_max_files.max_files):
                 error = "Maximum File Upload Limit Reached..!"
             else:
-                path = str(settings.MEDIA_ROOT) + '\\clients\\'+ str(main_client.username) + '\\'
-                dire = os.path.join(path, file_upload_type)
+                path = str(settings.MEDIA_ROOT) + '/clients/'+ str(main_client.username) + '/task_submission/'+str(task_id) + '/' + logged_in_user
+                # print("Path :",path)
+                # dire = os.path.join(path, file_upload_type)
+                # print(dire)
                 try:
-                    os.makedirs(dire)
+                    os.makedirs(path)
+                    # print("file created")
                 except:
+                    # print("already created")
                     pass
-                task_file_upload_path = str(dire) + '\\'+str(task_id) + '\\' + logged_in_user +'\\'
-                try:
-                    os.makedirs(task_file_upload_path)
-                except:
-                    pass
-                    
-                full_filename = os.path.join(task_file_upload_path, uploaded_filename)
+                # task_file_upload_path = str(dire) + '/'+str(task_id) + '/' + logged_in_user 
+                # try:
+                #     os.makedirs(task_file_upload_path)
+                # except:
+                #     pass
+                
+                full_filename = str(path) + '/' + uploaded_filename
+                print(full_filename)
                 fout = open(full_filename, 'wb+')
 
                 file_content = ContentFile( request.FILES['attachment'].read() )
@@ -78,7 +86,9 @@ def FilesStorage(request,user,type_of_file_upload,task_id,file_upload_type,file)
                 remove_absolute_path = full_filename.replace(str(settings.MEDIA_ROOT),'')
                 print("removed path :",remove_absolute_path)
                 if check_for:
+                    print("file already exist hence removing old and adding new")
                     str_data = check_for.replace("'",'"')
+                    print("check for")
                     json_data = json.loads(str_data)
                     file_location = json_data['file_location']
                     delete_file = str(settings.MEDIA_ROOT) + file_location
@@ -90,7 +100,7 @@ def FilesStorage(request,user,type_of_file_upload,task_id,file_upload_type,file)
                     "file_location":f"{remove_absolute_path}"
                     }
                 else:
-                    print("attachment added")
+                    print("no previous files hence attachment added")
                     attachment_file =  {
                         "user_id":f"{request.user.id}",
                         "file_location":f"{remove_absolute_path}"
@@ -98,6 +108,8 @@ def FilesStorage(request,user,type_of_file_upload,task_id,file_upload_type,file)
                     get_max_files.current_files = int(get_max_files.current_files) + 1
                     get_max_files.save()
                 return attachment_file
+    
+
     elif type_of_file_upload == "activity":
         if request.user.is_main_client:
             main_client = request.user
@@ -107,19 +119,36 @@ def FilesStorage(request,user,type_of_file_upload,task_id,file_upload_type,file)
                 error = "Maximum number of files exceeded"
             else:
                 print("save the file")
-                path = str(settings.MEDIA_ROOT) + '\\clients\\'+ str(main_client.username) + '\\'
-                directory = 'activity_process_notes'
-                dire = os.path.join(path, directory)
-                print(dire) 
-
-                uploaded_filename = request.FILES['attachment'].name    
+                path = str(settings.MEDIA_ROOT) + '/clients/'+ str(main_client.username) + '/activity_process_notes'
+                # print("Path :",path)
+                # dire = os.path.join(path, file_upload_type)
+                # print(dire)
                 try:
-                    os.makedirs(dire)
-                    print("created folder")
+                    os.makedirs(path)
+                    # print("file created")
                 except:
-                    print("folder already created")
+                    # print("already created")
                     pass
-                full_filename = os.path.join(dire, uploaded_filename)
+                # task_file_upload_path = str(dire) + '/'+str(task_id) + '/' + logged_in_user 
+                # try:
+                #     os.makedirs(task_file_upload_path)
+                # except:
+                #     pass
+                
+                full_filename = str(path) + '/' + uploaded_filename
+                # path = str(settings.MEDIA_ROOT) + '/clients/'+ str(main_client.username) 
+                # directory = 'activity_process_notes'
+                # dire = os.path.join(path, directory)
+                # print(dire) 
+
+                # uploaded_filename = request.FILES['attachment'].name    
+                # try:
+                #     os.makedirs(dire)
+                #     print("created folder")
+                # except:
+                #     print("folder already created")
+                #     pass
+                # full_filename = os.path.join(dire, uploaded_filename)
                 fout = open(full_filename, 'wb+')
                 print("full_filename :",full_filename)
 
@@ -174,7 +203,7 @@ def FilesStorage(request,user,type_of_file_upload,task_id,file_upload_type,file)
                     error = "Maximum number of files exceeded"
                 else:
                     print("save the file")
-                    path = str(settings.MEDIA_ROOT) + '\\clients\\'+ str(main_client.username) + '\\'
+                    path = str(settings.MEDIA_ROOT) + '/clients/'+ str(main_client.username) 
                     directory = 'task_process_notes'
                     dire = os.path.join(path, directory)
                     print(dire) 
@@ -263,7 +292,7 @@ def FilesStorage(request,user,type_of_file_upload,task_id,file_upload_type,file)
                     error = "Maximum number of files exceeded"
                 else:
                     print("save the file")
-                    path = str(settings.MEDIA_ROOT) + '\\clients\\'+ str(main_client.username) + '\\'
+                    path = str(settings.MEDIA_ROOT) + '/clients/'+ str(main_client.username) 
                     directory = 'task_process_notes'
                     dire = os.path.join(path, directory)
                     print(dire) 

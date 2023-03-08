@@ -72,7 +72,7 @@ def show_individual_task(request, task_id):
         in_time = False
         if task.task_start_datetime is not None and task.task_end_datetime is not None:
             estimated_end_date = task.task_start_datetime + timedelta(minutes = int(task.task_estimated_days))
-            print("result 4 :",estimated_end_date , int(task.task_estimated_days))
+            # print("result 4 :",estimated_end_date , int(task.task_estimated_days))
             in_time = True
 
             if estimated_end_date < task.task_end_datetime:
@@ -91,7 +91,7 @@ def show_individual_task(request, task_id):
             "file_location":file_location,
             "estimated_time":str(int(task.task_estimated_days)  // 60) + ":" + str(int(task.task_estimated_days)  % 60)
         }
-        print(context_data)
+        # print(context_data)
         return render(request,'auditor/individual_task.html',context_data)
 
 @login_required
@@ -132,13 +132,13 @@ def auditor_task_submission(request, task_id):
     if request.user.is_auditorclerk:
         try:
             getuser = User.objects.get(id=request.user.id)
-            print(getuser)
+            # print(getuser)
         except User.DoesNotExist:
             getuser = "none"
         if request.method == "POST":            
             task = ClientTask.objects.get(id = task_id)
             attachment = request.FILES.get('attachment', False)
-            print(attachment)
+            # print(attachment)
             attachment_file = FilesStorage(request,request.user,'clienttask',task.id,"task_submission",request.FILES['attachment'])
             task.auditor_attachment_file = attachment_file
                         # auditor = User.objects.get(id = request.user.id)
