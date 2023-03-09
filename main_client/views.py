@@ -1316,7 +1316,7 @@ def unlock_audit_plan(request, auditplan_id):
 
 @login_required
 def render_client_profile(request, client_id):
-    # print("yesssss")
+    
     if request.user.is_main_client:
         if request.method == "POST":
             get_email = request.POST.get('get_email')
@@ -1368,11 +1368,13 @@ def render_client_profile(request, client_id):
             # print(a.start_date, a.estimated_end_date , a.actual_end_date)
             total_tasks = ClientTask.objects.filter(auditplan_id = a).count()
             completed_tasks = ClientTask.objects.filter(auditplan_id = a, is_approved_partner = True).count()
+            pending_tasks = ClientTask.objects.filter(auditplan_id = a,is_approved=True,is_approved_partner =False).count()
             if total_tasks == completed_tasks:
                 a.is_pending = True
             else:
                 a.is_pending = False
             a.total_tasks = total_tasks
+            a.total_pending_tasks = pending_tasks
             a.completed_tasks = completed_tasks
         # print(industries)
         # print(entity)
@@ -1450,11 +1452,13 @@ def render_client_profile(request, client_id):
             print(a.start_date, a.estimated_end_date , a.actual_end_date)
             total_tasks = ClientTask.objects.filter(auditplan_id = a).count()
             completed_tasks = ClientTask.objects.filter(auditplan_id = a, is_approved_partner = True).count()
+            pending_tasks = ClientTask.objects.filter(auditplan_id = a,is_approved=True,is_approved_partner =False).count()
             if total_tasks == completed_tasks:
                 a.is_pending = True
             else:
                 a.is_pending = False
             a.total_tasks = total_tasks
+            a.total_pending_tasks = pending_tasks
             a.completed_tasks = completed_tasks
         # print(industries)
         # print(entity)

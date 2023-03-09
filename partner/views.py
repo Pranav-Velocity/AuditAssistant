@@ -1426,6 +1426,8 @@ def approve_tasks(request,task_id):
         task.is_approved_partner = True                                                                             
         print(task)
         task.task_end_date = date.today()
+        task.task_end_datetime = datetime.now()
+        # task.task_end_date = date.today()
         task.save()
         return HttpResponseRedirect(f'/partner/approval/{task_id}')
 

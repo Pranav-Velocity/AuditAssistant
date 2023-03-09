@@ -379,6 +379,7 @@ def FilesStorage(request,user,type_of_file_upload,task_id,file_upload_type,file)
 @login_required
 def SuperAdminDashboard(request):
     if request.user.is_super_admin:
+        print(Activity.objects.get_super_admin_activities())
         total_no_of_files = 0
         total_no_of_users = 0
         get_all_main_client = User.objects.filter(is_main_client=True)
@@ -1169,7 +1170,28 @@ def DatabaseMigrations(request):
         return render(request,"super_admin/database_migrations.html")
 
 
-
+def DashboardSuperAdmin(request):
+    
+    total_no_of_files = 0
+    total_no_of_users = 0
+    get_all_main_client = User.objects.filter(is_main_client=True)
+    for i in get_all_main_client:
+        max_files = MaxFiles.objects.get(main_client = i.id)
+        users = User.objects.filter(linked_employee = i.id)
+        for j in users:
+            total_no_of_users += 1
+            users_level2 = User.objects.filter(linked_employee = j.id)
+            for k in users_level2:
+                total_no_of_users += 1
+        total_no_of_files = total_no_of_files + int(max_files.current_files)
+    print("count :",total_no_of_files , "Total no of Users :",total_no_of_users)
+    
+    params = {
+        "no_of_clients":User.objects.filter(is_main_client=True).count(),
+        "total_no_of_files":total_no_of_files,
+        "total_no_of_users":total_no_of_users
+    }
+    return JsonResponse({'data':params})
 
 
 

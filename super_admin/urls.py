@@ -18,5 +18,9 @@ urlpatterns = [
     path('files/',views.FilesCreated,name="files_created"),
     path('export_excel/<str:employee_ids>', views.export_users_xls_superadmin, name='export_excel'),
     path('export_pdf/<str:employee_ids>', views.export_pdf_superadmin, name='export_pdf'),
-    path('database',views.DatabaseMigrations,name="databasemigrations")
+    path('database',views.DatabaseMigrations,name="databasemigrations"),
+
+
+    path('api/kunal/dashboard_super_admin/',views.DashboardSuperAdmin,name="dashboard_super_admin"),
+    
 ]

@@ -265,7 +265,11 @@
                         {% if ap.is_pending == True %}
                           <strong class="text-success">Completed</strong>
                         {% else %}
-                          <strong class="text-danger">Pending</strong>
+                          <strong class="text-danger">Pending {% if ap.total_pending_tasks > 0 %}
+                            ({{ap.total_pending_tasks}})
+
+                          {% endif %}
+                          </strong>
                         {% endif %}
                       </td>
                       {% if ap.is_audit_plan_locked == True %}

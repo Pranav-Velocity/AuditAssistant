@@ -192,8 +192,8 @@ def approved_tasks(request,task_id):
 
             task.is_approved = True                                                                             
             print(task)
-            task.task_end_date = date.today()
-            task.task_end_datetime = datetime.now()
+            # task.task_end_date = date.today()
+            # task.task_end_datetime = datetime.now()
             task.save()
         return HttpResponseRedirect(f'/manager/approval/{task_id}')
     elif request.user.is_main_client:
@@ -480,6 +480,7 @@ def end_task(request, task_id):
         try:
             # Update start date as current date
             task.task_end_date = date.today()
+            task.task_end_datetime = datetime.now()
             task.save()
 
         except Exception as e:
@@ -556,8 +557,8 @@ def manager_task_submission(request, task_id):
                 #         print("no max files found")
             task.status = True
             task.is_approved = True
-            task.task_end_date = date.today()
-            task.task_end_datetime = datetime.now()
+            # task.task_end_date = date.today()
+            # task.task_end_datetime = datetime.now()
             task.remark = request.POST.get('remark')
             task.save()
                 # if attachment:

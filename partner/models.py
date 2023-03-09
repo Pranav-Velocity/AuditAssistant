@@ -35,6 +35,9 @@ class Activity_Labels(models.Model):
     def __str__(self):
         return self.activity_label_name
 # Level Three
+class ActivitySuperAdmin(models.Manager):
+    def get_super_admin_activities(self):
+        return self.filter(is_global=True)
 class Activity(models.Model):
     user = models.ForeignKey(User,on_delete=models.CASCADE,null=True,blank=True)
     activity_name = models.CharField(max_length=1024, null=False, blank=False)  
@@ -43,6 +46,7 @@ class Activity(models.Model):
     act = models.ForeignKey(Act, on_delete=models.CASCADE, blank=True, null=True, related_name='activity')
     process_notes = models.CharField(max_length=500,null=True, blank=True)
     is_global = models.BooleanField(default=False)
+    objects = ActivitySuperAdmin()
     def __str__(self):
         return self.activity_name
 
