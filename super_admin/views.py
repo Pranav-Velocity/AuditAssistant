@@ -125,9 +125,9 @@ def FilesStorage(request,user,type_of_file_upload,task_id,file_upload_type,file)
                 # print(dire)
                 try:
                     os.makedirs(path)
-                    # print("file created")
+                    print("folder created")
                 except:
-                    # print("already created")
+                    print("folder already created")
                     pass
                 # task_file_upload_path = str(dire) + '/'+str(task_id) + '/' + logged_in_user 
                 # try:
@@ -136,6 +136,19 @@ def FilesStorage(request,user,type_of_file_upload,task_id,file_upload_type,file)
                 #     pass
                 
                 full_filename = str(path) + '/' + uploaded_filename
+                print(full_filename)
+                fout = open(full_filename, 'wb+')
+
+                file_content = ContentFile( request.FILES['attachment'].read() )
+                for chunk in file_content.chunks():
+                    fout.write(chunk)
+                fout.close()
+                remove_absolute_path = full_filename.replace(str(settings.MEDIA_ROOT),'')
+                print("removed path :",remove_absolute_path)
+                task_id.process_notes = remove_absolute_path
+                task_id.save()
+                max_files.current_files = int(max_files.current_files) + 1
+                max_files.save()
                 # path = str(settings.MEDIA_ROOT) + '/clients/'+ str(main_client.username) 
                 # directory = 'activity_process_notes'
                 # dire = os.path.join(path, directory)
@@ -149,47 +162,74 @@ def FilesStorage(request,user,type_of_file_upload,task_id,file_upload_type,file)
                 #     print("folder already created")
                 #     pass
                 # full_filename = os.path.join(dire, uploaded_filename)
-                fout = open(full_filename, 'wb+')
-                print("full_filename :",full_filename)
+                # fout = open(full_filename, 'wb+')
+                # print("full_filename :",full_filename)
 
-                file_content = ContentFile( request.FILES['attachment'].read())
+                # file_content = ContentFile( request.FILES['attachment'].read())
 
-                # Iterate through the chunks.
-                for chunk in file_content.chunks():
-                    fout.write(chunk)
-                fout.close()
-                remove_absolute_path = full_filename.replace(str(settings.MEDIA_ROOT),'')
-                print("removed path :",remove_absolute_path)
-                task_id.process_notes.name = remove_absolute_path
-                task_id.save()
-                max_files.current_files = int(max_files.current_files) + 1
-                max_files.save()
+                # # Iterate through the chunks.
+                # for chunk in file_content.chunks():
+                #     fout.write(chunk)
+                # fout.close()
+                # remove_absolute_path = full_filename.replace(str(settings.MEDIA_ROOT),'')
+                # print("removed path :",remove_absolute_path)
+                # task_id.process_notes.name = remove_absolute_path
+                # # task_id.save()
+                # max_files.current_files = int(max_files.current_files) + 1
+                # max_files.save()
         elif request.user.is_super_admin:
-            path = str(settings.MEDIA_ROOT)
-            directory = 'activity_process_notes'
-            dire = os.path.join(path, directory)
-
-            uploaded_filename = request.FILES['attachment'].name
+            path = str(settings.MEDIA_ROOT) + '/activity_process_notes'
+            # print("Path :",path)
+            # dire = os.path.join(path, file_upload_type)
+            # print(dire)
             try:
-                os.makedirs(dire)
-                print("created folder")
+                os.makedirs(path)
+                print("folder created")
             except:
                 print("folder already created")
                 pass
-            full_filename = os.path.join(dire, uploaded_filename)
+            # task_file_upload_path = str(dire) + '/'+str(task_id) + '/' + logged_in_user 
+            # try:
+            #     os.makedirs(task_file_upload_path)
+            # except:
+            #     pass
+            
+            full_filename = str(path) + '/' + uploaded_filename
+            print(full_filename)
             fout = open(full_filename, 'wb+')
-            print("full_filename :",full_filename)
 
-            file_content = ContentFile( request.FILES['attachment'].read())
-
-            # Iterate through the chunks.
+            file_content = ContentFile( request.FILES['attachment'].read() )
             for chunk in file_content.chunks():
                 fout.write(chunk)
             fout.close()
             remove_absolute_path = full_filename.replace(str(settings.MEDIA_ROOT),'')
             print("removed path :",remove_absolute_path)
-            task_id.process_notes.name = remove_absolute_path
+            task_id.process_notes = remove_absolute_path
             task_id.save()
+            # directory = 'activity_process_notes'
+            # dire = os.path.join(path, directory)
+
+            # uploaded_filename = request.FILES['attachment'].name
+            # try:
+            #     os.makedirs(dire)
+            #     print("created folder")
+            # except:
+            #     print("folder already created")
+            #     pass
+            # full_filename = os.path.join(dire, uploaded_filename)
+            # fout = open(full_filename, 'wb+')
+            # print("full_filename :",full_filename)
+
+            # file_content = ContentFile( request.FILES['attachment'].read())
+
+            # # Iterate through the chunks.
+            # for chunk in file_content.chunks():
+            #     fout.write(chunk)
+            # fout.close()
+            # remove_absolute_path = full_filename.replace(str(settings.MEDIA_ROOT),'')
+            # print("removed path :",remove_absolute_path)
+            # task_id.process_notes.name = remove_absolute_path
+            # task_id.save()
     elif type_of_file_upload == "task":
         print("task is given")
         if file_upload_type == "task_update_upload":
@@ -203,19 +243,17 @@ def FilesStorage(request,user,type_of_file_upload,task_id,file_upload_type,file)
                     error = "Maximum number of files exceeded"
                 else:
                     print("save the file")
-                    path = str(settings.MEDIA_ROOT) + '/clients/'+ str(main_client.username) 
-                    directory = 'task_process_notes'
-                    dire = os.path.join(path, directory)
-                    print(dire) 
+                    path = str(settings.MEDIA_ROOT) + '/clients/'+ str(main_client.username) + '/task_process_notes'
 
-                    uploaded_filename = request.FILES['process_notes_file'].name    
+
+                    
                     try:
-                        os.makedirs(dire)
+                        os.makedirs(path)
                         print("created folder")
                     except:
                         print("folder already created")
                         pass
-                    full_filename = os.path.join(dire, uploaded_filename)
+                    full_filename = str(path) + '/' + uploaded_filename
                     fout = open(full_filename, 'wb+')
                     print("full_filename :",full_filename)
 
@@ -245,19 +283,16 @@ def FilesStorage(request,user,type_of_file_upload,task_id,file_upload_type,file)
             elif request.user.is_super_admin:
                 task = Task.objects.get(id=task_id)
                
-                path = str(settings.MEDIA_ROOT) 
-                directory = 'task_process_notes'
-                dire = os.path.join(path, directory)
-                print(dire) 
+                path = str(settings.MEDIA_ROOT) + '/task_process_notes'
 
-                uploaded_filename = request.FILES['process_notes_file'].name    
+ 
                 try:
-                    os.makedirs(dire)
+                    os.makedirs(path)
                     print("created folder")
                 except:
                     print("folder already created")
                     pass
-                full_filename = os.path.join(dire, uploaded_filename)
+                full_filename = str(path) + '/' + uploaded_filename
                 fout = open(full_filename, 'wb+')
                 print("full_filename :",full_filename)
 
@@ -279,7 +314,6 @@ def FilesStorage(request,user,type_of_file_upload,task_id,file_upload_type,file)
                     task.process_notes = remove_absolute_path
                     task.save()
                 else:
-                    
                     task.process_notes = remove_absolute_path
                     task.save()
         else:
@@ -292,19 +326,15 @@ def FilesStorage(request,user,type_of_file_upload,task_id,file_upload_type,file)
                     error = "Maximum number of files exceeded"
                 else:
                     print("save the file")
-                    path = str(settings.MEDIA_ROOT) + '/clients/'+ str(main_client.username) 
-                    directory = 'task_process_notes'
-                    dire = os.path.join(path, directory)
-                    print(dire) 
-
-                    uploaded_filename = request.FILES['attachment'].name    
+                    path = str(settings.MEDIA_ROOT) + '/clients/'+ str(main_client.username) + '/task_process_notes'
+   
                     try:
-                        os.makedirs(dire)
+                        os.makedirs(path)
                         print("created folder")
                     except:
                         print("folder already created")
                         pass
-                    full_filename = os.path.join(dire, uploaded_filename)
+                    full_filename = str(path) + '/' + uploaded_filename
                     fout = open(full_filename, 'wb+')
                     print("full_filename :",full_filename)
 
@@ -316,23 +346,20 @@ def FilesStorage(request,user,type_of_file_upload,task_id,file_upload_type,file)
                     fout.close()
                     remove_absolute_path = full_filename.replace(str(settings.MEDIA_ROOT),'')
                     print("removed path :",remove_absolute_path)
-                    task_id.process_notes.name = remove_absolute_path
+                    task_id.process_notes = remove_absolute_path
                     task_id.save()
                     max_files.current_files = int(max_files.current_files) + 1
                     max_files.save()
             elif request.user.is_super_admin:
-                path = str(settings.MEDIA_ROOT)
-                directory = 'task_process_notes'
-                dire = os.path.join(path, directory)
+                path = str(settings.MEDIA_ROOT) + '/task_process_notes'
 
-                uploaded_filename = request.FILES['attachment'].name
                 try:
-                    os.makedirs(dire)
+                    os.makedirs(path)
                     print("created folder")
                 except:
                     print("folder already created")
                     pass
-                full_filename = os.path.join(dire, uploaded_filename)
+                full_filename = str(path) + '/' + uploaded_filename
                 fout = open(full_filename, 'wb+')
                 print("full_filename :",full_filename)
 
@@ -344,7 +371,7 @@ def FilesStorage(request,user,type_of_file_upload,task_id,file_upload_type,file)
                 fout.close()
                 remove_absolute_path = full_filename.replace(str(settings.MEDIA_ROOT),'')
                 print("removed path :",remove_absolute_path)
-                task_id.process_notes.name = remove_absolute_path
+                task_id.process_notes = remove_absolute_path
                 task_id.save()
 
 
