@@ -186,7 +186,9 @@ def approved_tasks(request,task_id):
             task.manager_feedback = feedback
 
             attachment = request.FILES.get('attachment', False)
-            if request.FILES['attachment']:
+            if attachment == False:
+                print("no attachment")
+            else:
                 attachment_file = FilesStorage(request,request.user,'clienttask',task.id,"task_submission",request.FILES['attachment'])
                 task.manager_attachment_file = attachment_file
 
@@ -499,9 +501,11 @@ def manager_task_submission(request, task_id):
         if request.method == "POST":            
             task = ClientTask.objects.get(id = task_id)
             print("task.id :" ,task.id)
-            # attachment = request.FILES.get('attachment', False)
+            attachment = request.FILES.get('attachment', False)
             # print(attachment)
-            if request.FILES['attachment']:
+            if attachment == False:
+                print("no attachment")
+            else:
                 attachment_file = FilesStorage(request,request.user,'clienttask',task.id,"task_submission",request.FILES['attachment'])
                 task.manager_attachment_file = attachment_file
                 # if getuser == "none":
@@ -556,7 +560,7 @@ def manager_task_submission(request, task_id):
                 #     except MaxFiles.DoesNotExist:
                 #         print("no max files found")
             task.status = True
-            task.is_approved = True
+            # task.is_approved = True
             # task.task_end_date = date.today()
             # task.task_end_datetime = datetime.now()
             task.remark = request.POST.get('remark')

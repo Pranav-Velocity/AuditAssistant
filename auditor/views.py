@@ -138,9 +138,11 @@ def auditor_task_submission(request, task_id):
         if request.method == "POST":            
             task = ClientTask.objects.get(id = task_id)
             attachment = request.FILES.get('attachment', False)
-            # print(attachment)
-            attachment_file = FilesStorage(request,request.user,'clienttask',task.id,"task_submission",request.FILES['attachment'])
-            task.auditor_attachment_file = attachment_file
+            if attachment == False:
+                print("no attachment")
+            else:
+                attachment_file = FilesStorage(request,request.user,'clienttask',task.id,"task_submission",request.FILES['attachment'])
+                task.auditor_attachment_file = attachment_file
                         # auditor = User.objects.get(id = request.user.id)
                         # manager = User.objects.get(id = auditor.linked_employee)
                         # partner = User.objects.get(id = manager.linked_employee)
